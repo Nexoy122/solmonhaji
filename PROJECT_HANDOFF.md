@@ -3,7 +3,7 @@
 > Read this first. It's the full picture of what NicheSpy is, what's built, how it works,
 > and what's left. Give this file to a new Claude/dev and they'll have complete context.
 
-Last updated: 2026-06-26
+Last updated: 2026-06-26 — **NicheSpy is LIVE in production.**
 
 ---
 
@@ -135,30 +135,72 @@ run `npm run register` once from your PC → start. For signup pings, set the si
 - **Email:** `vixo.live` **verified in Resend** (SPF + DKIM + MX + DMARC `p=none` all green).
   Sends from `support@vixo.live`, **confirmed landing in inbox (not spam)**.
 - **Firebase:** project `waitlist-for-nichespy`, Firestore `waitlist` collection.
-- **GA4:** property "NicheSpy", measurement ID `G-1DWN72Y5P0`, stream URL https://vixo.live.
-  (GA shows "data collection not active" until the site is deployed + getting consented visits.)
-- **Turnstile:** Cloudflare widget, hostnames vixo.live + localhost (ADD real deploy domain too).
+- **GA4:** property "NicheSpy", measurement ID `G-1DWN72Y5P0`, receiving live data. ✅
+- **Turnstile:** Cloudflare widget, hostnames waitlist.vixo.live + vixo.live + localhost.
 - **Discord:** bot app created, invited to server, 4 commands registered.
+
+### Deployment (LIVE)
+- **Site → Vercel.** Repo `github.com/Nexoy122/nichespy` (account: Nexoy122). Auto-deploys on
+  push to `main`. Live at **https://waitlist.vixo.live** (and https://vixo.live — both serve it).
+  Next.js pinned to **15.5.19** (Vercel blocks vulnerable 15.1.3). All 8 env vars set in Vercel.
+- **Bot → Railway.** Repo `github.com/Nexoy122/nichespy-bot`. Auto-deploys on push to `main`.
+  Public URL **https://nichespy-bot-production.up.railway.app**. Running 24/7. All env vars set
+  (incl. `FIREBASE_SERVICE_ACCOUNT` as one-line JSON, `SITE_URL=https://waitlist.vixo.live`).
+- **DNS (Cloudflare):** `waitlist` CNAME → Vercel; root `vixo.live` A → Vercel.
 
 ---
 
-## 6. What's DONE ✅
+## 6. What's DONE ✅ (all live in production)
 
-Site + waitlist (Turnstile-protected, dedup'd) · inbox-landing email from own domain ·
-GA4 + cookie consent · traffic-source attribution · Discord bot (4 commands + signup pings) ·
-Cloudflare DNS/DDoS · referral-code marketing modal (fake) · privacy/terms · all type-checks
-pass, both projects build clean.
+Site live on Vercel at waitlist.vixo.live · waitlist (Turnstile-protected, dedup'd) →
+Firestore · inbox-landing email from support@vixo.live · GA4 + cookie consent (live data) ·
+traffic-source attribution · Discord bot 24/7 on Railway (4 commands) · **signup → Discord
+notification loop confirmed working end-to-end** · Cloudflare DNS/DDoS · referral marketing
+modal · privacy/terms.
 
 ## 7. What's LEFT 📋
 
-1. **Deploy site → Vercel** + set all env vars there (RESEND_API_KEY, EMAIL_FROM, Turnstile
-   keys, NEXT_PUBLIC_SITE_URL=https://vixo.live, NEXT_PUBLIC_GA_ID, BOT_NOTIFY_URL once bot up).
-2. **Point vixo.live → Vercel** (via Cloudflare DNS — add the A/CNAME Vercel gives, proxied OK
-   for the website record).
-3. **Deploy bot 24/7** (bot-hosting.net or Railway) + set site's `BOT_NOTIFY_URL`.
-4. Add Turnstile **real deploy hostname** to the widget; confirm GA "active" after deploy.
-5. **ROTATE SECRETS before public launch** — Discord bot token, Resend API key, and Firebase
-   service-account key were shared in chat during setup. Regenerate them.
+1. **ROTATE SECRETS** — Discord bot token, Resend API key, Firebase service-account key were
+   shared in chat during setup. Regenerate them before heavy public promotion. After rotating,
+   update the values in Railway (bot) and Vercel (site) env vars.
+2. **(Optional)** User wants a SEPARATE main site on root `vixo.live` (a different repo on their
+   "beast322" GitHub). That means: detach `vixo.live` from the waitlist Vercel project →
+   deploy the other repo as its own Vercel project → point root domain there. Waitlist stays on
+   `waitlist.vixo.live`.
+3. **(Optional)** Clean up test waitlist entries from setup (e.g. `/delete email:...` in Discord).
+
+---
+
+## 7b. HOW TO MAKE CHANGES / UPDATE THE SITE 🔧
+
+**Both projects auto-deploy from GitHub.** The workflow for any change:
+
+```
+edit code locally → test on localhost → commit → git push → auto-deploys live (~2 min)
+```
+
+### Updating the WEBSITE (text, design, pages, email, features)
+1. Edit files in `D:\Eggger\Niche Spy`
+2. Preview locally: `cd "D:\Eggger\Niche Spy" && npm run dev` → http://localhost:3000
+3. When happy: `git add -A && git commit -m "..." && git push`
+4. **Vercel auto-builds & deploys** → live on waitlist.vixo.live in ~2 min.
+   (Watch progress in the Vercel dashboard → Deployments.)
+
+### Updating the DISCORD BOT (commands, notifications)
+1. Edit files in `D:\Eggger\nichespy-bot`
+2. If you changed/added a **slash command**, re-register it: `npm run register`
+   (run once, locally, with the bot's `.env` — talks to Discord's API)
+3. Commit + push → **Railway auto-builds & deploys** → live in ~2 min.
+
+### Things to remember
+- **Never commit secrets.** `.env` and `serviceAccount.json` are gitignored — keep it that way.
+- **New secret/config?** Add it in the dashboard, NOT in code: Vercel (site) → Settings →
+  Environment Variables, or Railway (bot) → Variables. Then redeploy (Vercel needs a redeploy
+  after env changes; push a commit or use Deployments → Redeploy).
+- **`NEXT_PUBLIC_*` vars** are baked into the browser build → changing them requires a redeploy.
+- After pushing, if a Vercel build fails, check the build log (most likely a type/lint error or
+  a Next.js security block — see gotchas).
+- The safe habit: **always `npm run dev` and eyeball the change locally before pushing.**
 
 ## 8. Important gotchas (learned the hard way)
 
