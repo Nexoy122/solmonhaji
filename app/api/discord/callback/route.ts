@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { discordConfig, isDiscordConfigured } from "@/lib/discord";
+import {
+  discordConfig,
+  isDiscordConfigured,
+  encodeSession,
+  SESSION_COOKIE,
+  SESSION_MAX_AGE,
+} from "@/lib/discord";
 
 export const runtime = "nodejs";
 
@@ -45,7 +51,33 @@ export async function GET(req: NextRequest) {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
     if (!userRes.ok) return done(req, "error", "user_failed");
-    const user = (await userRes.json()) as { id: string };
+    const user = (await userRes.json()) as {
+      id: string;
+      username: string;
+      global_name?: string | null;
+      avatar: string | null;
+    };
+
+    // Set a signed session cookie so the navbar can show their pfp + name.
+    const setSession = (res: NextResponse) => {
+      res.cookies.set(
+        SESSION_COOKIE,
+        encodeSession({
+          id: user.id,
+          username: user.global_name || user.username,
+          avatar: user.avatar,
+        }),
+        {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: SESSION_MAX_AGE,
+        }
+      );
+      res.cookies.delete("discord_oauth_state");
+      return res;
+    };
 
     // 3. Add the user to the guild with the role (bot token + guilds.join scope).
     //    PUT returns 201 if added, 204 if already a member.
@@ -63,9 +95,7 @@ export async function GET(req: NextRequest) {
 
     if (joinRes.status === 201) {
       // newly added (role applied via body)
-      const res = done(req, "success");
-      res.cookies.delete("discord_oauth_state");
-      return res;
+      return setSession(done(req, "success"));
     }
 
     if (joinRes.status === 204) {
@@ -76,9 +106,7 @@ export async function GET(req: NextRequest) {
           { method: "PUT", headers: { Authorization: `Bot ${discordConfig.botToken}` } }
         );
       }
-      const res = done(req, "exists");
-      res.cookies.delete("discord_oauth_state");
-      return res;
+      return setSession(done(req, "exists"));
     }
 
     console.error("[discord callback] join failed:", joinRes.status, await joinRes.text());
