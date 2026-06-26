@@ -60,10 +60,10 @@ export function Navbar({ topOffset = 0 }: { topOffset?: number }) {
         scrolled ? "border-b border-outline-variant bg-surface/85 backdrop-blur-xl" : "border-b border-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-[1180px] items-center justify-between px-5 md:px-8 py-3.5">
+      <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-2 px-4 md:px-8 py-3.5">
         <a href="#top" className="flex items-center gap-2.5 text-[20px] font-bold tracking-[-0.4px]">
           <Logo />
-          NicheSpy
+          <span className="max-[400px]:hidden">NicheSpy</span>
         </a>
 
         <div className="hidden items-center gap-8 md:flex">
@@ -72,18 +72,18 @@ export function Navbar({ topOffset = 0 }: { topOffset?: number }) {
           <a href="#faq" className="text-body-medium text-on-surface-variant transition-colors hover:text-on-surface">FAQ</a>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex shrink-0 items-center gap-2">
           {user ? (
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((o) => !o)}
-                className="flex h-10 items-center gap-2 rounded-full border border-outline-variant bg-surface-container-low pl-1 pr-3 transition-colors hover:bg-surface-container"
+                className="flex h-10 items-center gap-2 rounded-full border border-outline-variant bg-surface-container-low pl-1 pr-2.5 transition-colors hover:bg-surface-container max-sm:pr-1.5"
                 aria-label="Account menu"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={user.avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full" />
                 <span className="text-[14px] font-medium text-on-surface max-sm:hidden">{user.username}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-on-surface-variant"><path d="m6 9 6 6 6-6" /></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-on-surface-variant max-sm:hidden"><path d="m6 9 6 6 6-6" /></svg>
               </button>
 
               {menuOpen && (
@@ -123,8 +123,9 @@ export function Navbar({ topOffset = 0 }: { topOffset?: number }) {
           >
             Referral code
           </button>
-          <a href="#top" className="m3-btn-filled !h-10 !px-5 !text-[14px] max-sm:!px-4">
-            Join the Waitlist
+          <a href="#top" className="m3-btn-filled !h-10 shrink-0 whitespace-nowrap !px-5 !text-[14px] max-sm:!px-4">
+            <span className="max-[400px]:hidden">Join the Waitlist</span>
+            <span className="min-[401px]:hidden">Join</span>
           </a>
         </div>
       </div>
