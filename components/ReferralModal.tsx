@@ -91,6 +91,10 @@ export function ReferralModal() {
         <form onSubmit={submit} className="mt-5">
           <input
             type="text"
+            name="referral-code"
+            autoComplete="off"
+            data-form-type="other"
+            inputMode="text"
             value={code}
             onChange={(e) => {
               setCode(e.target.value.toUpperCase());
