@@ -34,18 +34,28 @@ export function WaitlistForm({
     }
     setState("loading");
     try {
-      // Bot protection — run an invisible Turnstile challenge and verify it
-      // server-side before we allow the signup to proceed.
-      const token = await getTurnstileToken();
-      const verify = await fetch("/api/verify-turnstile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      if (!verify.ok) {
-        setState("error");
-        setError("Couldn't verify you're human. Please try again.");
-        return;
+      // Bot protection — run an invisible Turnstile challenge.
+      // FAIL-OPEN: if the widget can't produce/verify a token (misconfig, network,
+      // ad-blocker, timeout), we DON'T block the signup — real users always get
+      // through. We only rely on Turnstile when it actually works.
+      try {
+        const token = await getTurnstileToken();
+        if (token) {
+          const verify = await fetch("/api/verify-turnstile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+          if (!verify.ok) {
+            // Token was produced but rejected → likely a real bot. Block.
+            setState("error");
+            setError("Couldn't verify you're human. Please try again.");
+            return;
+          }
+        }
+        // No token (widget failed/blocked) → fall through and allow the signup.
+      } catch (e) {
+        console.warn("[turnstile] check skipped (fail-open):", e);
       }
 
       // Duplicate protection — don't add an email that's already on the list.
