@@ -12,14 +12,11 @@ import { Footer } from "@/components/Footer";
 import { DiscordButton } from "@/components/DiscordButton";
 import { ReferralModal } from "@/components/ReferralModal";
 
-// Seed count for the hero social-proof number.
-const BASE_COUNT = 247;
-
 export default function Home() {
   return (
     <main>
       <TopBar />
-      <Hero count={BASE_COUNT} />
+      <Hero />
       <Ticker />
       <Stats />
       <WhatIsIt />

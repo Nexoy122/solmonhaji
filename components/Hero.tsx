@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { WaitlistForm } from "./WaitlistForm";
-import { CountUp } from "./CountUp";
 import { AnimatedShowcase } from "./AnimatedShowcase";
 import { openReferralModal } from "./ReferralModal";
+import { SpotsRemaining } from "./SpotsRemaining";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -15,7 +15,7 @@ const fadeUp = {
   }),
 };
 
-export function Hero({ count }: { count: number }) {
+export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden px-5 md:px-8 pt-36 md:pt-44 pb-24 text-center">
       <div className="hero-aura" />
@@ -72,26 +72,8 @@ export function Hero({ count }: { count: number }) {
           </button>
         </motion.div>
 
-        <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="mt-9 flex items-center justify-center gap-3.5">
-          <div className="flex -space-x-2.5">
-            {[
-              { t: "Y", c: "bg-[#ff6b6b] text-white" },
-              { t: "M", c: "bg-[#4ecdc4] text-white" },
-              { t: "A", c: "bg-[#a8e063] text-[#0c0d14]" },
-              { t: "+", c: "bg-tertiary text-on-tertiary" },
-            ].map((a) => (
-              <div key={a.t} className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-surface text-[14px] font-semibold ${a.c}`}>
-                {a.t}
-              </div>
-            ))}
-          </div>
-          <span className="text-body-medium text-on-surface-variant">
-            Trusted by{" "}
-            <strong className="font-semibold text-on-surface">
-              <CountUp to={count} from={Math.max(0, count - 60)} />
-            </strong>{" "}
-            creators
-          </span>
+        <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="mt-9 flex items-center justify-center">
+          <SpotsRemaining />
         </motion.div>
       </div>
 
