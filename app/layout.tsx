@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "NicheSpy — Spy on Your YouTube Competitors",
   description:
-    "NicheSpy automates the competitor research creators waste 3–5 hours on every week. Type your niche, get full competitor intelligence in 60 seconds.",
+    "NicheSpy automates the competitor research creators waste 3–5 hours on every week. Type your niche, get full competitor intelligence in 60 seconds — plus a free Trust Score analysis of your own channel for waitlist members.",
   keywords: [
     "youtube competitor research",
     "youtube analytics",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "NicheSpy — Spy on Your YouTube Competitors",
     description:
-      "Know exactly what your competitors are doing. Always. Automated YouTube competitor intelligence in 60 seconds.",
+      "Know exactly what your competitors are doing. Always. Automated YouTube competitor intelligence in 60 seconds — plus a free Trust Score analysis of your channel for waitlist members.",
     url: SITE_URL,
     siteName: "NicheSpy",
     type: "website",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "NicheSpy — Spy on Your YouTube Competitors",
     description:
-      "Automated YouTube competitor intelligence in 60 seconds. Join the waitlist.",
+      "Automated YouTube competitor intelligence in 60 seconds. Plus a free Trust Score analysis of your channel for waitlist members. Join the waitlist.",
     images: ["/og-image.png"],
   },
   robots: { index: true, follow: true },
