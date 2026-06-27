@@ -42,8 +42,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og-image.png",
-        width: 1200,
-        height: 630,
+        width: 1366,
+        height: 768,
         alt: "NicheSpy — Tools for Creators",
       },
     ],
