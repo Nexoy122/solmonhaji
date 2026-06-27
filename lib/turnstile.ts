@@ -39,6 +39,15 @@ function loadScript(): Promise<void> {
 }
 
 /**
+ * Pre-load the Turnstile script early (call on page mount) so the challenge is
+ * fast when the user actually clicks Join — avoids the cold-start delay.
+ */
+export function preloadTurnstile(): void {
+  if (!TURNSTILE_SITE_KEY) return;
+  loadScript().catch(() => {});
+}
+
+/**
  * Run an invisible Turnstile challenge and resolve with the token.
  * If no site key is configured, resolves with "" (verification is skipped server-side).
  */

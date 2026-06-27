@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { collection, addDoc, serverTimestamp, query, where, getDocs, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getAttribution } from "@/lib/attribution";
 import { trackEvent } from "@/lib/analytics";
-import { getTurnstileToken } from "@/lib/turnstile";
+import { getTurnstileToken, preloadTurnstile } from "@/lib/turnstile";
 
 interface Props {
   source: string;
@@ -24,6 +24,11 @@ export function WaitlistForm({
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
 
+  // Pre-warm Turnstile on mount so the challenge is fast at click time.
+  useEffect(() => {
+    preloadTurnstile();
+  }, []);
+
   const submit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     const value = email.trim().toLowerCase();
@@ -34,34 +39,35 @@ export function WaitlistForm({
     }
     setState("loading");
     try {
-      // Bot protection — run an invisible Turnstile challenge.
-      // FAIL-OPEN: if the widget can't produce/verify a token (misconfig, network,
-      // ad-blocker, timeout), we DON'T block the signup — real users always get
-      // through. We only rely on Turnstile when it actually works.
-      try {
-        const token = await getTurnstileToken();
-        if (token) {
+      // Run bot-check and duplicate-check IN PARALLEL (they don't depend on each
+      // other) — this roughly halves the wait before showing success.
+      const turnstilePromise = (async (): Promise<"ok" | "bot"> => {
+        // FAIL-OPEN: only block if Turnstile explicitly rejects a real token.
+        try {
+          const token = await getTurnstileToken();
+          if (!token) return "ok"; // widget failed/blocked → let them through
           const verify = await fetch("/api/verify-turnstile", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token }),
           });
-          if (!verify.ok) {
-            // Token was produced but rejected → likely a real bot. Block.
-            setState("error");
-            setError("Couldn't verify you're human. Please try again.");
-            return;
-          }
+          return verify.ok ? "ok" : "bot";
+        } catch {
+          return "ok"; // network/error → fail open
         }
-        // No token (widget failed/blocked) → fall through and allow the signup.
-      } catch (e) {
-        console.warn("[turnstile] check skipped (fail-open):", e);
-      }
+      })();
 
-      // Duplicate protection — don't add an email that's already on the list.
-      const existing = await getDocs(
+      const dupPromise = getDocs(
         query(collection(db, "waitlist"), where("email", "==", value), limit(1))
       );
+
+      const [botResult, existing] = await Promise.all([turnstilePromise, dupPromise]);
+
+      if (botResult === "bot") {
+        setState("error");
+        setError("Couldn't verify you're human. Please try again.");
+        return;
+      }
       if (!existing.empty) {
         setState("error");
         setError("This email is already on the waitlist.");
