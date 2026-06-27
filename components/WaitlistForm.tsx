@@ -21,12 +21,18 @@ export function WaitlistForm({
   compact = false,
 }: Props) {
   const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [state, setState] = useState<"idle" | "loading" | "success" | "error" | "joined">("idle");
   const [error, setError] = useState("");
 
-  // Pre-warm Turnstile on mount so the challenge is fast at click time.
+  // Pre-warm Turnstile on mount; also remember if this browser already joined,
+  // so a refresh shows "you're in" instead of asking them to join again.
   useEffect(() => {
     preloadTurnstile();
+    try {
+      if (localStorage.getItem("ns_joined") === "1") setState("joined");
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const submit = async (e?: React.FormEvent) => {
@@ -87,6 +93,8 @@ export function WaitlistForm({
         joinedAt: serverTimestamp(),
       });
       setState("success");
+      // Remember this browser joined, so a refresh shows the joined state.
+      try { localStorage.setItem("ns_joined", "1"); } catch { /* ignore */ }
 
       // GA conversion event with the traffic source attached.
       trackEvent("waitlist_signup", { source: attr.source, medium: attr.medium, form: source });
@@ -110,6 +118,18 @@ export function WaitlistForm({
   };
 
   const maxW = compact ? "max-w-[440px]" : "max-w-[480px]";
+
+  // Persistent "already joined" state (shown on refresh if this browser joined).
+  if (state === "joined") {
+    return (
+      <div className={`mx-auto w-full ${maxW}`}>
+        <div className="flex items-center gap-3 rounded-2xl bg-primary-container px-5 py-4 text-body-medium font-medium text-on-primary-container">
+          <span className="text-lg">✓</span>
+          You&apos;re already on the waitlist — we&apos;ll email you when your spot opens.
+        </div>
+      </div>
+    );
+  }
 
   if (state === "success") {
     return (
