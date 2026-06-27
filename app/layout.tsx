@@ -47,6 +47,9 @@ export const metadata: Metadata = {
       "Automated YouTube competitor intelligence in 60 seconds. Join the waitlist.",
   },
   robots: { index: true, follow: true },
+  verification: {
+    google: "2gfzfxvr_cCtx66UmSk4iyLVXc8DXFteZg2nCJa-2Gg",
+  },
   icons: {
     icon: [{ url: "/favicon.webp", type: "image/webp" }],
     shortcut: "/favicon.webp",

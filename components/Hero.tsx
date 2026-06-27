@@ -43,9 +43,27 @@ export function Hero({ count }: { count: number }) {
           <div className="w-full max-w-[480px]">
             <WaitlistForm source="hero" buttonLabel="Join the Waitlist" />
           </div>
+
+          {/* Waitlist perk — single clear callout */}
+          <div className="mt-5 inline-flex max-w-[560px] flex-col items-center rounded-2xl border border-primary/30 bg-primary-container/40 px-6 py-4 text-center">
+            <span className="flex items-center gap-2 text-[15px] font-semibold text-on-surface md:text-[16px]">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                <rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5" />
+              </svg>
+              Join the waitlist &amp; get exclusive early access at launch
+            </span>
+            <span className="mt-1.5 text-[14px] text-on-surface-variant">
+              Plus 1 week of our premium tools — completely free.
+            </span>
+            <span className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1 text-[14px] font-bold text-on-primary md:text-[15px]">
+              <span className="h-2 w-2 rounded-full bg-on-primary animate-pulse-dot" />
+              First 1,000 users only
+            </span>
+          </div>
+
           <button
             onClick={openReferralModal}
-            className="mt-4 inline-flex items-center gap-1.5 text-body-medium text-on-surface-variant transition-colors hover:text-primary"
+            className="mt-5 inline-flex items-center gap-1.5 text-body-medium text-on-surface-variant transition-colors hover:text-primary"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 12v10H4V12" /><path d="M2 7h20v5H2z" /><path d="M12 22V7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
