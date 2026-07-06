@@ -274,20 +274,28 @@ ${sampleTitles.slice(0, 8).map((t) => `- ${t.slice(0, 90)}`).join("\n") || "(non
           messages: [
             { role: "system", content: `You are a strict YouTube Shorts channel classifier. Read the channel name + its recent Short titles and pick the SINGLE niche the CHANNEL is actually about. Return STRICT JSON only: {"niche": <id or null>, "format": <id or null>, "faceless": <bool>, "language": <ISO639-1 or null>, "topics": [<3-6 lowercase one-word topic tags, no # or spaces, e.g. "football","cats","reddit","minecraft">]}.
 
-NICHE DEFINITIONS (pick ONE by the dominant SUBJECT, use the exact id):
-- ranking = videos that literally rank/list/tier things ("Ranking...", "Top 5...", "Tier list", "Best/Worst..."). The word "Ranking" or a numbered list is the giveaway.
-- gaming = actual VIDEO GAME content: gameplay footage, Minecraft, Roblox, Fortnite, game facts, game edits. Titles mention games/game mechanics.
-- animation = the visuals are ANIMATED/cartoon/drawn (2D/3D animation, animated stories, animation tutorials). NOT live-action.
-- commentary = a person reacting to / talking over / giving takes on clips, news, or topics (opinion, reactions, "the comments section", storytime with a voice).
-- memes = funny/relatable/brainrot/absurd humor clips, meme formats. Comedy is the point.
-- edits_montages = clips cut & synced to music/beat (sports edits, character edits, montages, "velocity edit"). Aesthetic, music-driven.
-- captions_only = on-screen TEXT story/facts with NO talking (text over b-roll, silent reddit-style text, AI-voice facts over stock footage).
+Work through the niches IN THIS ORDER and STOP at the first one that clearly fits. "commentary" is the LAST resort — only use it if NONE of the others fit. Do NOT default to commentary when unsure.
+
+1. ranking — the titles literally RANK / LIST / TIER things. Signals: the word "Ranking"/"Ranked", "Top 5/10", "Tier list", "Best... / Worst...", "vs", numbered lists, "from weakest to strongest". If MOST titles do this → niche = "ranking". This beats everything else. (A "Ranking funniest football moments" channel is RANKING, not commentary and not edits.)
+
+2. gaming — an actual VIDEO GAME is the subject: Minecraft, Roblox, Fortnite, GTA, gameplay footage, game facts/"did you know", game character skits (Roblox/Minecraft avatars on screen). Roblox or Minecraft avatars in the thumbnails/titles → gaming. (FIFA/eFootball the game = gaming; a REAL football match ≠ gaming.)
+
+3. animation — the visuals are ANIMATED / cartoon / drawn (2D/3D animation, animated stories). NOT live-action.
+
+4. captions_only — on-screen TEXT story/facts with NO talking head (text over b-roll, silent reddit-style text, AI-voice facts over stock footage).
+
+5. edits_montages — real clips cut & synced to MUSIC/beat (sports edits, character edits, "velocity edit", montages). Aesthetic, music-driven, minimal talking.
+
+6. memes — the point is COMEDY: funny/relatable/brainrot/absurd humor, meme formats, skits made to make you laugh.
+
+7. commentary — LAST RESORT. A person REACTING to / TALKING OVER / giving opinions on clips, news, or storytime with a voice, that fits none of 1–6. If a channel could be ranking OR commentary, choose RANKING. If it could be gaming OR commentary, choose GAMING.
 
 CRITICAL ANTI-CONFUSION RULES:
-- FOOTBALL / SOCCER / basketball / real SPORTS clips are NOT "gaming". A football-highlights or Ronaldo/Messi channel = edits_montages if music-synced, else commentary. NEVER gaming unless it's a VIDEO GAME (FIFA/eFootball the game counts as gaming; real matches do NOT).
-- "gaming" requires an actual VIDEO GAME on screen. If unsure whether footage is a real sport vs a game, it is NOT gaming.
-- Minecraft/Roblox "facts" or "did you know" channels = gaming.
-- If the channel clearly matches NONE of the 7 niches, return niche: null (do not force it).
+- Titles containing "Ranking", "Top N", "Tier", "Best/Worst", or "vs" → ranking (NOT commentary, NOT edits), even if the topic is football or games.
+- Roblox / Minecraft avatars or gameplay → gaming (NOT commentary).
+- FOOTBALL / SOCCER / basketball / real SPORTS clips are NOT gaming. Real match footage music-synced = edits_montages; ranking real players/moments = ranking.
+- "gaming" requires an actual VIDEO GAME on screen. If unsure real sport vs game, it is NOT gaming.
+- Only use commentary when 1–6 genuinely do not fit. If truly none of the 7 fit, return niche: null.
 
 format = one of [${formatList}] or null. faceless = true if creator is NOT on camera (voiceover/text/gameplay/animation/compilation). language = ISO 639-1 of the titles' language ("en","es","hi","ar","pt") or null.` },
             { role: "user", content: prompt },
@@ -579,15 +587,36 @@ export async function getSeedChannels(): Promise<(DiscoveryChannel & { seedNiche
     });
 }
 
+// Overlay the USER's seed-niche assignment onto a channel's AI niche. For the
+// ~150 curated seed channels, what the user put the channel in ALWAYS wins over
+// the AI's guess (the AI mislabels e.g. a Ranking channel as commentary). Non-
+// seed (auto-discovered) channels keep their AI niche.
+function applySeedNiche(c: DiscoveryChannel, seedMap: Map<string, NicheId>): DiscoveryChannel {
+  const seedNiche = seedMap.get(c.channelId);
+  if (!seedNiche) return c;
+  const nicheLabel = NICHES.find((n) => n.id === seedNiche)?.label ?? c.nicheLabel;
+  return { ...c, aiNiche: seedNiche, nicheLabel };
+}
+
 export async function queryChannels(q: DiscoveryQuery): Promise<{ channels: DiscoveryChannel[]; total: number }> {
-  // "relevance" needs positional per-term scoring (name > handle > niche > shorts)
-  // that doesn't map cleanly to a SQL ORDER BY. For it we pull the filtered
-  // candidate set from SQL (no LIMIT) and rank in JS. Every other sort — including
-  // the filters and free-text WHERE — runs entirely in Postgres.
+  const seedMap = await getSeedNicheMap();
   const sort = q.sort ?? "blowing_up";
+
+  // ── Niche filter with seed override ──
+  // The niche shown/filtered is the EFFECTIVE niche = seed assignment if the
+  // channel is a seed, else the AI guess. Because SQL only knows ai_niche, when
+  // a specific niche is selected we fetch a broad candidate set (niche:"all")
+  // and filter by the effective niche in the app layer. This makes a seed the
+  // user filed under "Ranking" show under Ranking even if the AI said commentary,
+  // and hides it from the (wrong) commentary bucket.
+  const filteringNiche = q.niche && q.niche !== "all" ? q.niche : null;
+
+  // "relevance" needs positional per-term scoring (name > handle > niche > shorts)
+  // that doesn't map cleanly to a SQL ORDER BY: fetch broad, rank in JS.
   if (sort === "relevance" && q.q?.trim()) {
-    // Fetch all rows matching the same filters, unbounded, then score.
-    const { channels: candidates } = await queryChannelsDb({ ...q, sort: "blowing_up", limit: 5000 });
+    const { channels: raw } = await queryChannelsDb({ ...q, niche: "all", sort: "blowing_up", limit: 5000 });
+    let candidates = raw.map((c) => applySeedNiche(c, seedMap));
+    if (filteringNiche) candidates = candidates.filter((c) => c.aiNiche === filteringNiche);
     const terms = q.q.toLowerCase().split(/\s+/).filter(Boolean);
     const score = (c: DiscoveryChannel): number => {
       let s = 0;
@@ -607,8 +636,17 @@ export async function queryChannels(q: DiscoveryQuery): Promise<{ channels: Disc
     return { channels: ranked.slice(0, q.limit ?? 60), total: candidates.length };
   }
 
-  // blowing_up / subscribers / views / recent → SQL does filter + sort + limit.
-  return queryChannelsDb(q);
+  if (filteringNiche) {
+    // Fetch a broad set (all niches, other filters still applied in SQL), overlay
+    // the seed niche, then filter by the effective niche + re-limit in the app.
+    const { channels: raw } = await queryChannelsDb({ ...q, niche: "all", limit: 5000 });
+    const overlaid = raw.map((c) => applySeedNiche(c, seedMap)).filter((c) => c.aiNiche === filteringNiche);
+    return { channels: overlaid.slice(0, q.limit ?? 60), total: overlaid.length };
+  }
+
+  // No niche filter → SQL does sort + limit; just overlay the seed niche on the page.
+  const { channels, total } = await queryChannelsDb(q);
+  return { channels: channels.map((c) => applySeedNiche(c, seedMap)), total };
 }
 
 export async function getCrawlMeta(): Promise<{ lastCrawl: number | null; discovered: number; enriched: number }> {
