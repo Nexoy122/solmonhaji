@@ -2,6 +2,10 @@ import "server-only";
 import { adminDb } from "@/lib/firebaseAdmin";
 import { youtubeFetch } from "@/lib/youtubeKeys";
 import { NICHES, NicheId, getNicheChannels } from "@/lib/nicheResearch";
+import {
+  upsertChannel, getChannel, existingIds, freshIds, staleChannels,
+  getBlockedSet, deleteChannelDb, queryChannelsDb, channelsByIds,
+} from "@/lib/discoveryDb";
 
 // ── Discovery ─────────────────────────────────────────────────────────────────
 // An auto-growing index of faceless Shorts channels. A scheduled crawler:
@@ -14,9 +18,9 @@ import { NICHES, NicheId, getNicheChannels } from "@/lib/nicheResearch";
 // KEY GUARANTEE: each channel doc holds ONLY that channel's own recent Shorts.
 // We never mix videos from other channels into a card.
 
-const CHANNELS = "discovery_channels"; // doc per channel → DiscoveryChannel
+// Channels + blocklist now live in Postgres (see lib/discoveryDb.ts) — unlimited
+// rows, no Firestore read cap, SQL filter/sort. These two stay tiny in Firestore.
 const META = "discovery_meta";         // doc "state" → { lastCrawl, ... }
-const BLOCKED = "discovery_blocked";   // doc per channelId → { at } — never re-add
 const EXPANSIONS = "discovery_expansions"; // doc per search query → { at } — dedupe live expansion
 
 const SHORTS_MAX_SEC = 180;   // Shorts cap (3 min)
@@ -327,7 +331,7 @@ export async function enrichChannel(raw: RawChannel, sourceKeyword: string | nul
   const views7d = shorts.filter((s) => s.publishedAt && now - new Date(s.publishedAt).getTime() <= 7 * DAY).reduce((a, s) => a + s.views, 0);
   const avgShortsViews = Math.round(shorts.reduce((a, s) => a + s.views, 0) / shorts.length);
 
-  const existing = (await adminDb().collection(CHANNELS).doc(raw.id).get()).data() as DiscoveryChannel | undefined;
+  const existing = await getChannel(raw.id);
 
   // Stats-only refresh (skipAi) reuses the stored tags — a channel's niche
   // doesn't change day to day, so no Groq call is needed.
@@ -368,7 +372,7 @@ export async function enrichChannel(raw: RawChannel, sourceKeyword: string | nul
     updatedAt: now,
     createdAt: existing?.createdAt ?? now,
   };
-  await adminDb().collection(CHANNELS).doc(raw.id).set(doc);
+  await upsertChannel(doc);
   invalidateChannelCache();
   return doc;
 }
@@ -397,15 +401,15 @@ export async function crawl(opts: { perNiche?: number; maxEnrich?: number; pages
   }
 
   // 2) Skip blocked (manually deleted) + recently-enriched channels, cap batch.
+  //    Freshness is one batched SQL read instead of a Firestore get per candidate.
   const now = Date.now();
   const blocked = await getBlockedIds();
+  const candidateIds = [...candidates.keys()].filter((id) => !blocked.has(id));
+  const fresh = await freshIds(candidateIds, now, STALE_MS);
   const toEnrich: [string, string | null][] = [];
-  for (const [id, kw] of candidates) {
-    if (blocked.has(id)) continue; // never re-add a manually deleted channel
-    const snap = await adminDb().collection(CHANNELS).doc(id).get();
-    const d = snap.data() as DiscoveryChannel | undefined;
-    if (d && now - d.updatedAt < STALE_MS) continue;
-    toEnrich.push([id, kw]);
+  for (const id of candidateIds) {
+    if (fresh.has(id)) continue; // enriched within the last day → skip
+    toEnrich.push([id, candidates.get(id) ?? null]);
     if (toEnrich.length >= maxEnrich) break;
   }
 
@@ -451,14 +455,9 @@ export async function seedIndex(): Promise<{ seeds: number; enriched: number }> 
 // re-tagging), so it's cheap: ~2 YouTube units per channel, zero Groq calls.
 // Keeps "+X / 48h" and the Blowing-up ranking honest across the whole index.
 export async function refreshIndex(opts: { max?: number } = {}): Promise<{ stale: number; refreshed: number }> {
-  const db = adminDb();
-  const snap = await db.collection(CHANNELS).limit(3000).get();
   const now = Date.now();
-  const stale = snap.docs
-    .map((d) => d.data() as DiscoveryChannel)
-    .filter((c) => now - c.updatedAt > STALE_MS)
-    .sort((a, b) => a.updatedAt - b.updatedAt) // oldest first
-    .slice(0, opts.max ?? 500);
+  // Pull the oldest-stale channels straight from Postgres (no 3,000-doc cap).
+  const stale = await staleChannels(now, STALE_MS, opts.max ?? 500);
   if (stale.length === 0) return { stale: 0, refreshed: 0 };
 
   const raws = await fetchChannelsRaw(stale.map((c) => c.channelId));
@@ -466,7 +465,7 @@ export async function refreshIndex(opts: { max?: number } = {}): Promise<{ stale
   // they entered the index); skipAi=true → stats only.
   const results = await inChunks(raws, 5, (raw) => enrichChannel(raw, null, true, true).catch(() => null));
   const refreshed = results.filter(Boolean).length;
-  await db.collection(META).doc("state").set({ lastIndexRefresh: now, indexRefreshed: refreshed }, { merge: true });
+  await adminDb().collection(META).doc("state").set({ lastIndexRefresh: now, indexRefreshed: refreshed }, { merge: true });
   console.log(`[discovery] index refresh: ${stale.length} stale → ${refreshed} refreshed`);
   return { stale: stale.length, refreshed };
 }
@@ -499,7 +498,6 @@ export async function startQueryExpansion(q: string, force = false): Promise<boo
 }
 
 export async function expandQuery(q: string, opts: { pages?: number; maxNew?: number } = {}): Promise<number> {
-  const db = adminDb();
   const maxNew = opts.maxNew ?? EXPANSION_MAX_NEW;
   // VIDEO search (Shorts) is the high-yield source: channels actively posting
   // Shorts about the query. Channel search adds a few more on top.
@@ -509,15 +507,10 @@ export async function expandQuery(q: string, opts: { pages?: number; maxNew?: nu
   ]);
   const found = [...new Set([...fromVideos, ...fromChannels])];
 
-  // Drop blocked + already-indexed (batched read, not one-by-one).
+  // Drop blocked + already-indexed (one batched SQL read).
   const blocked = await getBlockedIds();
   const candidates = found.filter((id) => !blocked.has(id));
-  const existing = new Set<string>();
-  for (let i = 0; i < candidates.length; i += 100) {
-    const refs = candidates.slice(i, i + 100).map((id) => db.collection(CHANNELS).doc(id));
-    const snaps = await db.getAll(...refs);
-    for (const s of snaps) if (s.exists) existing.add(s.id);
-  }
+  const existing = await existingIds(candidates);
   const fresh = candidates.filter((id) => !existing.has(id)).slice(0, maxNew);
   if (fresh.length === 0) return 0;
 
@@ -532,18 +525,13 @@ export async function expandQuery(q: string, opts: { pages?: number; maxNew?: nu
 // ── Delete + blocklist ──
 // Removes a channel from the index AND records it so the crawler never re-adds it.
 export async function deleteChannel(channelId: string): Promise<void> {
-  const db = adminDb();
-  await Promise.all([
-    db.collection(CHANNELS).doc(channelId).delete(),
-    db.collection(BLOCKED).doc(channelId).set({ at: Date.now() }),
-  ]);
+  await deleteChannelDb(channelId, Date.now());
   invalidateChannelCache();
 }
 
 // Set of blocked channel IDs (crawler consults this before enriching).
 async function getBlockedIds(): Promise<Set<string>> {
-  const snap = await adminDb().collection(BLOCKED).get();
-  return new Set(snap.docs.map((d) => d.id));
+  return getBlockedSet();
 }
 
 // ── Read side: query the index for the Discover feed ──
@@ -557,23 +545,15 @@ export interface DiscoveryQuery {
   limit?: number;
 }
 
-// In-memory cache of the full channel index. Filtering/sorting happens on this
-// cached copy so we don't re-read hundreds of Firestore docs on every request
-// (Discover fires a query on mount + every keystroke/sort). Refreshed at most
-// once per CHANNEL_CACHE_TTL, drastically cutting Firestore read quota usage.
+// Channels are read from Postgres now (filter/sort/limit in SQL), so there's no
+// need to cache the whole index in memory. The seed-niche MAP (which channel the
+// USER assigned to each niche) still comes from Firestore's niche_channels and is
+// cheaply cached below, since seeds change rarely.
 const CHANNEL_CACHE_TTL = 5 * 60 * 1000; // 5 min
-let channelCache: { at: number; data: DiscoveryChannel[] } | null = null;
 
-async function getAllChannelsCached(): Promise<DiscoveryChannel[]> {
-  if (channelCache && Date.now() - channelCache.at < CHANNEL_CACHE_TTL) return channelCache.data;
-  const snap = await adminDb().collection(CHANNELS).limit(3000).get();
-  const data = snap.docs.map((d) => d.data() as DiscoveryChannel);
-  channelCache = { at: Date.now(), data };
-  return data;
-}
-
-// Invalidate after writes (crawl/delete) so fresh data shows promptly.
-function invalidateChannelCache() { channelCache = null; }
+// No-op kept so call sites (enrich/delete) stay unchanged. Postgres reads are
+// always live, so nothing to invalidate.
+function invalidateChannelCache() { /* Postgres reads are live — nothing cached */ }
 
 // Seed channels only — the curated set the user provided (niche_channels),
 // with their enriched data. Each channel keeps the niche the USER put it in
@@ -588,8 +568,10 @@ async function getSeedNicheMap(): Promise<Map<string, NicheId>> {
 }
 
 export async function getSeedChannels(): Promise<(DiscoveryChannel & { seedNiche: NicheId; seedNicheLabel: string })[]> {
-  const [all, seedMap] = await Promise.all([getAllChannelsCached(), getSeedNicheMap()]);
-  return all
+  const seedMap = await getSeedNicheMap();
+  // Fetch only the seed channels' rows by ID (not the whole index).
+  const rows = await channelsByIds([...seedMap.keys()]);
+  return rows
     .filter((c) => seedMap.has(c.channelId))
     .map((c) => {
       const seedNiche = seedMap.get(c.channelId)!;
@@ -598,32 +580,14 @@ export async function getSeedChannels(): Promise<(DiscoveryChannel & { seedNiche
 }
 
 export async function queryChannels(q: DiscoveryQuery): Promise<{ channels: DiscoveryChannel[]; total: number }> {
-  // Read the full index from the in-memory cache, then filter/sort in memory.
-  const all = await getAllChannelsCached();
-  let list = q.niche && q.niche !== "all" ? all.filter((c) => c.aiNiche === q.niche) : all.slice();
-
-  if (q.faceless) list = list.filter((c) => c.faceless);
-  if (q.minSubs) list = list.filter((c) => c.subscriberCount >= q.minSubs!);
-  if (q.language) list = list.filter((c) => c.primaryLanguage === q.language);
-
-  // Free-text search: every term must appear somewhere in the channel's
-  // name/handle/niche/format/Shorts titles ("funny football", "minecraft"…).
-  if (q.q?.trim()) {
-    const terms = q.q.toLowerCase().split(/\s+/).filter(Boolean);
-    list = list.filter((c) => {
-      const hay = [
-        c.title, c.handle ?? "", c.nicheLabel ?? "", c.aiNiche ?? "",
-        c.format ?? "", c.sourceKeyword ?? "",
-        ...(c.recentVideos ?? []).map((v) => v.title),
-      ].join(" ").toLowerCase();
-      return terms.every((t) => hay.includes(t));
-    });
-  }
-
+  // "relevance" needs positional per-term scoring (name > handle > niche > shorts)
+  // that doesn't map cleanly to a SQL ORDER BY. For it we pull the filtered
+  // candidate set from SQL (no LIMIT) and rank in JS. Every other sort — including
+  // the filters and free-text WHERE — runs entirely in Postgres.
   const sort = q.sort ?? "blowing_up";
   if (sort === "relevance" && q.q?.trim()) {
-    // Best match: weight by WHERE the terms hit (name > handle > niche > shorts),
-    // tiebreak by 48h velocity so strong matches that are also hot rank first.
+    // Fetch all rows matching the same filters, unbounded, then score.
+    const { channels: candidates } = await queryChannelsDb({ ...q, sort: "blowing_up", limit: 5000 });
     const terms = q.q.toLowerCase().split(/\s+/).filter(Boolean);
     const score = (c: DiscoveryChannel): number => {
       let s = 0;
@@ -639,27 +603,12 @@ export async function queryChannels(q: DiscoveryQuery): Promise<{ channels: Disc
       }
       return s;
     };
-    list.sort((a, b) => score(b) - score(a) || b.views48h - a.views48h);
-  } else if (sort === "recent") {
-    // "New & rising" = small channels punching above their weight: FEW total
-    // videos but HIGH average views. A channel with 20 videos at 1M avg views
-    // ranks far above one with 800 videos at 1M. Uses the channel's real total
-    // upload count (not the ~30 we sampled). Requires a real signal (10k+ avg).
-    const rising = (c: DiscoveryChannel) => {
-      if (c.avgShortsViews < 10_000) return -1;
-      const uploads = c.totalVideos || c.shortsCount || 1;
-      return c.avgShortsViews / Math.sqrt(uploads);
-    };
-    list.sort((a, b) => rising(b) - rising(a));
-  } else {
-    list.sort((a, b) =>
-      sort === "subscribers" ? b.subscriberCount - a.subscriberCount :
-      sort === "views" ? b.viewCount - a.viewCount :
-      b.views48h - a.views48h); // blowing_up (also the relevance fallback w/o a query)
+    const ranked = candidates.sort((a, b) => score(b) - score(a) || b.views48h - a.views48h);
+    return { channels: ranked.slice(0, q.limit ?? 60), total: candidates.length };
   }
 
-  const total = list.length;
-  return { channels: list.slice(0, q.limit ?? 60), total };
+  // blowing_up / subscribers / views / recent → SQL does filter + sort + limit.
+  return queryChannelsDb(q);
 }
 
 export async function getCrawlMeta(): Promise<{ lastCrawl: number | null; discovered: number; enriched: number }> {
