@@ -369,3 +369,33 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
 }
 .range-thumb::-webkit-slider-runnable-track { background: transparent; }
 .range-thumb::-moz-range-track { background: transparent; }
+
+/* ---- Niche tab button (Uiverse by Smit-Prajapati), scaled to tab size ----
+   Green grid pattern + radial glow, top/bottom border-image glow. The active
+   niche is hue-rotated so it reads as a distinct (purple/blue) state. */
+.niche-btn {
+  --main-color: rgb(46, 213, 115);
+  --main-bg-color: rgba(46, 213, 116, 0.36);
+  --pattern-color: rgba(46, 213, 116, 0.073);
+  filter: hue-rotate(0deg);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.12rem;
+  background:
+    radial-gradient(circle, var(--main-bg-color) 0%, rgba(0, 0, 0, 0) 95%),
+    linear-gradient(var(--pattern-color) 1px, transparent 1px),
+    linear-gradient(to right, var(--pattern-color) 1px, transparent 1px);
+  background-size: cover, 15px 15px, 15px 15px;
+  background-position: center center, center center, center center;
+  border-image: radial-gradient(circle, var(--main-color) 0%, rgba(0, 0, 0, 0) 100%) 1;
+  border-width: 1px 0 1px 0;
+  border-style: solid;
+  color: var(--main-color);
+  padding: 0.85rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: background-size 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+.niche-btn:hover { background-size: cover, 10px 10px, 10px 10px; }
+/* Selected niche → hue-rotated to a cool (blue/purple) tone. */
+.niche-btn.is-active { filter: hue-rotate(200deg); }

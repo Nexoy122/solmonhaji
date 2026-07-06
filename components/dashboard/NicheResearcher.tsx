@@ -92,17 +92,13 @@ export function NicheResearcher() {
         <p className="mt-1 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
       </div>
 
-      {/* Niche tabs — full width, evenly spread */}
+      {/* Niche tabs — full width, evenly spread (Uiverse grid-glow button) */}
       <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
         {tabNiches.map((n) => (
           <button
             key={n.id}
             onClick={() => { setActive(n.id); setSelectedWeek(""); }}
-            className={`rounded-xl border px-4 py-3 text-[14px] font-semibold transition-colors ${
-              active === n.id
-                ? "border-primary bg-primary text-on-primary"
-                : "border-white/10 bg-white/[0.02] text-on-surface hover:border-white/25 hover:bg-white/[0.05]"
-            }`}
+            className={`niche-btn text-center ${active === n.id ? "is-active" : ""}`}
           >
             {n.label}
           </button>
