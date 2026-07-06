@@ -8,7 +8,8 @@ import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import pg from "pg";
-import admin from "firebase-admin";
+import { initializeApp, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -17,8 +18,12 @@ function loadEnv() {
   try {
     const env = readFileSync(join(root, ".env"), "utf8");
     for (const line of env.split("\n")) {
-      const m = line.match(/^([A-Z_]+)="?(.*?)"?\s*$/);
-      if (m && !process.env[m[1]]) process.env[m[1]] = m[2];
+      const m = line.match(/^([A-Z_]+)=(.*)$/);
+      if (!m || process.env[m[1]]) continue;
+      // Strip one layer of surrounding double-quotes if present (greedy value capture).
+      let val = m[2];
+      if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+      process.env[m[1]] = val;
     }
   } catch { /* ignore */ }
 }
@@ -26,15 +31,15 @@ loadEnv();
 
 if (!process.env.DATABASE_URL) { console.error("DATABASE_URL not set."); process.exit(1); }
 
-// ── Firebase Admin ──
-admin.initializeApp({
-  credential: admin.credential.cert({
+// ── Firebase Admin (modular SDK — required for ESM) ──
+initializeApp({
+  credential: cert({
     projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
     clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     privateKey: (process.env.FIREBASE_ADMIN_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
   }),
 });
-const fs = admin.firestore();
+const fs = getFirestore();
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 const num = (v) => (v == null ? 0 : Number(v)) || 0;
