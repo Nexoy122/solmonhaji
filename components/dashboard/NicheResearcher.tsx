@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/AuthProvider";
 
 interface NicheDef { id: string; label: string }
-interface ViralVideo { id: string; title: string; channelName: string; thumbnail: string; views: number; url: string; outlierX: number }
+interface ViralVideo { id: string; title: string; channelName: string; thumbnail: string; views: number; url: string; outlierX: number; publishedAt?: string }
 interface RankedChannel { channelId: string; name: string; avatar: string | null; subs: number; delta: number; deltaPct?: number; uploads?: number }
 interface SubNiche {
   name: string; viralCount: number; viralRate: number; avgViews: number; totalViews: number;
@@ -36,6 +36,18 @@ function fmt(n: number): string {
 function weekLabel(weekKey: string): string {
   const d = new Date(weekKey + "T00:00:00Z");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+}
+// "5d ago" / "3w ago" from an ISO date (empty if unknown).
+function timeAgo(iso?: string): string {
+  if (!iso) return "";
+  const ms = Date.now() - new Date(iso).getTime();
+  if (ms < 0 || Number.isNaN(ms)) return "";
+  const d = Math.floor(ms / 86400000);
+  if (d < 1) return "today";
+  if (d < 7) return `${d}d ago`;
+  if (d < 30) return `${Math.floor(d / 7)}w ago`;
+  if (d < 365) return `${Math.floor(d / 30)}mo ago`;
+  return `${Math.floor(d / 365)}y ago`;
 }
 
 export function NicheResearcher() {
@@ -310,10 +322,10 @@ function PagePreview() {
 
       {/* Blowing up */}
       <p className="mb-3 mt-7 text-[13px] text-on-surface-variant">What&apos;s blowing up in this niche right now, from the last 14 days.</p>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-        {Array.from({ length: 6 }).map((_, i) => (
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
+        {Array.from({ length: 7 }).map((_, i) => (
           <div key={i} className="overflow-hidden rounded-none border border-white/10 bg-white/[0.02]">
-            <div className="aspect-[9/12] animate-pulse bg-white/[0.05]" />
+            <div className="aspect-[9/16] animate-pulse bg-white/[0.05]" />
             <div className="space-y-1.5 p-2"><Bar h="h-2.5" /><Bar w="60%" h="h-2" /></div>
           </div>
         ))}
@@ -405,31 +417,47 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function VideoGrid({ videos }: { videos: ViralVideo[] }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-      {videos.slice(0, 12).map((v) => (
-        <div key={v.id} className="group overflow-hidden rounded-none border border-white/10 bg-white/[0.02] transition-colors hover:border-white/25">
-          <a href={v.url} target="_blank" rel="noopener noreferrer" className="block">
-            <div className="relative aspect-[9/12] bg-white/[0.04]">
-              {v.thumbnail && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={v.thumbnail} alt="" className="h-full w-full object-cover" />
-              )}
-              <span className="absolute right-1.5 top-1.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-bold text-white">{v.outlierX.toFixed(1)}x</span>
-              <span className="absolute bottom-1.5 left-1.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-white">{fmt(v.views)}</span>
-            </div>
-          </a>
-          <div className="p-2">
-            <p className="line-clamp-2 text-[11px] font-semibold leading-tight text-on-surface">{v.title}</p>
-            <p className="mt-0.5 truncate text-[10px] text-on-surface-variant">{v.channelName}</p>
-            <a
-              href={`/dashboard/shorts-transcript?url=${encodeURIComponent(v.url)}`}
-              className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-white/12 px-2 py-1 text-[10px] font-semibold text-on-surface-variant transition-colors hover:bg-white/[0.05] hover:text-on-surface"
-            >
-              <Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={11} /> Transcript
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
+      {videos.slice(0, 14).map((v) => {
+        const ago = timeAgo(v.publishedAt);
+        return (
+          <div key={v.id} className="group flex flex-col overflow-hidden rounded-none border border-white/10 bg-white/[0.02] transition-colors hover:border-white/25">
+            {/* 9:16 thumbnail */}
+            <a href={v.url} target="_blank" rel="noopener noreferrer" className="block">
+              <div className="relative aspect-[9/16] bg-white/[0.04]">
+                {v.thumbnail && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={v.thumbnail} alt="" className="h-full w-full object-cover" />
+                )}
+              </div>
             </a>
+            <div className="flex flex-1 flex-col p-2">
+              <p className="line-clamp-2 text-[11px] font-semibold leading-tight text-on-surface">{v.title}</p>
+              <p className="mt-0.5 truncate text-[10px] text-on-surface-variant">{v.channelName}</p>
+              {/* stat row: views · outlier chip · time-ago */}
+              <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-on-surface-variant">
+                <span className="flex items-center gap-0.5">
+                  <Icon d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" size={11} /> {fmt(v.views)}
+                </span>
+                <span className="flex items-center gap-0.5 rounded bg-[#10b981]/15 px-1 py-0.5 font-bold text-[#34d399]">
+                  <Icon d="M23 6l-9.5 9.5-5-5L1 18" size={10} />{v.outlierX.toFixed(1)}x
+                </span>
+                {ago && (
+                  <span className="flex items-center gap-0.5">
+                    <Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={10} /> {ago}
+                  </span>
+                )}
+              </div>
+              <a
+                href={`/dashboard/shorts-transcript?url=${encodeURIComponent(v.url)}`}
+                className="mt-2 inline-flex items-center justify-center gap-1 rounded-none border border-white/12 px-2 py-1.5 text-[10px] font-semibold text-on-surface-variant transition-colors hover:bg-white/[0.05] hover:text-on-surface"
+              >
+                <Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={11} /> Get Transcript
+              </a>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

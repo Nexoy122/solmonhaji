@@ -50,7 +50,8 @@ export interface ViralVideo {
   thumbnail: string;
   views: number;
   url: string;
-  outlierX: number; // how many times the channel's average
+  outlierX: number;      // how many times the channel's average
+  publishedAt?: string;  // ISO — for the "Xd ago" chip
 }
 
 export interface RankedChannel {
@@ -263,7 +264,7 @@ export async function refreshNiche(niche: NicheId): Promise<NicheRecap> {
     for (const v of recent) {
       const outlierX = avgViews > 0 ? v.views / avgViews : 0;
       if (outlierX < 2) continue;
-      const vid = { id: v.id, title: v.title, channelName: ch.name, thumbnail: v.thumbnail, views: v.views, url: `https://www.youtube.com/watch?v=${v.id}`, outlierX };
+      const vid = { id: v.id, title: v.title, channelName: ch.name, thumbnail: v.thumbnail, views: v.views, url: `https://www.youtube.com/watch?v=${v.id}`, outlierX, publishedAt: v.publishedAt };
       const ageMs = v.publishedAt ? Date.now() - new Date(v.publishedAt).getTime() : 0;
       if (ageMs <= WEEK) { viralCount++; viral.push(vid); }
       else if (v.views >= 1_000_000) resurging.push(vid);
