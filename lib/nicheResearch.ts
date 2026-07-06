@@ -228,6 +228,15 @@ export async function refreshNiche(niche: NicheId): Promise<NicheRecap> {
   // Keep the tracked list == the curated set.
   await adminDb().collection(CH_LIST).doc(niche).set({ channelIds, seeds: seeds.length ? seeds : channelIds }, { merge: true });
 
+  // Guard: if we HAVE seed channels but fetched ZERO stats, the YouTube fetch
+  // failed (quota/rate-limit) — do NOT overwrite a good prior recap with an
+  // empty one. Keep the last recap and bail.
+  if (channelIds.length > 0 && now.length === 0) {
+    const prior = await getRecap(niche);
+    if (prior) return prior;
+    throw new Error(`[niche-research] ${niche}: fetched 0/${channelIds.length} channels (quota?)`);
+  }
+
   const db = adminDb();
   let viewsGained = 0, subsGained = 0, newUploads = 0, viralCount = 0, hasPrior = false;
   const subGainers: RankedChannel[] = [];

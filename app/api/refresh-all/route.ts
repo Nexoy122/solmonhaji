@@ -35,10 +35,15 @@ export async function GET(req: NextRequest) {
   const result: Record<string, unknown> = {};
   const started = Date.now();
 
-  // 1) Explore videos → Postgres (also stamps explore_meta.last_refresh).
+  // Order matters: run the CHEAP crawls first so Explore's massive deep-crawl
+  // (tens of thousands of videos) doesn't drain the YouTube quota before the
+  // others get their turn. Niche Research is ~2 units/channel (~150 channels);
+  // Discover is a handful of searches; Explore is by far the heaviest.
+
+  // 1) Niche Research weekly recaps (seeds only — cheap, and the most visible).
   try {
-    result.explore = await refreshExploreIndex();
-  } catch (e) { result.exploreError = (e as Error).message; }
+    result.niche = await refreshAllNiches();
+  } catch (e) { result.nicheError = (e as Error).message; }
 
   // 2) Discover channels: discover + enrich new, then refresh stale stats.
   try {
@@ -47,10 +52,10 @@ export async function GET(req: NextRequest) {
     result.discover = { ...crawled, ...refreshed };
   } catch (e) { result.discoverError = (e as Error).message; }
 
-  // 3) Niche Research weekly recaps (seeds only).
+  // 3) Explore videos → Postgres (heaviest; also stamps explore_meta.last_refresh).
   try {
-    result.niche = await refreshAllNiches();
-  } catch (e) { result.nicheError = (e as Error).message; }
+    result.explore = await refreshExploreIndex();
+  } catch (e) { result.exploreError = (e as Error).message; }
 
   // Stamp the shared unified-refresh clock (drives every countdown).
   const finished = Date.now();
