@@ -223,16 +223,13 @@ function ToolUnavailable({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-function ChannelCard({ c, onDelete }: { c: DiscoveryChannel; onDelete: (id: string) => void }) {
+function ChannelCard({ c }: { c: DiscoveryChannel }) {
   const [copied, setCopied] = useState(false);
-  const [confirming, setConfirming] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const shorts = (c.recentVideos ?? []).filter((v) => v?.id).slice(0, 3);
   const copy = async () => {
     try { await navigator.clipboard.writeText(c.url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* ignore */ }
   };
-  const doDelete = async () => { setDeleting(true); await onDelete(c.channelId); };
   return (
     <div className="group/card flex flex-col overflow-hidden border border-white/[0.07] bg-white/[0.02] transition-colors duration-200 hover:border-white/25">
       {showModal && <ChannelModal c={c} onClose={() => setShowModal(false)} />}
@@ -254,28 +251,8 @@ function ChannelCard({ c, onDelete }: { c: DiscoveryChannel; onDelete: (id: stri
           {c.nicheLabel && (
             <span className="rounded-md bg-primary-container px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-on-primary-container">{c.nicheLabel}</span>
           )}
-          <button
-            onClick={() => setConfirming(true)}
-            title="Remove this channel from the database"
-            className="flex size-6 items-center justify-center rounded-md text-on-surface-variant/60 transition-colors hover:bg-error/10 hover:text-error"
-          >
-            <Icon d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6" size={14} />
-          </button>
         </div>
       </div>
-
-      {/* Delete confirmation */}
-      {confirming && (
-        <div className="mx-4 mt-3 rounded-none border border-error/30 bg-error/10 p-3">
-          <p className="text-[12.5px] font-medium text-on-surface">Remove <span className="font-semibold">{c.title}</span> from the whole database? It won&apos;t be re-added by the crawler.</p>
-          <div className="mt-2.5 flex gap-2">
-            <button onClick={doDelete} disabled={deleting} className="inline-flex items-center gap-1.5 rounded-lg bg-error px-3 py-1.5 text-[12px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60">
-              {deleting ? <><span className="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white" /> Removing…</> : <><Icon d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" size={12} /> Yes, remove</>}
-            </button>
-            <button onClick={() => setConfirming(false)} disabled={deleting} className="rounded-lg border border-outline-variant px-3 py-1.5 text-[12px] font-semibold text-on-surface transition-colors hover:bg-surface-container-high disabled:opacity-60">Cancel</button>
-          </div>
-        </div>
-      )}
 
       {/* Tags */}
       {(c.faceless || c.format) && (
@@ -400,23 +377,6 @@ export function Discover() {
     } catch { /* background — errors surface on the next reload */ }
   }, [user, query, effectiveSort, authHeader]);
 
-  const handleDelete = useCallback(async (channelId: string) => {
-    if (!user) return;
-    try {
-      const res = await fetch(`/api/discovery?channelId=${encodeURIComponent(channelId)}`, {
-        method: "DELETE",
-        headers: await authHeader(),
-      });
-      if (res.ok) {
-        setChannels((prev) => prev.filter((c) => c.channelId !== channelId));
-        setTotal((t) => Math.max(0, t - 1));
-      } else {
-        const d = await res.json().catch(() => ({}));
-        setError(d.error || "Couldn't remove the channel.");
-      }
-    } catch { setError("Network error while removing."); }
-  }, [user, authHeader]);
-
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (sortRef.current && !sortRef.current.contains(e.target as Node)) setSortMenu(false);
@@ -520,7 +480,7 @@ export function Discover() {
       ) : (
         <>
           <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {channels.map((c) => <ChannelCard key={c.channelId} c={c} onDelete={handleDelete} />)}
+            {channels.map((c) => <ChannelCard key={c.channelId} c={c} />)}
           </div>
           {/* Subtle indicator when expanding on top of existing results */}
           {expanding && (
