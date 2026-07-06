@@ -236,8 +236,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
             </button>
-            {/* Page title — shown on mobile only; on desktop the sidebar shows the active page. */}
-            <h1 className="font-heading text-[22px] font-bold tracking-[-0.01em] text-white md:hidden">{pageTitle(pathname)}</h1>
+            {/* Page title in the topbar. Hidden on desktop only for Explore
+                (its filter rail occupies that top-left spot). */}
+            <h1 className={`font-heading text-[22px] font-bold tracking-[-0.01em] text-white ${pathname.startsWith("/dashboard/explore") ? "md:hidden" : ""}`}>{pageTitle(pathname)}</h1>
           </div>
 
           <div className="flex items-center gap-2.5">

@@ -335,7 +335,6 @@ export function Discover() {
   const [query, setQuery] = useState("");     // debounced value sent to the API
   const [sort, setSort] = useState<Sort>("blowing_up");
   const [sortTouched, setSortTouched] = useState(false); // user explicitly picked a sort
-  const [englishOnly, setEnglishOnly] = useState(false);
   const [channels, setChannels] = useState<DiscoveryChannel[]>([]);
   const [total, setTotal] = useState(0);
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -366,7 +365,6 @@ export function Discover() {
     try {
       const params = new URLSearchParams({ niche: "all", sort: effectiveSort, limit: "90" });
       if (query) params.set("q", query);
-      if (englishOnly) params.set("language", "en");
       const res = await fetch(`/api/discovery?${params}`, { headers: await authHeader() });
       const data = await res.json();
       if (!res.ok) {
@@ -378,7 +376,7 @@ export function Discover() {
       }
     } catch { setError("Network error."); }
     setLoading(false);
-  }, [user, authHeader, query, effectiveSort, englishOnly]);
+  }, [user, authHeader, query, effectiveSort]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -398,10 +396,9 @@ export function Discover() {
     setExpanding(true);
     try {
       const params = new URLSearchParams({ niche: "all", sort: effectiveSort, limit: "90", q: query, expand: "1" });
-      if (englishOnly) params.set("language", "en");
       await fetch(`/api/discovery?${params}`, { headers: await authHeader() });
     } catch { /* background — errors surface on the next reload */ }
-  }, [user, query, effectiveSort, englishOnly, authHeader]);
+  }, [user, query, effectiveSort, authHeader]);
 
   const handleDelete = useCallback(async (channelId: string) => {
     if (!user) return;
@@ -483,29 +480,17 @@ export function Discover() {
           )}
         </div>
 
-        {/* English-only toggle */}
-        <button onClick={() => setEnglishOnly((e) => !e)} className={`inline-flex items-center gap-2 rounded-none border px-3.5 py-2 text-[13px] font-medium transition-colors ${englishOnly ? "border-primary bg-primary-container text-on-primary-container" : "border-outline-variant bg-surface text-on-surface-variant hover:bg-surface-container-high"}`}>
-          <span className={`flex size-4 items-center justify-center rounded border ${englishOnly ? "border-primary bg-primary" : "border-outline"}`}>{englishOnly && <Icon d="M20 6 9 17l-5-5" size={11} />}</span>
-          English only
-        </button>
-
       </div>
 
-      {/* Count row (own line, tight to the grid) */}
-      <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-        {!loading && (
-          <span className="inline-flex items-center gap-1.5 text-[13px] text-on-surface-variant">
-            <span className="inline-flex min-w-[28px] items-center justify-center bg-primary px-2 py-0.5 text-[13px] font-bold tabular-nums text-on-primary">{total.toLocaleString()}</span>
-            channels found
-          </span>
-        )}
-        {!expanding && query && !loading && (
+      {/* Discover-more (only while searching) */}
+      {!expanding && query && !loading && (
+        <div className="mb-3.5">
           <button onClick={discoverMore} className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/5 px-3.5 py-1.5 text-[12.5px] font-semibold text-primary transition-colors hover:bg-primary/10">
             <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2zM19 3v4M21 5h-4" size={13} />
             Discover more channels
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {error && (
         <div className="mb-5 flex items-center gap-2 rounded-none border border-error/30 bg-error/10 px-4 py-3 text-[14px] font-medium text-error">
