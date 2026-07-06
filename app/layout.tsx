@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Roboto, Roboto_Mono } from "next/font/google";
+import { Roboto, Roboto_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { CookieConsent } from "@/components/CookieConsent";
+import { AuthProvider } from "@/components/AuthProvider";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -14,6 +15,14 @@ const robotoMono = Roboto_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   variable: "--font-mono-roboto",
+  display: "swap",
+});
+
+// Heading font for the new dark redesign (auth + dashboard).
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-space-grotesk",
   display: "swap",
 });
 
@@ -70,12 +79,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${roboto.variable} ${robotoMono.variable}`}>
+    <html lang="en" className={`${roboto.variable} ${robotoMono.variable} ${spaceGrotesk.variable}`}>
       {/* suppressHydrationWarning: browser extensions (e.g. Bitdefender) inject
           attributes like bis_skin_checked into <body> before React hydrates. */}
       <body suppressHydrationWarning>
-        {children}
-        <CookieConsent />
+        <AuthProvider>
+          {children}
+          <CookieConsent />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -7,9 +7,15 @@
 .env*.local
 .DS_Store
 *.pem
+serviceAccount.json
+*serviceAccount*.json
 /coverage
 next-env.d.ts.bak
 
 # backups
 *.bak
 _original-design.html.bak
+
+# large source data (not for deploy)
+pdf data/
+transcripts/

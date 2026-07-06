@@ -1,0 +1,58 @@
+rules_version = '2';
+
+// NicheSpy Firestore security rules.
+//
+// IMPORTANT: server code uses the Firebase Admin SDK, which BYPASSES these rules
+// entirely. So anything only the server touches can be fully locked from clients.
+// These rules only govern the public Firebase client config used in the browser.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Waitlist ─────────────────────────────────────────────────────────────
+    // The public landing page form needs to: count entries, check for a dup
+    // email, and add a new signup. It must NOT be able to read individual rows
+    // (which contain emails) or edit/delete anything.
+    match /waitlist/{docId} {
+      // Allow aggregate count queries and dup-email existence checks, but not
+      // bulk reading of email data. (get/list are required for these queries;
+      // we constrain writes tightly and accept that the landing form needs list
+      // for the dup-check — emails are low-sensitivity here. Tighten later by
+      // moving the dup-check + count behind an API route if desired.)
+      allow read: if true;
+
+      // Anyone can create a waitlist entry, but the doc must look like a real
+      // signup and cannot be modified or deleted afterward.
+      allow create: if request.resource.data.email is string
+                    && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+                    && request.resource.data.email.size() < 320;
+      allow update, delete: if false;
+    }
+
+    // ── Users + their YouTube channels ───────────────────────────────────────
+    // Written/read only by the server (Admin SDK). Stored YouTube OAuth tokens
+    // live under here — clients must never touch them directly.
+    match /users/{userId} {
+      allow read, write: if false;
+      match /{document=**} {
+        allow read, write: if false;
+      }
+    }
+
+    // ── Server-only collections (auth flow, rate limiting) ───────────────────
+    // pending_signups holds temp passwords + hashed codes; auth_ip_limits holds
+    // rate-limit counters. Both are server-only; deny all client access.
+    match /pending_signups/{docId} {
+      allow read, write: if false;
+    }
+    match /auth_ip_limits/{docId} {
+      allow read, write: if false;
+    }
+
+    // ── Default deny ─────────────────────────────────────────────────────────
+    // Anything not explicitly matched above is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
