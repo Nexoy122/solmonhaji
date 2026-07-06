@@ -112,38 +112,44 @@ export function NicheResearcher() {
         </div>
       )}
 
-      {/* ── AI ANALYSIS panel ── */}
-      <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
-      <div className="relative overflow-hidden rounded-none border border-white/10 bg-white/[0.02] p-6">
-        <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
-          <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
-        </p>
-        {picked && recap?.brief ? (
-          <p className="text-[14px] leading-relaxed text-on-surface">{recap.brief}</p>
-        ) : picked && loading ? (
-          <SkeletonLines />
-        ) : (
-          <>
-            <SkeletonLines dim />
-            {/* Centered "pick a niche" overlay */}
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-b from-transparent via-[#141317]/60 to-[#141317]/80">
-              <div className="max-w-[420px] rounded-none border border-primary/25 bg-[#17161c] px-10 py-8 text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
-                <span className="mx-auto mb-4 flex size-11 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary">
-                  <Icon d="M12 19V5M5 12l7-7 7 7" size={20} />
-                </span>
-                <p className="text-[17px] font-bold text-on-surface">Pick a niche to begin</p>
-                <p className="mx-auto mt-2 max-w-[340px] text-[13.5px] leading-relaxed text-on-surface-variant">
-                  Tap any niche above and we&apos;ll pull live opportunity data, the most underserved sub-niches, and what&apos;s trending right now.
-                </p>
-              </div>
+      {/* ── Nothing picked yet: whole page previews (dimmed skeletons) with a
+             centered "pick a niche" card floating over everything. ── */}
+      {!picked && (
+        <div className="relative">
+          <div className="pointer-events-none select-none blur-[1.5px]">
+            <PagePreview />
+          </div>
+          {/* Scrim + centered card */}
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-[#141317]/40 via-[#141317]/75 to-[#141317] pt-[130px]">
+            <div className="max-w-[440px] rounded-none border border-primary/25 bg-[#17161c] px-10 py-9 text-center shadow-[0_24px_70px_rgba(0,0,0,0.6)]">
+              <span className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary">
+                <Icon d="M12 19V5M5 12l7-7 7 7" size={22} />
+              </span>
+              <p className="text-[18px] font-bold text-on-surface">Pick a niche to begin</p>
+              <p className="mx-auto mt-2 max-w-[350px] text-[13.5px] leading-relaxed text-on-surface-variant">
+                Tap any niche above and we&apos;ll pull live opportunity data, the most underserved sub-niches, and what&apos;s trending right now.
+              </p>
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
 
-      {/* ── The rest only shows once a niche is picked ── */}
+      {/* ── A niche is picked: real content ── */}
       {picked && (
         <>
+          {/* AI ANALYSIS panel */}
+          <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
+          <div className="relative overflow-hidden rounded-none border border-white/10 bg-white/[0.02] p-6">
+            <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
+              <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
+            </p>
+            {recap?.brief ? (
+              <p className="text-[14px] leading-relaxed text-on-surface">{recap.brief}</p>
+            ) : (
+              <SkeletonLines />
+            )}
+          </div>
+
           {/* Week history dropdown */}
           {weeks.length > 0 && (
             <div className="relative mt-5">
@@ -262,6 +268,56 @@ function SkeletonLines({ dim }: { dim?: boolean }) {
       <div className="h-3 w-[92%] animate-pulse rounded bg-white/10" />
       <div className="h-3 w-[78%] animate-pulse rounded bg-white/10" />
       <div className="h-3 w-[85%] animate-pulse rounded bg-white/10" />
+    </div>
+  );
+}
+
+const Bar = ({ w = "100%", h = "h-3" }: { w?: string; h?: string }) => (
+  <div className={`${h} animate-pulse rounded bg-white/10`} style={{ width: w }} />
+);
+
+// Full-page skeleton shown behind the "pick a niche" card — mirrors the real
+// layout (AI panel, filter, stats, sub-niches, video grid) so the empty state
+// feels like the page is loading in the background.
+function PagePreview() {
+  return (
+    <div>
+      {/* AI Analysis */}
+      <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
+      <div className="rounded-none border border-white/10 bg-white/[0.02] p-6">
+        <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
+          <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
+        </p>
+        <div className="space-y-2.5">
+          <Bar w="94%" /><Bar w="88%" /><Bar w="91%" /><Bar w="72%" />
+        </div>
+      </div>
+
+      {/* Filter (week) */}
+      <div className="mt-5 h-10 w-[200px] animate-pulse rounded-none border border-white/10 bg-white/[0.03]" />
+
+      {/* Stats */}
+      <p className="mb-3 mt-6 text-[13px] text-on-surface-variant">The numbers at a glance — channels, videos, and how often they go viral.</p>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="rounded-none border border-white/10 bg-white/[0.02] p-4">
+            <Bar w="55%" h="h-2.5" />
+            <div className="mt-3"><Bar w="45%" h="h-6" /></div>
+            <div className="mt-2"><Bar w="70%" h="h-2.5" /></div>
+          </div>
+        ))}
+      </div>
+
+      {/* Blowing up */}
+      <p className="mb-3 mt-7 text-[13px] text-on-surface-variant">What&apos;s blowing up in this niche right now, from the last 14 days.</p>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="overflow-hidden rounded-none border border-white/10 bg-white/[0.02]">
+            <div className="aspect-[9/12] animate-pulse bg-white/[0.05]" />
+            <div className="space-y-1.5 p-2"><Bar h="h-2.5" /><Bar w="60%" h="h-2" /></div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
