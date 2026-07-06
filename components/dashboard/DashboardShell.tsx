@@ -55,7 +55,7 @@ function isActive(href: string, pathname: string): boolean {
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Discover",
   "/dashboard/explore": "Explore",
-  "/dashboard/niche-researcher": "Niche Researcher",
+  "/dashboard/niche-researcher": "Niche Research",
   "/dashboard/script-generator": "Script Generator",
   "/dashboard/trust-score": "Trust Score",
   "/dashboard/channel-audit": "Channel Audit",
