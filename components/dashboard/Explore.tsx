@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { ExploreChannels } from "@/components/dashboard/ExploreChannels";
+import { refreshCountdownLabel } from "@/lib/refreshSchedule";
 
 interface NicheDef { id: string; label: string }
 interface ExploreVideo {
@@ -21,15 +22,6 @@ const SORT_OPTS: [SortKey, string][] = [
   ["velocity", "Fastest Growing (Views/Day)"],
   ["recent", "Newest First"],
 ];
-// "Video refresh in Xd Yh" — time until the weekly Explore refresh.
-function refreshCountdown(nextRefresh: number | null): string {
-  if (!nextRefresh) return "";
-  const ms = nextRefresh - Date.now();
-  if (ms <= 0) return "due now";
-  const d = Math.floor(ms / 86400000);
-  const h = Math.floor((ms % 86400000) / 3600000);
-  return d > 0 ? `${d}d ${h}h` : `${h}h`;
-}
 
 // ── Filter presets ──────────────────────────────────────────────────────────
 // Each option carries a predicate; "any" = no constraint.
@@ -335,7 +327,6 @@ export function Explore() {
   const [active, setActive] = useState<string>("all");
   const [videos, setVideos] = useState<ExploreVideo[]>([]);
   const [total, setTotal] = useState(0);
-  const [nextRefresh, setNextRefresh] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
@@ -382,7 +373,6 @@ export function Explore() {
         setNiches(data.niches ?? []);
         setVideos((data.videos ?? []).map(mapVideo));
         setTotal(data.total ?? 0);
-        setNextRefresh(data.nextRefresh ?? null);
       }
     } catch { setError("Network error."); }
     setLoading(false);
@@ -468,12 +458,10 @@ export function Explore() {
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(total)}</span>
             <span className="text-[13px] font-medium text-on-surface-variant">videos match your filters</span>
           </div>
-          {nextRefresh && (
-            <span className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#1a1a20] px-3 py-2 text-[12.5px] font-medium text-on-surface-variant">
-              <span className="text-primary"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={14} /></span>
-              Video refresh in <span className="font-semibold text-[#4fc3f7]">{refreshCountdown(nextRefresh)}</span>
-            </span>
-          )}
+          <span className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#1a1a20] px-3 py-2 text-[12.5px] font-medium text-on-surface-variant">
+            <span className="text-primary"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={14} /></span>
+            Video refresh in <span className="font-semibold text-[#4fc3f7]">{refreshCountdownLabel()}</span>
+          </span>
         </div>
       )}
 

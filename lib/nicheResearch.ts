@@ -1,6 +1,7 @@
 import "server-only";
 import { adminDb } from "@/lib/firebaseAdmin";
 import { youtubeFetch } from "@/lib/youtubeKeys";
+import { isWeeklyRefreshDue } from "@/lib/refreshSchedule";
 
 // ── Niche Researcher ──────────────────────────────────────────────────────────
 // Tracks a curated set of channels per niche. Weekly it snapshots each channel's
@@ -484,13 +485,19 @@ export async function getRecapForWeek(niche: NicheId, weekKey: string): Promise<
   return snap.exists ? (snap.data() as NicheRecap) : null;
 }
 
-const WEEK_MS = 7 * 86400000;
 export async function refreshAllIfDue(): Promise<{ refreshed: boolean }> {
-  // Check the freshest recap; if any is >7 days old (or missing), refresh all.
+  // Shared weekly slot (Monday 04:00 UTC) — same clock as Explore + Discover.
   const first = await getRecap(NICHES[0].id);
-  if (first && Date.now() - first.updatedAt < WEEK_MS) return { refreshed: false };
-  for (const n of NICHES) {
-    try { await refreshNiche(n.id); } catch (e) { console.warn(`[niche-research] refresh ${n.id} failed:`, (e as Error).message); }
-  }
+  if (first && !isWeeklyRefreshDue(first.updatedAt)) return { refreshed: false };
+  await refreshAllNiches();
   return { refreshed: true };
+}
+
+// Refresh every niche unconditionally (used by the unified weekly crawl).
+export async function refreshAllNiches(): Promise<{ niches: number }> {
+  let done = 0;
+  for (const n of NICHES) {
+    try { await refreshNiche(n.id); done++; } catch (e) { console.warn(`[niche-research] refresh ${n.id} failed:`, (e as Error).message); }
+  }
+  return { niches: done };
 }

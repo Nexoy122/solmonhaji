@@ -1,15 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/niche-research/cron",
-      "schedule": "0 6 * * 1"
-    },
-    {
-      "path": "/api/discovery/crawl",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/explore/refresh",
+      "path": "/api/refresh-all",
       "schedule": "0 4 * * 1"
     }
   ]

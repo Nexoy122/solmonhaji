@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { NAV_ICONS } from "@/components/dashboard/NavIcons";
+import { refreshCountdownLabel } from "@/lib/refreshSchedule";
 
 type NavItem = { label: string; href: string; icon: string; soon?: boolean };
 
@@ -42,16 +43,6 @@ function Icon({ d, size = 18 }: { d: string; size?: number }) {
   );
 }
 
-// Time until the next daily discovery refresh (Vercel cron: 05:00 UTC).
-function refreshCountdown(): string {
-  const now = new Date();
-  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 5, 0, 0));
-  if (next.getTime() <= now.getTime()) next.setUTCDate(next.getUTCDate() + 1);
-  const ms = next.getTime() - now.getTime();
-  const h = Math.floor(ms / 3_600_000);
-  const m = Math.floor((ms % 3_600_000) / 60_000);
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-}
 
 // Which nav href is "active" for the current path. Discover shares /dashboard
 // with Overview, so we treat the exact /dashboard as Overview.
@@ -100,8 +91,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }, [menuOpen]);
 
   useEffect(() => {
-    setCountdown(refreshCountdown());
-    const t = setInterval(() => setCountdown(refreshCountdown()), 30_000);
+    setCountdown(refreshCountdownLabel());
+    const t = setInterval(() => setCountdown(refreshCountdownLabel()), 30_000);
     return () => clearInterval(t);
   }, []);
 
@@ -246,7 +237,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             {countdown && (
               <span className="hidden items-center gap-2 rounded-full border border-white/[0.08] bg-[#1a1a20]/90 px-3.5 py-2 text-[13px] font-medium text-white/60 backdrop-blur-md sm:inline-flex">
                 <span className="text-[#0FA5E9]"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
-                Discovery refresh in <span className="font-semibold text-[#4fc3f7]">{countdown}</span>
+                Video refresh in <span className="font-semibold text-[#4fc3f7]">{countdown}</span>
               </span>
             )}
 

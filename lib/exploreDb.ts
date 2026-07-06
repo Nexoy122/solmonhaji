@@ -2,6 +2,7 @@ import "server-only";
 import { db, query } from "@/lib/db";
 import { youtubeFetch } from "@/lib/youtubeKeys";
 import { NICHES, NicheId, getNicheChannels } from "@/lib/nicheResearch";
+import { isWeeklyRefreshDue } from "@/lib/refreshSchedule";
 
 // ── Explore video index, Postgres edition ─────────────────────────────────────
 // Deep-crawls EVERY Short from EVERY seed creator into Postgres (unlimited rows,
@@ -194,8 +195,25 @@ export async function getLastRefresh(): Promise<number> {
 }
 
 export async function isRefreshDue(): Promise<boolean> {
+  // Weekly slot (Monday 04:00 UTC), shared across all pages.
   const last = await getLastRefresh();
-  return Date.now() - last > REFRESH_INTERVAL_MS;
+  return isWeeklyRefreshDue(last);
+}
+
+// ── Shared meta store (drives the unified weekly refresh + countdown) ──
+// The whole app refreshes together; `refresh_all` records when the last unified
+// crawl finished so every page's countdown reads the same clock.
+export async function getMeta(key: string): Promise<number> {
+  const rows = await query<{ value: string }>(`SELECT value FROM explore_meta WHERE key=$1`, [key]);
+  return rows[0] ? Number(rows[0].value) : 0;
+}
+
+export async function setMeta(key: string, value: number): Promise<void> {
+  await query(
+    `INSERT INTO explore_meta (key, value) VALUES ($1, $2)
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`,
+    [key, value]
+  );
 }
 
 // ── Paginated reads (unlimited; only fetches one page) ──
