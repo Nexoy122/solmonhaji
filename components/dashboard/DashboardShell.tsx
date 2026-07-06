@@ -217,8 +217,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           />
         </div>
 
-        {/* Top row — no bar (transparent, no border/background), items just float. */}
-        <header className="pointer-events-none sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
+        {/* Top row — sticky. A blurred gradient backing keeps page content from
+            colliding with the title as it scrolls underneath. */}
+        <header className="pointer-events-none sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between bg-gradient-to-b from-[#151416] via-[#151416]/90 to-transparent px-4 backdrop-blur-sm md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
           <div className="flex items-center gap-3">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#151416]/80 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/[0.06] md:hidden"

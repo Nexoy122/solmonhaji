@@ -422,14 +422,22 @@ function VideoGrid({ videos }: { videos: ViralVideo[] }) {
         const ago = timeAgo(v.publishedAt);
         return (
           <div key={v.id} className="group flex flex-col overflow-hidden rounded-none border border-white/10 bg-white/[0.02] transition-colors hover:border-white/25">
-            {/* 9:16 thumbnail */}
-            <a href={v.url} target="_blank" rel="noopener noreferrer" className="block">
-              <div className="relative aspect-[9/16] bg-white/[0.04]">
-                {v.thumbnail && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={v.thumbnail} alt="" className="h-full w-full object-cover" />
-                )}
-              </div>
+            {/* 9:16 thumbnail — click to open the Short on YouTube */}
+            <a href={v.url} target="_blank" rel="noopener noreferrer" className="group/thumb relative block aspect-[9/16] overflow-hidden bg-white/[0.04]">
+              {v.thumbnail && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={v.thumbnail} alt="" className="h-full w-full object-cover" />
+              )}
+              {/* open-in-new button (always visible, top-right) */}
+              <span className="absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-md bg-black/60 text-white backdrop-blur-sm transition-colors group-hover/thumb:bg-black/80">
+                <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={12} />
+              </span>
+              {/* play affordance on hover */}
+              <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover/thumb:bg-black/30 group-hover/thumb:opacity-100">
+                <span className="flex size-9 items-center justify-center rounded-full bg-white/90 text-black">
+                  <Icon d="M8 5v14l11-7z" size={16} />
+                </span>
+              </span>
             </a>
             <div className="flex flex-1 flex-col p-2">
               <p className="line-clamp-2 text-[11px] font-semibold leading-tight text-on-surface">{v.title}</p>
