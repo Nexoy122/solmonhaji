@@ -156,7 +156,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="dashboard-dark flex min-h-screen bg-[#151416]">
+    <div className="dashboard-dark flex h-screen overflow-hidden bg-[#151416]">
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 flex h-screen w-64 transform flex-col overflow-x-hidden border-r border-white/[0.06] bg-[#0D0D11] transition-transform duration-200 md:sticky md:top-0 md:translate-x-0 ${
@@ -201,7 +201,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* Main column */}
-      <div className="relative flex min-w-0 flex-1 flex-col">
+      <div className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
         {/* Ambient background depth */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -right-40 -top-40 h-96 w-96 rounded-full bg-[#0FA5E9]/[0.06] blur-[120px]" />
@@ -217,9 +217,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           />
         </div>
 
-        {/* Top row — sticky. A blurred gradient backing keeps page content from
-            colliding with the title as it scrolls underneath. */}
-        <header className="pointer-events-none sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between bg-gradient-to-b from-[#151416] via-[#151416]/90 to-transparent px-4 backdrop-blur-sm md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
+        {/* Top row — a fixed bar; the <main> below scrolls, this never moves. */}
+        <header className="pointer-events-none z-30 flex h-16 shrink-0 items-center justify-between bg-[#151416] px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
           <div className="flex items-center gap-3">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#151416]/80 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/[0.06] md:hidden"
@@ -282,7 +281,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="dashboard-zoom relative flex-1 p-4 text-white md:p-6 lg:p-8">{children}</main>
+        <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 text-white md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );
