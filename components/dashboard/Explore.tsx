@@ -335,7 +335,6 @@ export function Explore() {
   const [active, setActive] = useState<string>("all");
   const [videos, setVideos] = useState<ExploreVideo[]>([]);
   const [total, setTotal] = useState(0);
-  const [channelCount, setChannelCount] = useState(0);
   const [nextRefresh, setNextRefresh] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -383,7 +382,6 @@ export function Explore() {
         setNiches(data.niches ?? []);
         setVideos((data.videos ?? []).map(mapVideo));
         setTotal(data.total ?? 0);
-        setChannelCount(data.channelCount ?? 0);
         setNextRefresh(data.nextRefresh ?? null);
       }
     } catch { setError("Network error."); }
@@ -468,7 +466,7 @@ export function Explore() {
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <div className="inline-flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#1a1a20] py-1.5 pl-1.5 pr-3.5">
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(total)}</span>
-            <span className="text-[13px] font-medium text-on-surface-variant">videos from <span className="font-semibold text-on-surface">{channelCount}</span> creators</span>
+            <span className="text-[13px] font-medium text-on-surface-variant">videos match your filters</span>
           </div>
           {nextRefresh && (
             <span className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#1a1a20] px-3 py-2 text-[12.5px] font-medium text-on-surface-variant">
