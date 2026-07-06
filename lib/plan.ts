@@ -15,7 +15,8 @@ export type Capability =
   | "explore_full_library"   // see the whole library vs a capped preview
   | "performance_sorting"    // sort by best-performing (all-time views / velocity)
   | "channel_search"         // search within the Channels tab
-  | "best_videos";           // surface all-time best videos, not just recent
+  | "best_videos"            // surface all-time best videos, not just recent
+  | "advanced_filters";      // Discover advanced filters (niche, subs, faceless, language)
 
 // Minimum tier for each capability. "free" = available to everyone.
 const REQUIRED_TIER: Record<Capability, Tier> = {
@@ -23,6 +24,7 @@ const REQUIRED_TIER: Record<Capability, Tier> = {
   performance_sorting: "creator",
   channel_search: "creator",
   best_videos: "creator",
+  advanced_filters: "creator",
 };
 
 // Free-tier preview limit for the library (how many videos a free user sees).

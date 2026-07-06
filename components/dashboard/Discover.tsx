@@ -3,6 +3,24 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "@/components/AuthProvider";
+import { canUse } from "@/lib/plan";
+
+// Niche filter options (mirrors lib/nicheResearch NICHES — client-safe copy).
+const NICHE_OPTS: [string, string][] = [
+  ["commentary", "Commentary"], ["ranking", "Ranking"], ["animation", "Animation"],
+  ["gaming", "Gaming"], ["captions_only", "Captions Only"], ["edits_montages", "Edits/Montages"],
+  ["memes", "Memes"],
+];
+// Subscriber tiers for the advanced filter (min subs).
+const SUB_OPTS: [number, string][] = [
+  [0, "Any size"], [1_000, "1K+"], [10_000, "10K+"], [100_000, "100K+"],
+  [500_000, "500K+"], [1_000_000, "1M+"],
+];
+// Languages users can filter by (value = ISO code the AI stored).
+const LANG_OPTS: [string, string][] = [
+  ["en", "English"], ["es", "Spanish"], ["pt", "Portuguese"], ["hi", "Hindi"],
+  ["ar", "Arabic"], ["fr", "French"], ["de", "German"], ["id", "Indonesian"],
+];
 
 interface DiscoveryShort { id: string; title: string; views: number; publishedAt: string }
 interface DiscoveryChannel {
@@ -322,6 +340,17 @@ export function Discover() {
   const [sortMenu, setSortMenu] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
 
+  // ── Advanced filters (premium later — gated via canUse('advanced_filters')) ──
+  const [showFilters, setShowFilters] = useState(false);
+  const [showUpsell, setShowUpsell] = useState(false); // shown when locked + clicked
+  const [fNiche, setFNiche] = useState("all");        // niche id or "all"
+  const [fMinSubs, setFMinSubs] = useState(0);        // minimum subscribers
+  const [fFaceless, setFFaceless] = useState(false);  // faceless only
+  const [fLang, setFLang] = useState("");             // ISO language code or ""
+  const filtersUnlocked = canUse(undefined, "advanced_filters");
+  const activeFilterCount = (fNiche !== "all" ? 1 : 0) + (fMinSubs > 0 ? 1 : 0) + (fFaceless ? 1 : 0) + (fLang ? 1 : 0);
+  const clearFilters = () => { setFNiche("all"); setFMinSubs(0); setFFaceless(false); setFLang(""); };
+
   const authHeader = useCallback(async (): Promise<Record<string, string>> => {
     const t = await user?.getIdToken();
     return t ? { Authorization: `Bearer ${t}` } : {};
@@ -340,8 +369,14 @@ export function Discover() {
     if (!user) return;
     setLoading(true); setError(""); setUnavailable(false);
     try {
-      const params = new URLSearchParams({ niche: "all", sort: effectiveSort, limit: "90" });
+      const params = new URLSearchParams({ niche: fNiche, sort: effectiveSort, limit: "90" });
       if (query) params.set("q", query);
+      // Advanced filters (only sent when unlocked — free tier ignores them).
+      if (filtersUnlocked) {
+        if (fMinSubs > 0) params.set("minSubs", String(fMinSubs));
+        if (fFaceless) params.set("faceless", "1");
+        if (fLang) params.set("language", fLang);
+      }
       const res = await fetch(`/api/discovery?${params}`, { headers: await authHeader() });
       const data = await res.json();
       if (!res.ok) {
@@ -353,7 +388,7 @@ export function Discover() {
       }
     } catch { setError("Network error."); }
     setLoading(false);
-  }, [user, authHeader, query, effectiveSort]);
+  }, [user, authHeader, query, effectiveSort, fNiche, fMinSubs, fFaceless, fLang, filtersUnlocked]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -440,7 +475,75 @@ export function Discover() {
           )}
         </div>
 
+        {/* Advanced Filters (premium later — locked shows a padlock + upsell) */}
+        <button
+          onClick={() => filtersUnlocked ? setShowFilters((o) => !o) : setShowUpsell(true)}
+          title={filtersUnlocked ? "Filter by niche, size, language & style" : "Advanced filters are a premium feature"}
+          className={`inline-flex items-center gap-2 rounded-none border px-4 py-2 text-[13.5px] font-medium transition-colors ${
+            showFilters || activeFilterCount > 0
+              ? "border-primary/50 bg-primary/10 text-primary"
+              : "border-white/12 bg-white/[0.03] text-on-surface hover:bg-surface-container-high"
+          }`}
+        >
+          {/* Padlock when locked, funnel-style filter icon when unlocked */}
+          <Icon d={filtersUnlocked ? "M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z" : "M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5zM12 15v3"} size={13} />
+          Advanced Filters
+          {filtersUnlocked && activeFilterCount > 0 && (
+            <span className="ml-0.5 inline-flex size-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">{activeFilterCount}</span>
+          )}
+          {filtersUnlocked && <Icon d={showFilters ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6"} size={13} />}
+        </button>
+
+        {/* Clear (only when a filter is active) */}
+        {activeFilterCount > 0 && (
+          <button onClick={clearFilters} className="inline-flex items-center gap-1.5 rounded-none border border-white/12 bg-white/[0.03] px-3.5 py-2 text-[13.5px] font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface">
+            <Icon d="M18 6 6 18M6 6l12 12" size={13} /> Clear
+          </button>
+        )}
       </div>
+
+      {/* Advanced filter panel (only when unlocked) */}
+      {showFilters && filtersUnlocked && (
+        <div className="mb-4 grid grid-cols-1 gap-4 rounded-none border border-white/12 bg-white/[0.02] p-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Niche */}
+          <div>
+            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Niche</label>
+            <div className="flex flex-wrap gap-1.5">
+              {[["all", "All"], ...NICHE_OPTS].map(([val, lbl]) => (
+                <button key={val} onClick={() => setFNiche(val)} className={`rounded-none border px-2.5 py-1 text-[12px] font-medium transition-colors ${fNiche === val ? "border-primary bg-primary/15 text-primary" : "border-white/12 text-on-surface-variant hover:bg-surface-container-high"}`}>{lbl}</button>
+              ))}
+            </div>
+          </div>
+          {/* Min subscribers */}
+          <div>
+            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Min subscribers</label>
+            <div className="flex flex-wrap gap-1.5">
+              {SUB_OPTS.map(([val, lbl]) => (
+                <button key={val} onClick={() => setFMinSubs(val)} className={`rounded-none border px-2.5 py-1 text-[12px] font-medium transition-colors ${fMinSubs === val ? "border-primary bg-primary/15 text-primary" : "border-white/12 text-on-surface-variant hover:bg-surface-container-high"}`}>{lbl}</button>
+              ))}
+            </div>
+          </div>
+          {/* Language */}
+          <div>
+            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Language</label>
+            <div className="flex flex-wrap gap-1.5">
+              {[["", "Any"], ...LANG_OPTS].map(([val, lbl]) => (
+                <button key={val || "any"} onClick={() => setFLang(val)} className={`rounded-none border px-2.5 py-1 text-[12px] font-medium transition-colors ${fLang === val ? "border-primary bg-primary/15 text-primary" : "border-white/12 text-on-surface-variant hover:bg-surface-container-high"}`}>{lbl}</button>
+              ))}
+            </div>
+          </div>
+          {/* Faceless */}
+          <div>
+            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Style</label>
+            <button onClick={() => setFFaceless((v) => !v)} className={`inline-flex items-center gap-2 rounded-none border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fFaceless ? "border-[#10b981]/60 bg-[#10b981]/15 text-[#34d399]" : "border-white/12 text-on-surface-variant hover:bg-surface-container-high"}`}>
+              <span className={`flex size-4 items-center justify-center rounded-none border ${fFaceless ? "border-[#10b981] bg-[#10b981] text-black" : "border-white/30"}`}>
+                {fFaceless && <Icon d="M20 6 9 17l-5-5" size={11} />}
+              </span>
+              Faceless only
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Discover-more (only while searching) */}
       {!expanding && query && !loading && (
@@ -491,6 +594,33 @@ export function Discover() {
           )}
         </>
       )}
+
+      {/* Premium upsell — shown only when advanced filters are locked + clicked */}
+      {showUpsell && <FiltersUpsell onClose={() => setShowUpsell(false)} />}
     </div>
+  );
+}
+
+// Locked-feature upsell for Advanced Filters (appears only when the paywall is on).
+function FiltersUpsell({ onClose }: { onClose: () => void }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-[420px] rounded-none border border-white/12 bg-[#16151a] p-6 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary">
+          <Icon d="M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z" size={22} />
+        </div>
+        <h3 className="text-[17px] font-bold text-on-surface">Advanced Filters is a premium feature</h3>
+        <p className="mt-2 text-[13.5px] leading-relaxed text-on-surface-variant">
+          Filter the entire discovery index by niche, subscriber size, language, and faceless style — pinpoint exactly the channels you want to model.
+        </p>
+        <button onClick={onClose} className="mt-5 w-full rounded-none border border-white/12 bg-white/[0.03] py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-surface-container-high">
+          Got it
+        </button>
+      </div>
+    </div>,
+    document.body
   );
 }
