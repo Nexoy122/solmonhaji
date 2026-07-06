@@ -86,11 +86,8 @@ export function NicheResearcher() {
 
   return (
     <div className="dash-fade-up w-full">
-      {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-[26px] font-bold text-on-surface">Niche Research</h1>
-        <p className="mt-1 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
-      </div>
+      {/* Header — the page title lives in the fixed topbar (no duplicate H1). */}
+      <p className="mb-4 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
 
       {/* Niche tabs — sharp, full width, evenly spread */}
       <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
@@ -129,11 +126,13 @@ export function NicheResearcher() {
           <>
             <SkeletonLines dim />
             {/* Centered "pick a niche" overlay */}
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <div className="rounded-none border border-white/10 bg-[#1c1b21]/95 px-8 py-6 text-center shadow-2xl">
-                <span className="mx-auto mb-2 flex justify-center text-primary"><Icon d="M12 19V5M5 12l7-7 7 7" size={22} /></span>
-                <p className="text-[16px] font-bold text-on-surface">Pick a niche to begin</p>
-                <p className="mx-auto mt-1 max-w-[360px] text-[13px] leading-relaxed text-on-surface-variant">
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-b from-transparent via-[#141317]/60 to-[#141317]/80">
+              <div className="max-w-[420px] rounded-none border border-primary/25 bg-[#17161c] px-10 py-8 text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+                <span className="mx-auto mb-4 flex size-11 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary">
+                  <Icon d="M12 19V5M5 12l7-7 7 7" size={20} />
+                </span>
+                <p className="text-[17px] font-bold text-on-surface">Pick a niche to begin</p>
+                <p className="mx-auto mt-2 max-w-[340px] text-[13.5px] leading-relaxed text-on-surface-variant">
                   Tap any niche above and we&apos;ll pull live opportunity data, the most underserved sub-niches, and what&apos;s trending right now.
                 </p>
               </div>
@@ -209,14 +208,20 @@ export function NicheResearcher() {
               {/* Resurging */}
               {recap.resurging?.length > 0 && (
                 <div className="mt-7">
-                  <p className="mb-3 text-[13px] text-on-surface-variant">🔄 Older videos gaining serious views again.</p>
+                  <p className="mb-3 flex items-center gap-1.5 text-[13px] text-on-surface-variant">
+                    <Icon d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" size={14} />
+                    Older videos gaining serious views again.
+                  </p>
                   <VideoGrid videos={recap.resurging} />
                 </div>
               )}
 
               {/* Channels of the week */}
               <div className="mt-8">
-                <p className="mb-3 text-[16px] font-bold text-on-surface">🏆 Channels of the week</p>
+                <p className="mb-3 flex items-center gap-2 text-[16px] font-bold text-on-surface">
+                  <Icon d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2z" size={18} />
+                  Channels of the week
+                </p>
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                   <RankColumn title="Top Sub Gainers" icon="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" channels={recap.topSubGainers} render={(c) => `+${fmt(c.delta)}${c.deltaPct ? ` (${c.deltaPct.toFixed(1)}%)` : ""}`} />
                   <RankColumn title="Top View Gainers" icon="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" channels={recap.topViewGainers} render={(c) => `+${fmt(c.delta)}`} />
@@ -279,8 +284,8 @@ function SubNicheCard({ s }: { s: SubNiche }) {
         <span className="text-[15px] font-bold text-on-surface">{s.name}</span>
         <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: opp.bg, color: opp.c }}>{opp.label}</span>
         {s.movement !== 0 && (
-          <span className={`text-[11px] font-semibold ${s.movement > 0 ? "text-[#34d399]" : "text-[#f87171]"}`}>
-            {s.movement > 0 ? "▲" : "▼"} {Math.abs(s.movement)}% wk
+          <span className={`flex items-center gap-0.5 text-[11px] font-semibold ${s.movement > 0 ? "text-[#34d399]" : "text-[#f87171]"}`}>
+            <Icon d={s.movement > 0 ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6"} size={12} /> {Math.abs(s.movement)}% wk
           </span>
         )}
         <span className="ml-auto rounded-full bg-primary-container px-2.5 py-0.5 text-[12px] font-bold text-on-primary-container">{s.viralRate}% share</span>
@@ -301,8 +306,9 @@ function SubNicheCard({ s }: { s: SubNiche }) {
         </div>
       )}
       {s.contentAngle && (
-        <div className="mt-2 rounded-none border border-primary/20 bg-primary-container/20 p-3">
-          <p className="text-[13px] leading-relaxed text-on-surface"><span className="font-semibold text-primary">💡 Try this: </span>{s.contentAngle}</p>
+        <div className="mt-2 flex gap-2 rounded-none border border-primary/20 bg-primary-container/20 p-3">
+          <span className="mt-0.5 shrink-0 text-primary"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={14} /></span>
+          <p className="text-[13px] leading-relaxed text-on-surface"><span className="font-semibold text-primary">Try this: </span>{s.contentAngle}</p>
         </div>
       )}
 
