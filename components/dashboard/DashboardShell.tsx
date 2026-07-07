@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { NAV_ICONS } from "@/components/dashboard/NavIcons";
-import { refreshCountdownLabel } from "@/lib/refreshSchedule";
 import SideRays from "@/components/dashboard/SideRays";
 
 type NavItem = { label: string; href: string; icon: string; soon?: boolean };
@@ -52,50 +51,15 @@ function isActive(href: string, pathname: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-// Page title shown in the topbar.
-const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Discover",
-  "/dashboard/explore": "Explore",
-  "/dashboard/niche-researcher": "Niche Research",
-  "/dashboard/script-generator": "Script Generator",
-  "/dashboard/trust-score": "Trust Score",
-  "/dashboard/channel-audit": "Channel Audit",
-  "/dashboard/shorts-transcript": "Shorts Transcript",
-  "/dashboard/settings": "Settings",
-};
-function pageTitle(pathname: string): string {
-  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
-  const hit = Object.keys(PAGE_TITLES).find((h) => h !== "/dashboard" && pathname.startsWith(h));
-  return hit ? PAGE_TITLES[hit] : "Discover";
-}
-
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [countdown, setCountdown] = useState("");
-  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login");
   }, [user, loading, router]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [menuOpen]);
-
-  useEffect(() => {
-    setCountdown(refreshCountdownLabel());
-    const t = setInterval(() => setCountdown(refreshCountdownLabel()), 30_000);
-    return () => clearInterval(t);
-  }, []);
 
   if (loading || !user) {
     return (
@@ -104,9 +68,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-
-  const displayName = user.displayName || user.email?.split("@")[0] || "Creator";
-  const avatar = user.photoURL;
 
   const NavLinks = () => (
     <nav className="flex flex-1 flex-col gap-5 overflow-y-auto px-3 pb-4 pt-2">
@@ -234,74 +195,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Top row — a fixed bar; the <main> below scrolls, this never moves.
-            No background of its own — the items float. */}
-        <header className="pointer-events-none z-30 flex h-16 shrink-0 items-center justify-between px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
-          <div className="flex items-center gap-3">
-            <button
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#151416]/80 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/[0.06] md:hidden"
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Open menu"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
-            </button>
-            {/* Page title in the topbar. Hidden on desktop only for Explore
-                (its filter rail occupies that top-left spot). */}
-            <h1 className={`font-heading text-[22px] font-bold tracking-[-0.01em] text-white ${pathname.startsWith("/dashboard/explore") ? "md:hidden" : ""}`}>{pageTitle(pathname)}</h1>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            {/* Refresh countdown (Uiverse gradient-ring pill) */}
-            {countdown && (
-              <span className="tb-pill hidden sm:inline-flex">
-                <span className="tb-pill-inner gap-2 px-3.5 py-2 text-[13px] font-medium text-white/60">
-                  <span className="text-[#0FA5E9]"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
-                  Video refresh in <span className="font-semibold text-[#4fc3f7]">{countdown}</span>
-                </span>
-              </span>
-            )}
-
-            {/* User menu (Uiverse gradient-ring pill) */}
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setMenuOpen((o) => !o)}
-                className="tb-pill"
-              >
-                <span className="tb-pill-inner gap-2 py-1 pl-1 pr-2.5">
-                {avatar ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full" />
-                ) : (
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0FA5E9] text-[14px] font-bold text-white">
-                    {displayName.charAt(0).toUpperCase()}
-                  </span>
-                )}
-                <span className="text-[13.5px] font-semibold text-white/90 max-sm:hidden">{displayName}</span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/45 max-sm:hidden"><path d="m6 9 6 6 6-6" /></svg>
-                </span>
-              </button>
-
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-white/[0.08] bg-[#1A1A20] shadow-[0_16px_50px_rgba(0,0,0,0.6)]">
-                  <div className="border-b border-white/[0.06] px-4 py-3">
-                    <div className="truncate text-[14px] font-semibold text-white">{displayName}</div>
-                    <div className="truncate text-[12px] text-white/45">{user.email}</div>
-                  </div>
-                  <Link href="/dashboard/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-[14px] text-white/70 transition-colors hover:bg-white/[0.04] hover:text-white">
-                    <Icon d={SETTINGS_ICON} size={15} /> Settings
-                  </Link>
-                  <button
-                    onClick={async () => { await signOut(); router.replace("/login"); }}
-                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[14px] text-[#ff6b6b] transition-colors hover:bg-[#ff6b6b]/10"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
-                    Log out
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
+        {/* Topbar removed. Only a mobile menu button floats (to open the sidebar);
+            the other items will be re-added later. */}
+        <button
+          className="fixed left-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-lg bg-[#151416]/80 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/[0.06] md:hidden"
+          onClick={() => setSidebarOpen(true)}
+          aria-label="Open menu"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
+        </button>
 
         <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 text-white md:p-6 lg:p-8">{children}</main>
       </div>
