@@ -217,8 +217,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           />
         </div>
 
-        {/* Top row — a fixed bar; the <main> below scrolls, this never moves. */}
-        <header className="pointer-events-none z-30 flex h-16 shrink-0 items-center justify-between bg-[#151416] px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
+        {/* Top row — a fixed bar; the <main> below scrolls, this never moves.
+            No background of its own — the items float. */}
+        <header className="pointer-events-none z-30 flex h-16 shrink-0 items-center justify-between px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
           <div className="flex items-center gap-3">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#151416]/80 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/[0.06] md:hidden"
@@ -233,20 +234,23 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Refresh countdown */}
+            {/* Refresh countdown (Uiverse gradient-ring pill) */}
             {countdown && (
-              <span className="hidden items-center gap-2 rounded-full border border-white/[0.08] bg-[#1a1a20]/90 px-3.5 py-2 text-[13px] font-medium text-white/60 backdrop-blur-md sm:inline-flex">
-                <span className="text-[#0FA5E9]"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
-                Video refresh in <span className="font-semibold text-[#4fc3f7]">{countdown}</span>
+              <span className="tb-pill hidden sm:inline-flex">
+                <span className="tb-pill-inner gap-2 px-3.5 py-2 text-[13px] font-medium text-white/60">
+                  <span className="text-[#0FA5E9]"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
+                  Video refresh in <span className="font-semibold text-[#4fc3f7]">{countdown}</span>
+                </span>
               </span>
             )}
 
-            {/* User menu */}
+            {/* User menu (Uiverse gradient-ring pill) */}
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((o) => !o)}
-                className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-[#1a1a20]/90 py-1 pl-1 pr-2.5 backdrop-blur-md transition-colors hover:bg-white/[0.08]"
+                className="tb-pill"
               >
+                <span className="tb-pill-inner gap-2 py-1 pl-1 pr-2.5">
                 {avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full" />
@@ -257,6 +261,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 )}
                 <span className="text-[13.5px] font-semibold text-white/90 max-sm:hidden">{displayName}</span>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/45 max-sm:hidden"><path d="m6 9 6 6 6-6" /></svg>
+                </span>
               </button>
 
               {menuOpen && (

@@ -369,3 +369,29 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
 }
 .range-thumb::-webkit-slider-runnable-track { background: transparent; }
 .range-thumb::-moz-range-track { background: transparent; }
+
+/* ---- Topbar pill (Uiverse by reglobby): gradient border ring + dark inner ----
+   A blue gradient-lit outer ring with a dark inner surface. Used for the
+   floating topbar buttons (user menu, refresh chip) now that the bar has no
+   background of its own. */
+.tb-pill {
+  border-radius: 13px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background:
+    linear-gradient(to bottom right, #2e8eff 0%, rgba(46, 142, 255, 0) 30%);
+  background-color: rgba(46, 142, 255, 0.2);
+  padding: 2px; /* the ring thickness */
+}
+.tb-pill:hover, .tb-pill:focus-within {
+  background-color: rgba(46, 142, 255, 0.6);
+  box-shadow: 0 0 12px rgba(46, 142, 255, 0.4);
+  outline: none;
+}
+.tb-pill-inner {
+  border-radius: 11px;
+  background-color: #17161c;
+  display: flex;
+  align-items: center;
+  color: #fff;
+}
