@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { NAV_ICONS } from "@/components/dashboard/NavIcons";
 import { refreshCountdownLabel } from "@/lib/refreshSchedule";
+import SideRays from "@/components/dashboard/SideRays";
 
 type NavItem = { label: string; href: string; icon: string; soon?: boolean };
 
@@ -215,6 +216,21 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               WebkitMaskImage: "radial-gradient(ellipse 100% 60% at 50% 0%, #000 40%, transparent 100%)",
             }}
           />
+          {/* Animated light rays from the top-right, tuned to the cyan theme. */}
+          <div className="absolute inset-0 opacity-40">
+            <SideRays
+              origin="top-right"
+              rayColor1="#0FA5E9"
+              rayColor2="#4fc3f7"
+              speed={1.6}
+              intensity={1.2}
+              spread={1.6}
+              saturation={1.2}
+              blend={0.7}
+              falloff={2.2}
+              opacity={0.9}
+            />
+          </div>
         </div>
 
         {/* Top row — a fixed bar; the <main> below scrolls, this never moves.
