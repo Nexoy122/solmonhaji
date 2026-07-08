@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { canUse } from "@/lib/plan";
 import { nicheColor } from "@/lib/nicheColors";
+import BorderGlow from "@/components/dashboard/BorderGlow";
 
 // Consistent per-niche colored badge, used across the app.
 function NicheBadge({ niche, label, className = "" }: { niche: string; label: string; className?: string }) {
@@ -451,8 +452,8 @@ export function Discover() {
 
       {/* Controls */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        {/* Search — animated glow border on focus */}
-        <div className="glow-search w-full max-w-[440px]">
+        {/* Search — animated mesh border glow (no hover) */}
+        <BorderGlow mesh borderRadius={10} glowRadius={20} glowColor="0 0 100" glowIntensity={0.4} className="w-full max-w-[440px]">
           <div className="relative flex items-center">
             <span className="pointer-events-none absolute left-3.5 text-white/40">
               <Icon d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3" size={16} />
@@ -462,7 +463,7 @@ export function Discover() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by vibe — funny football, ranking, minecraft…"
-              className="h-11 w-full rounded-none bg-transparent pl-11 pr-10 text-[14px] text-white outline-none placeholder:text-white/35"
+              className="h-11 w-full bg-transparent pl-11 pr-10 text-[14px] text-white outline-none placeholder:text-white/35"
             />
             {search && (
               <button onClick={() => setSearch("")} className="absolute right-3 text-white/40 transition-colors hover:text-white" aria-label="Clear search">
@@ -470,7 +471,7 @@ export function Discover() {
               </button>
             )}
           </div>
-        </div>
+        </BorderGlow>
 
         {/* Sort */}
         <div className="relative" ref={sortRef}>

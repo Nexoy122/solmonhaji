@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { nicheColor } from "@/lib/nicheColors";
+import BorderGlow from "@/components/dashboard/BorderGlow";
 
 // Consistent per-niche colored badge, used across the app.
 function NicheBadge({ niche, label, className = "" }: { niche: string; label: string; className?: string }) {
@@ -334,23 +335,25 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(filtered.length)}</span>
             <span className="text-[13px] font-medium text-on-surface-variant">channels match your filters</span>
           </div>
-          <div className="relative ml-auto w-full max-w-[260px]">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
-              <Icon d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3" size={15} />
-            </span>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => onSearch(e.target.value)}
-              placeholder="Search channels…"
-              className="h-9 w-full rounded-md border border-white/12 bg-[#0c0c0f] pl-9 pr-8 text-[13px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-primary"
-            />
-            {search && (
-              <button onClick={() => onSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 transition-colors hover:text-white" aria-label="Clear">
-                <Icon d="M18 6 6 18M6 6l12 12" size={14} />
-              </button>
-            )}
-          </div>
+          <BorderGlow mesh borderRadius={8} glowRadius={16} glowColor="0 0 100" glowIntensity={0.35} className="ml-auto w-full max-w-[260px]">
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
+                <Icon d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3" size={15} />
+              </span>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => onSearch(e.target.value)}
+                placeholder="Search channels…"
+                className="h-9 w-full bg-transparent pl-9 pr-8 text-[13px] text-white outline-none placeholder:text-white/35"
+              />
+              {search && (
+                <button onClick={() => onSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 transition-colors hover:text-white" aria-label="Clear">
+                  <Icon d="M18 6 6 18M6 6l12 12" size={14} />
+                </button>
+              )}
+            </div>
+          </BorderGlow>
         </div>
       )}
 
