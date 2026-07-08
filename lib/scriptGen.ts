@@ -76,13 +76,15 @@ async function callGroq(userContent: string, systemPrompt: string = SYSTEM_PROMP
 
 // Resolve a reference (YouTube URL or manual transcript) → { text, hook }.
 // The reference is used for STYLE/PACING, and its first line can become the hook.
-async function resolveReference(opts: { transcript?: string | null; youtubeUrl?: string | null }): Promise<{ text: string; hook: string | null }> {
+async function resolveReference(opts: { transcript?: string | null; youtubeUrl?: string | null }): Promise<{ text: string; hook: string | null; error?: string }> {
   let text = "";
+  let error: string | undefined;
   if (opts.youtubeUrl) {
-    try { text = await getTranscript(opts.youtubeUrl); } catch { /* fall through */ }
+    try { text = await getTranscript(opts.youtubeUrl); console.log(`[reference] fetched ${text.length} chars from ${opts.youtubeUrl}`); }
+    catch (e) { error = (e as Error).message; console.error("[reference] fetch failed:", error); }
   }
   if (!text && opts.transcript) text = opts.transcript;
-  if (!text) return { text: "", hook: null };
+  if (!text) return { text: "", hook: null, error };
   const trimmed = text.split(" ").slice(0, 800).join(" ");
   const firstSentence = trimmed.match(/^.*?[.!?]/);
   const hook = firstSentence ? firstSentence[0].trim() : trimmed.split(" ").slice(0, 15).join(" ");
