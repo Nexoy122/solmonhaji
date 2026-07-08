@@ -197,12 +197,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* mobile backdrop */}
       {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setSidebarOpen(false)} />}
 
-      {/* Main column — flat minimal background, no ambient effects. */}
-      <div className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
-
-        {/* Floating top items — FIXED to the viewport (offset for the sidebar on
-            desktop) so they never move on scroll. */}
-        <header className="pointer-events-none fixed inset-x-0 top-0 z-30 flex h-16 items-center justify-between px-4 md:left-64 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
+      {/* Floating top items — FIXED to the viewport, OUTSIDE the zoomed column so
+          no ancestor transform/zoom can move them. Offset for the sidebar. */}
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-4 md:left-64 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
           <div className="flex items-center gap-3">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-white/70 transition-colors hover:bg-white/[0.06] md:hidden"
@@ -260,6 +257,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
+      {/* Main column — flat minimal background. Scrolls under the fixed header. */}
+      <div className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
         <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 pt-20 text-white md:p-6 md:pt-20 lg:p-8 lg:pt-20">{children}</main>
       </div>
     </div>
