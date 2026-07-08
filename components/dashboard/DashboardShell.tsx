@@ -232,6 +232,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               opacity={0.9}
             />
           </div>
+          {/* Soft fade at the very top so the grid/rays don't texture the strip
+              behind the topbar — blends cleanly into flat #151416, no hard edge. */}
+          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#151416] to-transparent" />
         </div>
 
         {/* Top row — items float; no background of its own. The <main> below
