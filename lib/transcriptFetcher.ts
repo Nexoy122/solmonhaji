@@ -121,6 +121,7 @@ export async function understandVideoFromBuffer(
 
   let speech = "";
   let visual = "";
+  let visualErr = "";
   try {
     // 1) Try speech.
     try {
@@ -130,9 +131,10 @@ export async function understandVideoFromBuffer(
 
     // 2) If there's little/no speech, analyze the visuals.
     const speechWords = speech.split(/\s+/).filter(Boolean).length;
+    console.log(`[video] speech words: ${speechWords}, wantVisual: ${wantVisual}`);
     if (wantVisual && speechWords < 8) {
-      try { visual = await analyzeVideoFramesFromFile(srcPath); }
-      catch (e) { console.warn("[video] visual step failed:", (e as Error).message); }
+      try { visual = await analyzeVideoFramesFromFile(srcPath); console.log(`[video] visual chars: ${visual.length}`); }
+      catch (e) { visualErr = (e as Error).message; console.error("[video] visual step failed:", visualErr); }
     }
   } finally {
     fs.unlink(srcPath, () => {});
@@ -142,7 +144,7 @@ export async function understandVideoFromBuffer(
   const parts: string[] = [];
   if (speech) parts.push(`Spoken audio (transcript):\n"${speech}"`);
   if (visual) parts.push(`On-screen visuals & text:\n"${visual}"`);
-  if (parts.length === 0) throw new Error("The video had no readable speech or visuals.");
+  if (parts.length === 0) throw new Error(`Nothing readable in the video.${visualErr ? " Visual analysis error: " + visualErr : ""}`);
   return { text: parts.join("\n\n"), hadSpeech: Boolean(speech), hadVisual: Boolean(visual) };
 }
 
