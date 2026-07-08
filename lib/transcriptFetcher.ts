@@ -18,9 +18,9 @@ const VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 export async function analyzeVideoFramesFromFile(videoPath: string): Promise<string> {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "frames_"));
   try {
-    // ~1 frame/sec, scaled down, capped at 8 frames — enough to understand it.
-    await execFileAsync("ffmpeg", ["-y", "-i", videoPath, "-vf", "fps=1,scale=512:-1", "-frames:v", "8", path.join(dir, "f%02d.jpg")], { maxBuffer: 1024 * 1024 * 32 });
-    const files = fs.readdirSync(dir).filter((f) => f.endsWith(".jpg")).sort().slice(0, 8);
+    // Sample frames, scaled down, capped at 5 (the vision model's per-request max).
+    await execFileAsync("ffmpeg", ["-y", "-i", videoPath, "-vf", "fps=1,scale=512:-1", "-frames:v", "5", path.join(dir, "f%02d.jpg")], { maxBuffer: 1024 * 1024 * 32 });
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith(".jpg")).sort().slice(0, 5);
     if (files.length === 0) throw new Error("No frames extracted.");
 
     const images = files.map((f) => {
