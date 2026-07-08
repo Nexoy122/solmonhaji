@@ -547,3 +547,74 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
   .border-glow-card::before, .border-glow-card::after, .border-glow-card > .edge-light { transition: none; }
 }
 
+
+/* ---- Gradient "Generate" button (Uiverse by Allyhere) ---- */
+.btn-donate {
+  --btn-bg-1: hsla(194 100% 69% / 1);
+  --btn-bg-2: hsla(217 100% 56% / 1);
+  cursor: pointer;
+  padding: 0.9em 1.4em;
+  min-height: 44px;
+  font-weight: 600;
+  transition: 0.8s;
+  background-size: 280% auto;
+  background-image: linear-gradient(325deg, var(--btn-bg-2) 0%, var(--btn-bg-1) 55%, var(--btn-bg-2) 90%);
+  border: none;
+  border-radius: 0.5rem;
+  color: #fff;
+  box-shadow:
+    0px 0px 20px rgba(71, 184, 255, 0.5),
+    0px 5px 5px -1px rgba(58, 125, 233, 0.25),
+    inset 4px 4px 8px rgba(175, 230, 255, 0.5),
+    inset -4px -4px 8px rgba(19, 95, 216, 0.35);
+}
+.btn-donate:hover { background-position: right top; }
+.btn-donate:disabled { cursor: not-allowed; filter: grayscale(0.6) brightness(0.7); box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .btn-donate { transition: linear; } }
+
+/* ---- "Generating" letter loader (Uiverse by dexter-st) ---- */
+.loader-wrapper {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  height: 120px; width: auto; margin: 1rem;
+  font-size: 1.4em; font-weight: 600; user-select: none; color: #fff; scale: 1.4;
+}
+.loader-wrapper .gloader {
+  position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 1;
+  background-color: transparent;
+  mask: repeating-linear-gradient(90deg, transparent 0, transparent 6px, black 7px, black 8px);
+}
+.loader-wrapper .gloader::after {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background-image:
+    radial-gradient(circle at 50% 50%, #ff0 0%, transparent 50%),
+    radial-gradient(circle at 45% 45%, #f00 0%, transparent 45%),
+    radial-gradient(circle at 55% 55%, #0ff 0%, transparent 45%),
+    radial-gradient(circle at 45% 55%, #0f0 0%, transparent 45%),
+    radial-gradient(circle at 55% 45%, #00f 0%, transparent 45%);
+  mask: radial-gradient(circle at 50% 50%, transparent 0%, transparent 10%, black 25%);
+  animation: gl-transform 2s infinite alternate, gl-opacity 4s infinite;
+  animation-timing-function: cubic-bezier(0.6, 0.8, 0.5, 1);
+}
+@keyframes gl-transform { 0% { transform: translate(-55%); } 100% { transform: translate(55%); } }
+@keyframes gl-opacity { 0%, 100% { opacity: 0; } 15% { opacity: 1; } 65% { opacity: 0; } }
+.loader-letter { display: inline-block; opacity: 0; animation: gl-letter 4s infinite linear; z-index: 2; }
+.loader-letter:nth-child(1) { animation-delay: 0.1s; }
+.loader-letter:nth-child(2) { animation-delay: 0.205s; }
+.loader-letter:nth-child(3) { animation-delay: 0.31s; }
+.loader-letter:nth-child(4) { animation-delay: 0.415s; }
+.loader-letter:nth-child(5) { animation-delay: 0.521s; }
+.loader-letter:nth-child(6) { animation-delay: 0.626s; }
+.loader-letter:nth-child(7) { animation-delay: 0.731s; }
+.loader-letter:nth-child(8) { animation-delay: 0.837s; }
+.loader-letter:nth-child(9) { animation-delay: 0.942s; }
+.loader-letter:nth-child(10) { animation-delay: 1.047s; }
+@keyframes gl-letter {
+  0% { opacity: 0; }
+  5% { opacity: 1; text-shadow: 0 0 4px #fff; transform: scale(1.1) translateY(-2px); }
+  20% { opacity: 0.2; }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loader-wrapper .gloader::after, .loader-letter { animation: none; }
+  .loader-letter { opacity: 0.9; }
+}

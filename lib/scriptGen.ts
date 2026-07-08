@@ -55,16 +55,16 @@ Before answering, silently verify:
 Only output the final script.
 `;
 
-async function callGroq(userContent: string): Promise<string> {
+async function callGroq(userContent: string, systemPrompt: string = SYSTEM_PROMPT): Promise<string> {
   const res = await fetch(GROQ_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
     body: JSON.stringify({
       model: MODEL,
       temperature: 0.9,
-      max_tokens: 350,
+      max_tokens: 500,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         { role: "user", content: userContent },
       ],
     }),
@@ -74,9 +74,110 @@ async function callGroq(userContent: string): Promise<string> {
   return (data.choices?.[0]?.message?.content ?? "").trim();
 }
 
+// Resolve a reference (YouTube URL or manual transcript) → { text, hook }.
+// The reference is used for STYLE/PACING, and its first line can become the hook.
+async function resolveReference(opts: { transcript?: string | null; youtubeUrl?: string | null }): Promise<{ text: string; hook: string | null }> {
+  let text = "";
+  if (opts.youtubeUrl) {
+    try { text = await getTranscript(opts.youtubeUrl); } catch { /* fall through */ }
+  }
+  if (!text && opts.transcript) text = opts.transcript;
+  if (!text) return { text: "", hook: null };
+  const trimmed = text.split(" ").slice(0, 800).join(" ");
+  const firstSentence = trimmed.match(/^.*?[.!?]/);
+  const hook = firstSentence ? firstSentence[0].trim() : trimmed.split(" ").slice(0, 15).join(" ");
+  return { text: trimmed, hook };
+}
+
+// Append a "with timestamps" instruction when requested.
+function timestampRule(withTs: boolean): string {
+  return withTs
+    ? `\n\nFORMAT: Add a timestamp range before each beat, like "[0-3s] ..." then the line. Keep the whole script under ~60 seconds of spoken time.`
+    : `\n\nFORMAT: Plain spoken lines only. No timestamps, no labels.`;
+}
+
 // ── Generate from a topic ──
 export async function generateScript(topic: string): Promise<string> {
   return callGroq(`Topic: "${topic}"\n\nWrite one complete YouTube Shorts script.\n\nOnly output the final script.`);
+}
+
+// ── Mode 1: idea + reference style ──
+// User gives their idea (e.g. "Iran vs USA military") + a reference (transcript
+// or YouTube URL). AI writes THEIR idea in the reference's style/pacing.
+export async function generateFromIdeaWithReference(opts: {
+  idea: string;
+  transcript?: string | null;
+  youtubeUrl?: string | null;
+  withTimestamps?: boolean;
+}): Promise<string> {
+  const ref = await resolveReference(opts);
+  let content = `The creator's video idea/topic:\n"${opts.idea}"\n\n`;
+  if (ref.text) {
+    content += `Here is a REFERENCE script to copy the STYLE, pacing, and hook energy from (do NOT copy its topic or facts):\n"${ref.text}"\n\nStudy how it builds curiosity, its sentence length, and its rhythm.\n\n`;
+  }
+  content += `Now write a NEW original YouTube Shorts script about the creator's idea above, in that same style and pacing.`;
+  content += timestampRule(opts.withTimestamps ?? false);
+  content += `\n\nOnly output the final script.`;
+  return callGroq(content);
+}
+
+// ── Mode 2: improve an existing script ──
+export type ImproveOption =
+  | "better_hook" | "tighter_pacing" | "stronger_cta" | "more_engaging" | "shorter" | "longer";
+
+const IMPROVE_LABELS: Record<ImproveOption, string> = {
+  better_hook: "a stronger, scroll-stopping hook in the first line",
+  tighter_pacing: "tighter pacing — cut filler, shorten sentences",
+  stronger_cta: "a stronger call-to-action at the end",
+  more_engaging: "more engaging, higher-curiosity phrasing throughout",
+  shorter: "make it noticeably shorter and punchier",
+  longer: "expand it with more surprising facts/details",
+};
+
+export async function improveScript(opts: {
+  script: string;
+  options: ImproveOption[];
+  transcript?: string | null;
+  youtubeUrl?: string | null;
+  withTimestamps?: boolean;
+}): Promise<string> {
+  const asks = opts.options.length
+    ? opts.options.map((o) => `- ${IMPROVE_LABELS[o]}`).join("\n")
+    : "- overall quality, retention, and shareability";
+  const ref = await resolveReference(opts);
+  let content = `Here is the creator's current script:\n"${opts.script}"\n\nRewrite and IMPROVE it. Specifically apply:\n${asks}\n`;
+  if (ref.text) content += `\nMatch the STYLE/pacing of this reference (do not copy its content):\n"${ref.text}"\n`;
+  content += `\nKeep the same core topic. Return only the improved script.`;
+  content += timestampRule(opts.withTimestamps ?? false);
+  return callGroq(content);
+}
+
+// ── Mode 3: from a video (upload or YouTube URL) → analyze → script ──
+export async function generateFromVideo(opts: {
+  videoBuffer?: Buffer | null;
+  videoMime?: string | null;
+  youtubeUrl?: string | null;
+  transcript?: string | null; // reference for style
+  withTimestamps?: boolean;
+}): Promise<string> {
+  // 1) Get the source video's transcript (what the video is about).
+  let source = "";
+  if (opts.videoBuffer) {
+    try { source = (await transcribeBufferWithGroq(opts.videoBuffer, opts.videoMime ?? "audio/mpeg")).split(" ").slice(0, 900).join(" "); } catch { /* skip */ }
+  }
+  if (!source && opts.youtubeUrl) {
+    try { source = (await getTranscript(opts.youtubeUrl)).split(" ").slice(0, 900).join(" "); } catch { /* skip */ }
+  }
+  if (!source) throw new Error("Couldn't read the video. Try a shorter clip or a YouTube URL.");
+
+  // 2) Optional style reference (separate transcript).
+  const ref = await resolveReference({ transcript: opts.transcript });
+
+  let content = `Here is the transcript of the creator's own video:\n"${source}"\n\nWrite a polished YouTube Shorts script based on THIS video's topic and content.`;
+  if (ref.text) content += `\n\nWrite it in the STYLE/pacing of this reference (do not copy its content):\n"${ref.text}"`;
+  content += timestampRule(opts.withTimestamps ?? false);
+  content += `\n\nOnly output the final script.`;
+  return callGroq(content);
 }
 
 // ── Generate from a reference style (transcript / YouTube URL / uploaded video) ──
