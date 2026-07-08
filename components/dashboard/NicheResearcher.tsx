@@ -239,21 +239,28 @@ export function NicheResearcher() {
                 <StatCard icon="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" label="Views Gained" value={`+${fmt(recap.viewsGained)}`} foot={`across ${recap.trackedChannels} channels`} up />
               </div>
 
-              {/* What's blowing up (last 14 days) */}
+              {/* Viral this week */}
               {recap.viral.length > 0 && (
-                <div className="mt-7">
-                  <p className="mb-3 text-[13px] text-on-surface-variant">What&apos;s blowing up in this niche right now, from the last 14 days.</p>
+                <div className="mt-8">
+                  <SectionHead
+                    icon="M13 2L3 14h7l-1 8 10-12h-7z"
+                    iconColor="#f59e0b"
+                    title="Viral this week"
+                    subtitle="New uploads that exploded this week"
+                  />
                   <VideoGrid videos={recap.viral} />
                 </div>
               )}
 
               {/* Resurging */}
               {recap.resurging?.length > 0 && (
-                <div className="mt-7">
-                  <p className="mb-3 flex items-center gap-1.5 text-[13px] text-on-surface-variant">
-                    <Icon d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" size={14} />
-                    Older videos gaining serious views again.
-                  </p>
+                <div className="mt-8">
+                  <SectionHead
+                    icon="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+                    iconColor="#34d399"
+                    title="Resurging"
+                    subtitle="Older videos gaining serious views again this week"
+                  />
                   <VideoGrid videos={recap.resurging} />
                 </div>
               )}
@@ -274,8 +281,12 @@ export function NicheResearcher() {
               {/* Sub-niche breakdown — at the bottom */}
               {recap.subNiches?.length > 0 && (
                 <div className="mt-8">
-                  <p className="mb-1 text-[16px] font-bold text-on-surface">Sub-niche breakdown</p>
-                  <p className="mb-3 text-[13px] text-on-surface-variant">Every sub-niche ranked by opportunity — <span className="text-[#34d399]">green is underserved</span>, <span className="text-[#f87171]">red is saturated</span>.</p>
+                  <SectionHead
+                    icon="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"
+                    title="Sub-niche breakdown"
+                    subtitle="See every sub-niche, its viral rate, weekly movement, and the channels driving it."
+                  />
+                  <p className="mb-3 -mt-1 text-[12.5px] text-on-surface-variant"><span className="text-[#34d399]">Green is underserved</span>, <span className="text-[#f87171]">red is saturated</span>.</p>
                   <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     {recap.subNiches.map((s) => <SubNicheCard key={s.name} s={s} />)}
                   </div>
@@ -285,6 +296,21 @@ export function NicheResearcher() {
           )}
         </>
       )}
+    </div>
+  );
+}
+
+// Bold section heading with an icon + muted subtitle (matches the reference).
+function SectionHead({ icon, title, subtitle, iconColor }: { icon: string; title: string; subtitle: string; iconColor?: string }) {
+  return (
+    <div className="mb-3">
+      <p className="flex flex-wrap items-center gap-2 text-[16px] font-bold text-on-surface">
+        <span style={iconColor ? { color: iconColor } : undefined} className={iconColor ? "" : "text-on-surface-variant"}>
+          <Icon d={icon} size={17} />
+        </span>
+        {title}
+        <span className="text-[13px] font-normal text-on-surface-variant">{subtitle}</span>
+      </p>
     </div>
   );
 }
