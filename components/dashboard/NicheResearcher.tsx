@@ -233,10 +233,10 @@ export function NicheResearcher() {
               {/* Stats at a glance */}
               <p className="mb-3 mt-6 text-[13px] text-on-surface-variant">The numbers at a glance — channels, videos, and how often they go viral.</p>
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <StatCard icon="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" label="Channels" value={fmt(recap.trackedChannels)} foot="tracked in this niche" />
-                <StatCard icon="M3 3v18h18M7 14l3-4 4 3 5-7" label="New Uploads" value={fmt(recap.newUploads)} foot="this week" up />
-                <StatCard icon="M13 2L3 14h7l-1 8 10-12h-7z" label="Virality Rate" value={`${recap.viralityRate}%`} foot="hit 2x+ outlier" up={recap.viralityRate >= 4} />
-                <StatCard icon="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" label="Views Gained" value={`+${fmt(recap.viewsGained)}`} foot={`across ${recap.trackedChannels} channels`} up />
+                <StatCard icon="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" label="Views Gained" value={`+${fmt(recap.viewsGained)}`} foot={`across ${recap.trackedChannels} tracked channels`} trend={recap.viewsGained > 0 ? "up" : "flat"} />
+                <StatCard icon="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" label="Subs Gained" value={`+${fmt(recap.subsGained)}`} foot="net across the niche" trend={recap.subsGained > 0 ? "up" : "flat"} />
+                <StatCard icon="M3 3v18h18M7 14l3-4 4 3 5-7" label="New Uploads" value={fmt(recap.newUploads)} foot="this week" trend={recap.newUploads > 0 ? "up" : "flat"} />
+                <StatCard icon="M13 2L3 14h7l-1 8 10-12h-7z" label="Virality Rate" value={`${recap.viralityRate}%`} foot="of new uploads hit 2x+ outlier" trend={recap.viralityRate >= 5 ? "up" : recap.viralityRate > 0 ? "flat" : "down"} />
               </div>
 
               {/* Viral this week */}
@@ -520,14 +520,22 @@ function VideoGrid({ videos }: { videos: ViralVideo[] }) {
   );
 }
 
-function StatCard({ icon, label, value, foot, up }: { icon: string; label: string; value: string; foot: string; up?: boolean }) {
+// trend: "up" (green ↗), "down" (red ↘), or "flat" (grey —) arrow beside the value.
+function StatCard({ icon, label, value, foot, trend = "flat" }: { icon: string; label: string; value: string; foot: string; trend?: "up" | "down" | "flat" }) {
+  const arrow =
+    trend === "up" ? { d: "M7 17L17 7M17 7H8M17 7v9", c: "#34d399" } :
+    trend === "down" ? { d: "M7 7l10 10M17 17H8M17 17V8", c: "#f87171" } :
+    { d: "M5 12h14", c: "#8b8b93" };
   return (
     <div className="rounded-none border border-white/10 bg-white/[0.02] p-4">
       <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/70">
         <Icon d={icon} size={13} /> {label}
       </p>
-      <p className="mt-2 font-mono text-[24px] font-bold tracking-tight text-on-surface">{value}</p>
-      <p className={`mt-1 text-[11px] ${up ? "text-[#34d399]" : "text-on-surface-variant"}`}>{foot}</p>
+      <p className="mt-2 flex items-center gap-1.5 font-mono text-[24px] font-bold tracking-tight text-on-surface">
+        {value}
+        <span style={{ color: arrow.c }}><Icon d={arrow.d} size={16} /></span>
+      </p>
+      <p className="mt-1 text-[11px] text-on-surface-variant">{foot}</p>
     </div>
   );
 }
