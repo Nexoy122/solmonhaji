@@ -200,10 +200,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Main column — flat minimal background, no ambient effects. */}
       <div className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
 
-        {/* Floating top items — NOT a reserved row. Absolutely positioned so the
-            page fills the full height and the buttons just float in the corners
-            over the content (no full-width topbar strip). */}
-        <header className="pointer-events-none absolute inset-x-0 top-0 z-30 flex h-16 items-center justify-between px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
+        {/* Floating top items — FIXED to the viewport (offset for the sidebar on
+            desktop) so they never move on scroll. */}
+        <header className="pointer-events-none fixed inset-x-0 top-0 z-30 flex h-16 items-center justify-between px-4 md:left-64 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
           <div className="flex items-center gap-3">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-white/70 transition-colors hover:bg-white/[0.06] md:hidden"

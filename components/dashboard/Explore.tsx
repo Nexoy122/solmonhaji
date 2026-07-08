@@ -428,7 +428,7 @@ export function Explore() {
       {/* Tabs — pulled up onto the topbar line (same row as the floating nav
           items / user menu). Offset accounts for <main>'s pt-20. */}
       <div className="flex items-center gap-3 lg:-mt-[68px]">
-        <div className="inline-flex shrink-0 overflow-hidden rounded-lg border border-white/10 bg-[#08080a]">
+        <div className="inline-flex shrink-0 gap-2">
           {([
             ["videos", "Videos", "M23 7l-7 5 7 5V7zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"],
             ["channels", "Channels", "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"],
@@ -436,7 +436,7 @@ export function Explore() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`inline-flex items-center gap-2 px-7 py-2.5 text-[14.5px] font-semibold transition-all ${tab === t ? "bg-primary text-on-primary" : "text-on-surface-variant hover:bg-white/[0.05] hover:text-on-surface"}`}
+              className={`gbtn inline-flex items-center gap-2 rounded-none px-7 py-2.5 text-[14.5px] font-semibold ${tab === t ? "is-active text-white/90" : "text-white/55 hover:text-white/80"}`}
             >
               <Icon d={icon} size={16} /> {label}
             </button>

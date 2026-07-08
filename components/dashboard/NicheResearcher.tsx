@@ -108,8 +108,8 @@ export function NicheResearcher() {
           <button
             key={n.id}
             onClick={() => { setActive(n.id); setSelectedWeek(""); }}
-            className={`niche-glow rounded-none px-4 py-3 text-[13.5px] font-semibold transition-all ${
-              active === n.id ? "is-active text-white" : "text-white/80 hover:text-white"
+            className={`gbtn rounded-none px-4 py-3 text-[13.5px] font-semibold ${
+              active === n.id ? "is-active text-white/90" : "text-white/55 hover:text-white/80"
             }`}
           >
             {n.label}
