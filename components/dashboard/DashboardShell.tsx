@@ -234,12 +234,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
           {/* Soft fade at the very top so the grid/rays don't texture the strip
               behind the topbar — blends cleanly into flat #151416, no hard edge. */}
-          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#151416] to-transparent" />
         </div>
 
-        {/* Top row — items float; no background of its own. The <main> below
-            scrolls independently, so this strip never moves. */}
-        <header className="pointer-events-none z-30 flex h-16 shrink-0 items-center justify-between px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
+        {/* Floating top items — NOT a reserved row. Absolutely positioned so the
+            page fills the full height and the buttons just float in the corners
+            over the content (no full-width topbar strip). */}
+        <header className="pointer-events-none absolute inset-x-0 top-0 z-30 flex h-16 items-center justify-between px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
           <div className="flex items-center gap-3">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#151416]/80 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/[0.06] md:hidden"
@@ -303,7 +303,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 text-white md:p-6 lg:p-8">{children}</main>
+        <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 pt-20 text-white md:p-6 md:pt-20 lg:p-8 lg:pt-20">{children}</main>
       </div>
     </div>
   );
