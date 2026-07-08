@@ -119,7 +119,7 @@ export function ScriptGenerator() {
       const out = data.script ?? "";
       setScript(out);
       const title = mode === "idea" ? idea.trim().slice(0, 60) : mode === "improve" ? "Improved script" : (videoUrl.trim() ? "From video URL" : file?.name ?? "From video");
-      setHistory((h) => [{ id: crypto.randomUUID(), title, script: out, at: Date.now() }, ...h].slice(0, 20));
+      setHistory((h) => [{ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, title, script: out, at: Date.now() }, ...h].slice(0, 20));
     } catch (e) { setErr((e as Error).message); }
     setBusy(false);
   };
