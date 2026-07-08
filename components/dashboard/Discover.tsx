@@ -4,6 +4,20 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { canUse } from "@/lib/plan";
+import { nicheColor } from "@/lib/nicheColors";
+
+// Consistent per-niche colored badge, used across the app.
+function NicheBadge({ niche, label, className = "" }: { niche: string; label: string; className?: string }) {
+  const col = nicheColor(niche);
+  return (
+    <span
+      className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${className}`}
+      style={{ color: col.c, background: col.bg, border: `1px solid ${col.border}` }}
+    >
+      {label}
+    </span>
+  );
+}
 
 // Niche filter options (mirrors lib/nicheResearch NICHES — client-safe copy).
 const NICHE_OPTS: [string, string][] = [
@@ -128,7 +142,7 @@ function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void
           {/* Tags */}
           <div className="mb-4 flex flex-wrap items-center gap-1.5">
             {c.faceless && <span className="rounded-md bg-[#10b981]/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#34d399]">Faceless</span>}
-            {c.nicheLabel && <span className="rounded-md bg-primary-container px-2 py-0.5 text-[11px] font-semibold text-on-primary-container">{c.nicheLabel}</span>}
+            {c.nicheLabel && <NicheBadge niche={c.aiNiche ?? c.nicheLabel} label={c.nicheLabel} />}
             {c.format && <span className="rounded-md border border-white/12 bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{FORMAT_LABELS[c.format] ?? c.format}</span>}
             {lang && <span className="rounded-md border border-white/12 bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{lang}</span>}
           </div>
@@ -266,9 +280,7 @@ function ChannelCard({ c }: { c: DiscoveryChannel }) {
           {c.handle && <p className="truncate text-[12px] text-on-surface-variant">{c.handle}</p>}
         </button>
         <div className="flex shrink-0 items-center gap-1.5">
-          {c.nicheLabel && (
-            <span className="rounded-md bg-primary-container px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-on-primary-container">{c.nicheLabel}</span>
-          )}
+          {c.nicheLabel && <NicheBadge niche={c.aiNiche ?? c.nicheLabel} label={c.nicheLabel} className="uppercase tracking-wide !text-[10px]" />}
         </div>
       </div>
 

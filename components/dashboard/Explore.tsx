@@ -306,7 +306,7 @@ function VideoCard({ v }: { v: ExploreVideo }) {
         <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-on-surface-variant">
           <span className="inline-flex items-center gap-1"><Icon d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" size={12} />{fmt(v.views)}</span>
           {v.outlierX >= 1 && (
-            <span className="inline-flex items-center gap-1 rounded-none bg-primary-container px-1.5 py-0.5 font-semibold text-on-primary-container">
+            <span className="inline-flex items-center gap-1 rounded-none bg-[#10b981]/15 px-1.5 py-0.5 font-semibold text-[#34d399]">
               <Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={12} />{v.outlierX.toFixed(1)}x
             </span>
           )}

@@ -3,6 +3,20 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "@/components/AuthProvider";
+import { nicheColor } from "@/lib/nicheColors";
+
+// Consistent per-niche colored badge, used across the app.
+function NicheBadge({ niche, label, className = "" }: { niche: string; label: string; className?: string }) {
+  const col = nicheColor(niche);
+  return (
+    <span
+      className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${className}`}
+      style={{ color: col.c, background: col.bg, border: `1px solid ${col.border}` }}
+    >
+      {label}
+    </span>
+  );
+}
 
 interface NicheDef { id: string; label: string }
 interface DiscoveryShort { id: string; title: string; views: number; publishedAt: string }
@@ -146,7 +160,7 @@ function ChannelModal({ c, onClose }: { c: Channel; onClose: () => void }) {
         <div className="overflow-y-auto p-5">
           <div className="mb-4 flex flex-wrap items-center gap-1.5">
             {c.faceless && <span className="rounded-md bg-[#10b981]/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#34d399]">Faceless</span>}
-            <span className="rounded-md bg-primary-container px-2 py-0.5 text-[11px] font-semibold text-on-primary-container">{c.seedNicheLabel}</span>
+            <NicheBadge niche={c.seedNiche} label={c.seedNicheLabel} />
             {c.format && <span className="rounded-md border border-white/12 bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{FORMAT_LABELS[c.format] ?? c.format}</span>}
             {lang && <span className="rounded-md border border-white/12 bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{lang}</span>}
           </div>
@@ -197,7 +211,7 @@ function ChannelCard({ c, onView }: { c: Channel; onView: () => void }) {
           <img src={thumb(bannerId)} alt="" loading="lazy" className="h-full w-full object-cover opacity-70" />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0f] to-transparent" />
-        <span className="absolute right-2 top-2 rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-on-primary">{c.seedNicheLabel}</span>
+        <span className="absolute right-2 top-2"><NicheBadge niche={c.seedNiche} label={c.seedNicheLabel} className="uppercase tracking-wide" /></span>
       </button>
 
       {/* Header */}

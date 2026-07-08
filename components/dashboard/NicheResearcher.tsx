@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import BorderGlow from "@/components/dashboard/BorderGlow";
+import { nicheColor } from "@/lib/nicheColors";
 
 interface NicheDef { id: string; label: string }
 interface ViralVideo { id: string; title: string; channelName: string; thumbnail: string; views: number; url: string; outlierX: number; publishedAt?: string }
@@ -102,19 +103,22 @@ export function NicheResearcher() {
       {/* Header — the page title lives in the fixed topbar (no duplicate H1). */}
       <p className="mb-4 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
 
-      {/* Niche tabs — cyan border-glow buttons */}
+      {/* Niche tabs — each niche keeps its own color when active */}
       <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
-        {tabNiches.map((n) => (
-          <button
-            key={n.id}
-            onClick={() => { setActive(n.id); setSelectedWeek(""); }}
-            className={`gbtn rounded-none px-4 py-3 text-[13.5px] font-semibold ${
-              active === n.id ? "is-active text-white/90" : "text-white/55 hover:text-white/80"
-            }`}
-          >
-            {n.label}
-          </button>
-        ))}
+        {tabNiches.map((n) => {
+          const on = active === n.id;
+          const col = nicheColor(n.id);
+          return (
+            <button
+              key={n.id}
+              onClick={() => { setActive(n.id); setSelectedWeek(""); }}
+              className={`rounded-none border px-4 py-3 text-[13.5px] font-semibold transition-colors ${on ? "" : "border-white/12 bg-[#1E1F21] text-white/55 hover:border-white/25 hover:text-white/80"}`}
+              style={on ? { color: col.c, background: col.bg, borderColor: col.border } : undefined}
+            >
+              {n.label}
+            </button>
+          );
+        })}
       </div>
 
       {error && (
