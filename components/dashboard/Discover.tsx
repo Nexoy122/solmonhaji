@@ -485,8 +485,8 @@ export function Discover() {
               : "border-white/12 bg-white/[0.03] text-on-surface hover:bg-surface-container-high"
           }`}
         >
-          {/* Padlock when locked, funnel-style filter icon when unlocked */}
-          <Icon d={filtersUnlocked ? "M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z" : "M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5zM12 15v3"} size={13} />
+          {/* Filter (funnel) icon */}
+          <Icon d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" size={13} />
           Advanced Filters
           {filtersUnlocked && activeFilterCount > 0 && (
             <span className="ml-0.5 inline-flex size-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">{activeFilterCount}</span>

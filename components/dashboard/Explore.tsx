@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { ExploreChannels } from "@/components/dashboard/ExploreChannels";
-import { refreshCountdownLabel } from "@/lib/refreshSchedule";
 
 interface NicheDef { id: string; label: string }
 interface ExploreVideo {
@@ -450,17 +449,13 @@ export function Explore() {
         <ExploreChannels search={chSearch} onSearch={setChSearch} />
       ) : (
       <>
-      {/* Count badge + weekly-refresh countdown */}
+      {/* Count badge (weekly-refresh countdown lives in the topbar). */}
       {!loading && (
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <div className="inline-flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#1a1a20] py-1.5 pl-1.5 pr-3.5">
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(total)}</span>
             <span className="text-[13px] font-medium text-on-surface-variant">videos match your filters</span>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#1a1a20] px-3 py-2 text-[12.5px] font-medium text-on-surface-variant">
-            <span className="text-primary"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={14} /></span>
-            Video refresh in <span className="font-semibold text-[#4fc3f7]">{refreshCountdownLabel()}</span>
-          </span>
         </div>
       )}
 
