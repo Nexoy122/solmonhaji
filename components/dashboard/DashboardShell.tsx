@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
-import { NAV_ICONS } from "@/components/dashboard/NavIcons";
+import { NAV_ICONS, MSym } from "@/components/dashboard/NavIcons";
 import { refreshCountdownLabel } from "@/lib/refreshSchedule";
 
 type NavItem = { label: string; href: string; icon: string; soon?: boolean };
@@ -32,8 +32,6 @@ const NAV_SECTIONS: { heading?: string; items: NavItem[] }[] = [
     ],
   },
 ];
-
-const SETTINGS_ICON = "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z";
 
 function Icon({ d, size = 18 }: { d: string; size?: number }) {
   return (
@@ -182,15 +180,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
         {/* Bottom: settings + logout */}
         <div className="shrink-0 border-t border-white/[0.06] p-3">
-          <Link href="/dashboard/settings" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/55 transition-colors hover:bg-[#363738] hover:text-white/90">
-            <span className="text-white/45"><Icon d={SETTINGS_ICON} size={17} /></span>
+          <Link href="/dashboard/settings" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/60 transition-colors hover:bg-[#363738] hover:text-white/90">
+            <span className="flex items-center text-white/50"><MSym name="settings" size={20} /></span>
             Settings
           </Link>
           <button
             onClick={async () => { await signOut(); router.replace("/login"); }}
-            className="mt-0.5 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/55 transition-colors hover:bg-[#363738] hover:text-white/90"
+            className="mt-0.5 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/60 transition-colors hover:bg-[#363738] hover:text-white/90"
           >
-            <span className="text-white/45"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg></span>
+            <span className="flex items-center text-white/50"><MSym name="logout" size={20} /></span>
             Log out
           </button>
         </div>
@@ -220,10 +218,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Refresh countdown — cyan border-glow pill */}
+            {/* Refresh countdown — sharp black pill, gray border, no hover */}
             {countdown && (
-              <span className="tb-glow hidden items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-medium text-white/60 sm:inline-flex">
-                <span className="text-[#0FA5E9]"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
+              <span className="hidden items-center gap-2 rounded-none border border-white/15 bg-black px-3.5 py-2 text-[13px] font-medium text-white/60 sm:inline-flex">
+                <span className="text-white/40"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
                 Video refresh in <span className="font-semibold text-white/85">{countdown}</span>
               </span>
             )}
@@ -248,13 +246,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     <div className="truncate text-[12px] text-white/45">{user.email}</div>
                   </div>
                   <Link href="/dashboard/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-[14px] text-white/70 transition-colors hover:bg-[#363738] hover:text-white">
-                    <Icon d={SETTINGS_ICON} size={15} /> Settings
+                    <MSym name="settings" size={18} /> Settings
                   </Link>
                   <button
                     onClick={async () => { await signOut(); router.replace("/login"); }}
                     className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[14px] text-[#ff6b6b] transition-colors hover:bg-[#ff6b6b]/10"
                   >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+                    <MSym name="logout" size={18} />
                     Log out
                   </button>
                 </div>

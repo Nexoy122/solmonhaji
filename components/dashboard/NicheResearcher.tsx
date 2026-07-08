@@ -146,7 +146,7 @@ export function NicheResearcher() {
           <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
           <BorderGlow borderRadius={16} backgroundColor="#000101" glowColor="0 0 100" glowIntensity={0.5} className="mb-1">
             <div className="p-6">
-              <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
+              <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-white/45">
                 <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
               </p>
               {recap?.brief ? (
@@ -339,71 +339,82 @@ const OPP_STYLE: Record<string, { label: string; c: string; bg: string; border: 
 function SubNicheCard({ s }: { s: SubNiche }) {
   const opp = OPP_STYLE[s.opportunity] ?? OPP_STYLE.rising;
   return (
-    <div className="rounded-none border p-5" style={{ borderColor: opp.border, background: "rgba(255,255,255,0.02)" }}>
-      {/* header */}
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="overflow-hidden rounded-xl border bg-[#050506]" style={{ borderColor: opp.border }}>
+      {/* Header band with a clear opportunity signal */}
+      <div className="flex items-center gap-2.5 border-b px-5 py-3.5" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+        <span className="flex size-2.5 shrink-0 rounded-full" style={{ background: opp.c, boxShadow: `0 0 8px ${opp.c}` }} />
         <span className="text-[15px] font-bold text-on-surface">{s.name}</span>
-        <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: opp.bg, color: opp.c }}>{opp.label}</span>
+        <span className="rounded-full px-2.5 py-0.5 text-[11px] font-bold" style={{ background: opp.bg, color: opp.c }}>{opp.label}</span>
         {s.movement !== 0 && (
           <span className={`flex items-center gap-0.5 text-[11px] font-semibold ${s.movement > 0 ? "text-[#34d399]" : "text-[#f87171]"}`}>
-            <Icon d={s.movement > 0 ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6"} size={12} /> {Math.abs(s.movement)}% wk
+            <Icon d={s.movement > 0 ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6"} size={12} /> {Math.abs(s.movement)}%
           </span>
         )}
-        <span className="ml-auto rounded-full bg-primary-container px-2.5 py-0.5 text-[12px] font-bold text-on-primary-container">{s.viralRate}% share</span>
+        <span className="ml-auto text-[12px] font-semibold text-on-surface-variant">{s.viralRate}% of viral</span>
       </div>
 
-      {/* stat row */}
-      <div className="mt-3 grid grid-cols-4 gap-2 rounded-none bg-white/[0.03] p-3">
-        <Stat label="Viral" value={`${s.viralCount}`} />
-        <Stat label="Avg views" value={fmt(s.avgViews)} />
-        <Stat label="Total" value={fmt(s.totalViews)} />
-        <Stat label="Top hit" value={`${s.topOutlierX.toFixed(0)}x`} />
-      </div>
-
-      {/* AI insight + angle */}
-      {s.aiInsight && (
-        <div className="mt-3">
-          <p className="text-[13px] leading-relaxed text-on-surface"><span className="font-semibold text-primary">Why it&apos;s winning: </span>{s.aiInsight}</p>
+      <div className="p-5">
+        {/* Plain-language stats */}
+        <div className="grid grid-cols-3 gap-3">
+          <Stat label="Viral videos" value={`${s.viralCount}`} />
+          <Stat label="Avg views" value={fmt(s.avgViews)} />
+          <Stat label="Biggest hit" value={`${s.topOutlierX.toFixed(0)}× avg`} />
         </div>
-      )}
-      {s.contentAngle && (
-        <div className="mt-2 flex gap-2 rounded-none border border-primary/20 bg-primary-container/20 p-3">
-          <span className="mt-0.5 shrink-0 text-primary"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={14} /></span>
-          <p className="text-[13px] leading-relaxed text-on-surface"><span className="font-semibold text-primary">Try this: </span>{s.contentAngle}</p>
-        </div>
-      )}
 
-      {/* patterns + channels */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
-        {s.titlePatterns.length > 0 && (
-          <span className="text-on-surface-variant">Patterns: {s.titlePatterns.map((p) => <span key={p} className="mr-1 inline-block rounded bg-surface-container-high px-1.5 py-0.5 font-semibold text-on-surface">{p}</span>)}</span>
+        {/* Why it's winning */}
+        {s.aiInsight && (
+          <p className="mt-4 text-[13px] leading-relaxed text-on-surface-variant">
+            <span className="font-semibold text-on-surface">Why it&apos;s working — </span>{s.aiInsight}
+          </p>
         )}
-        {s.topChannels.length > 0 && <span className="text-on-surface-variant">Driven by: <span className="font-semibold text-on-surface">{s.topChannels.join(", ")}</span></span>}
-      </div>
 
-      {/* example videos */}
-      {s.examples.length > 0 && (
-        <div className="mt-3 flex gap-2">
-          {s.examples.map((e) => (
-            <a key={e.url} href={e.url} target="_blank" rel="noopener noreferrer" className="group relative block h-24 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-container-high">
-              {e.thumbnail && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={e.thumbnail} alt="" className="h-full w-full object-cover" />
-              )}
-              <span className="absolute bottom-0.5 left-0.5 rounded bg-black/70 px-1 text-[8px] font-bold text-white">{fmt(e.views)}</span>
-            </a>
-          ))}
-        </div>
-      )}
+        {/* Actionable idea (the paid value) */}
+        {s.contentAngle && (
+          <div className="mt-3 flex gap-2.5 rounded-lg border border-primary/25 bg-primary/[0.06] p-3.5">
+            <span className="mt-0.5 shrink-0 text-primary"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={15} /></span>
+            <p className="text-[13px] leading-relaxed text-on-surface"><span className="font-semibold text-primary">Make this: </span>{s.contentAngle}</p>
+          </div>
+        )}
+
+        {/* Winning title patterns as chips */}
+        {s.titlePatterns.length > 0 && (
+          <div className="mt-3.5 flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] font-medium text-on-surface-variant">Title patterns:</span>
+            {s.titlePatterns.map((p) => (
+              <span key={p} className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11px] font-semibold text-on-surface">{p}</span>
+            ))}
+          </div>
+        )}
+
+        {/* Example videos + driven-by */}
+        {s.examples.length > 0 && (
+          <div className="mt-4">
+            {s.topChannels.length > 0 && (
+              <p className="mb-2 text-[11px] text-on-surface-variant">Led by <span className="font-semibold text-on-surface">{s.topChannels.join(", ")}</span></p>
+            )}
+            <div className="flex gap-2">
+              {s.examples.map((e) => (
+                <a key={e.url} href={e.url} target="_blank" rel="noopener noreferrer" className="group relative block h-24 w-[54px] shrink-0 overflow-hidden rounded-lg bg-white/[0.04]">
+                  {e.thumbnail && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={e.thumbnail} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                  )}
+                  <span className="absolute bottom-0.5 left-0.5 rounded bg-black/75 px-1 text-[8px] font-bold text-white">{fmt(e.views)}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <p className="font-mono text-[15px] font-bold text-on-surface">{value}</p>
-      <p className="text-[10px] uppercase tracking-wide text-on-surface-variant/70">{label}</p>
+    <div className="rounded-lg bg-white/[0.03] px-3 py-2.5">
+      <p className="text-[16px] font-bold text-on-surface">{value}</p>
+      <p className="mt-0.5 text-[10.5px] text-on-surface-variant">{label}</p>
     </div>
   );
 }

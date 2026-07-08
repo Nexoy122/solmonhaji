@@ -5,7 +5,7 @@ import type { ReactElement } from "react";
 // Sidebar nav icons using Google Material Symbols (Rounded), self-hosted via the
 // material-symbols package. Each is a ligature glyph rendered with the .msym font.
 
-function MSym({ name, size = 22 }: { name: string; size?: number }) {
+export function MSym({ name, size = 22 }: { name: string; size?: number }) {
   return (
     <span className="msym" style={{ fontSize: size }} aria-hidden="true">
       {name}
