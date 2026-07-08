@@ -332,7 +332,7 @@ function SkeletonLines({ dim }: { dim?: boolean }) {
 const OPP_STYLE: Record<string, { label: string; c: string; bg: string; border: string }> = {
   untapped: { label: "Untapped", c: "#34d399", bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.35)" },
   hot: { label: "Hot", c: "#34d399", bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.35)" },
-  rising: { label: "Rising", c: "#4fc3f7", bg: "rgba(79,195,247,0.12)", border: "rgba(79,195,247,0.3)" },
+  rising: { label: "Rising", c: "#e0b341", bg: "rgba(224,179,65,0.12)", border: "rgba(224,179,65,0.3)" },
   saturated: { label: "Saturated", c: "#f87171", bg: "rgba(248,113,113,0.12)", border: "rgba(248,113,113,0.35)" },
 };
 

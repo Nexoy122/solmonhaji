@@ -107,10 +107,12 @@ body {
    Only the live waitlist pages keep the light scheme above.
    ============================================================================ */
 .dashboard-dark {
-  --color-primary: #0fa5e9;
-  --color-on-primary: #ffffff;
-  --color-primary-container: rgba(15,165,233,0.14);
-  --color-on-primary-container: #7fd3f7;
+  /* Neutral gray "primary" — no cyan anywhere. Buttons/badges read as dark gray
+     (#1E1F21) with light-gray text; containers are subtle gray. */
+  --color-primary: #1E1F21;
+  --color-on-primary: #d4d4d8;
+  --color-primary-container: #1E1F21;
+  --color-on-primary-container: #c5c5cc;
 
   --color-error: #ff6b6b;
   --color-on-error: #ffffff;
@@ -135,7 +137,7 @@ body {
   --color-outline: #3a3a42;
   --color-outline-variant: #1e1e24;
 }
-.dashboard-dark ::selection { background: rgba(15,165,233,0.3); color: #fff; }
+.dashboard-dark ::selection { background: rgba(255,255,255,0.22); color: #fff; }
 /* Slim dark scrollbar for the dashboard — covers inner scroll areas AND the
    window scrollbar (via :has, since .dashboard-dark is on an inner element). */
 .dashboard-dark ::-webkit-scrollbar,
@@ -152,7 +154,7 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb {
 }
 .dashboard-dark ::-webkit-scrollbar-thumb:hover,
 html:has(.dashboard-dark)::-webkit-scrollbar-thumb:hover,
-html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba(15,165,233,0.55); background-clip: padding-box; }
+html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); background-clip: padding-box; }
 .dashboard-dark, html:has(.dashboard-dark) { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) #000101; }
 /* Zoom the whole dashboard out for a denser, premium feel. */
 .dashboard-zoom { zoom: 0.92; }
@@ -192,7 +194,7 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
 }
 
 /* ---- Rocket "speeder" loader (Uiverse by anand_4957), themed cyan ---- */
-.rocket-loader { --rk: #0FA5E9; position: relative; width: 220px; height: 90px; overflow: hidden; }
+.rocket-loader { --rk: #d4d4d8; position: relative; width: 220px; height: 90px; overflow: hidden; }
 .rocket-loader .loader { position: absolute; top: 50%; margin-left: -50px; left: 50%; animation: rk-speeder 0.4s linear infinite; }
 .rocket-loader .loader > span { height: 5px; width: 35px; background: var(--rk); position: absolute; top: -19px; left: 60px; border-radius: 2px 10px 1px 0; }
 .rocket-loader .base span { position: absolute; width: 0; height: 0; border-top: 6px solid transparent; border-right: 100px solid var(--rk); border-bottom: 6px solid transparent; }
@@ -462,17 +464,6 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
   position: relative;
   overflow: auto;
   z-index: 1;
-}
-
-/* Topbar pills — subtle cyan border glow (static, minimal). */
-.tb-glow {
-  border: 1px solid rgba(15,165,233,0.4);
-  box-shadow: 0 0 0 1px rgba(15,165,233,0.15), 0 0 12px rgba(15,165,233,0.25);
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
-}
-.tb-glow:hover {
-  border-color: rgba(15,165,233,0.7);
-  box-shadow: 0 0 0 1px rgba(15,165,233,0.25), 0 0 18px rgba(15,165,233,0.4);
 }
 
 /* Buttons/inputs — sharp #1E1F21 with a soft white border glow (like the AI box,

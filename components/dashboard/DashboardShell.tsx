@@ -227,7 +227,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
             {/* User menu — avatar only, cyan border-glow */}
             <div className="relative" ref={menuRef}>
-              <button onClick={() => setMenuOpen((o) => !o)} aria-label="Account menu" className="tb-glow flex size-10 items-center justify-center overflow-hidden rounded-full p-0">
+              <button onClick={() => setMenuOpen((o) => !o)} aria-label="Account menu" className="flex size-10 items-center justify-center overflow-hidden rounded-full border border-white/15 p-0 transition-colors hover:border-white/30">
                 {avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={avatar} alt="" width={40} height={40} className="h-full w-full rounded-full object-cover" />
