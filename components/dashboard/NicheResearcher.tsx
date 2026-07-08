@@ -133,8 +133,8 @@ export function NicheResearcher() {
             <PagePreview />
           </div>
           {/* Scrim + centered card */}
-          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-[#141317]/40 via-[#141317]/75 to-[#141317] pt-[120px]">
-            <div className="relative w-full max-w-[460px] overflow-hidden rounded-2xl border border-white/10 bg-[#17161c] px-10 py-10 text-center shadow-[0_30px_80px_rgba(0,0,0,0.65)]">
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-[#08080a]/40 via-[#08080a]/75 to-[#08080a] pt-[120px]">
+            <div className="relative w-full max-w-[460px] overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0f] px-10 py-10 text-center">
               {/* top gradient accent line */}
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
               {/* soft glow behind the icon */}
@@ -144,7 +144,7 @@ export function NicheResearcher() {
               <span className="relative mx-auto mb-5 flex size-14 items-center justify-center">
                 <span className="halo-pulse absolute inset-0 rounded-full border border-primary/50" />
                 <span className="halo-pulse absolute inset-0 rounded-full border border-primary/30" style={{ animationDelay: "1s" }} />
-                <span className="relative flex size-14 items-center justify-center rounded-full border border-primary/40 bg-primary/12 text-primary shadow-[0_0_24px_rgba(15,165,233,0.35)]">
+                <span className="relative flex size-14 items-center justify-center rounded-full border border-primary/40 bg-primary/12 text-primary">
                   <span className="nudge-up"><Icon d="M12 19V5M5 12l7-7 7 7" size={24} /></span>
                 </span>
               </span>
@@ -181,7 +181,7 @@ export function NicheResearcher() {
         <>
           {/* AI ANALYSIS panel — premium animated border glow */}
           <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
-          <BorderGlow borderRadius={16} className="mb-1">
+          <BorderGlow borderRadius={16} backgroundColor="#000101" className="mb-1">
             <div className="p-6">
               <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
                 <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
@@ -206,7 +206,7 @@ export function NicheResearcher() {
                 <Icon d="m6 9 6 6 6-6" size={15} />
               </button>
               {weekMenuOpen && (
-                <div className="absolute z-20 mt-1.5 w-[240px] overflow-hidden rounded-none border border-white/10 bg-[#1a1a20] shadow-lg">
+                <div className="absolute z-20 mt-1.5 w-[240px] overflow-hidden rounded-none border border-white/10 bg-[#0c0c0f]">
                   <button
                     onClick={() => { setSelectedWeek(""); setWeekMenuOpen(false); }}
                     className={`block w-full px-4 py-2.5 text-left text-[14px] transition-colors hover:bg-white/[0.05] ${!selectedWeek ? "font-semibold text-primary" : "text-on-surface"}`}

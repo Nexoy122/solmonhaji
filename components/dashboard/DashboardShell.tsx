@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { NAV_ICONS } from "@/components/dashboard/NavIcons";
 import { refreshCountdownLabel } from "@/lib/refreshSchedule";
-import SideRays from "@/components/dashboard/SideRays";
 
 type NavItem = { label: string; href: string; icon: string; soon?: boolean };
 
@@ -99,8 +98,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#151416]">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-[#0FA5E9]" />
+      <div className="flex min-h-screen items-center justify-center bg-[#000101]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-white/60" />
       </div>
     );
   }
@@ -131,7 +130,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   ) : (
                     <span className="absolute inset-0 scale-95 rounded-lg bg-white/[0.05] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100" />
                   )}
-                  {active && <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#0FA5E9] shadow-[0_0_8px_rgba(15,165,233,0.7)]" />}
+                  {active && <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#0FA5E9]" />}
                   {/* animated icon: cyan when active, animates on hover */}
                   <span className={`relative shrink-0 ${active ? "text-[#0FA5E9]" : "text-white/50 group-hover:text-white/90"}`}>
                     {IconCmp ? <IconCmp /> : null}
@@ -157,10 +156,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="dashboard-dark flex h-screen overflow-hidden bg-[#151416]">
+    <div className="dashboard-dark flex h-screen overflow-hidden bg-[#000101]">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex h-screen w-64 transform flex-col overflow-x-hidden border-r border-white/[0.06] bg-[#0D0D11] transition-transform duration-200 md:sticky md:top-0 md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex h-screen w-64 transform flex-col overflow-x-hidden border-r border-white/[0.06] bg-[#000101] transition-transform duration-200 md:sticky md:top-0 md:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -201,40 +200,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* mobile backdrop */}
       {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setSidebarOpen(false)} />}
 
-      {/* Main column */}
+      {/* Main column — flat minimal background, no ambient effects. */}
       <div className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
-        {/* Ambient background depth — covers the full column (incl. behind the
-            transparent topbar) so there's no dark band at the top. */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -right-40 -top-32 h-96 w-96 rounded-full bg-[#0FA5E9]/[0.05] blur-[120px]" />
-          <div className="absolute -left-20 top-1/3 h-80 w-80 rounded-full bg-[#0FA5E9]/[0.03] blur-[120px]" />
-          <div
-            className="absolute inset-0 opacity-[0.6]"
-            style={{
-              backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-              maskImage: "radial-gradient(ellipse 100% 60% at 50% 0%, #000 40%, transparent 100%)",
-              WebkitMaskImage: "radial-gradient(ellipse 100% 60% at 50% 0%, #000 40%, transparent 100%)",
-            }}
-          />
-          {/* Animated light rays from the top-right, tuned to the cyan theme. */}
-          <div className="absolute inset-0 opacity-40">
-            <SideRays
-              origin="top-right"
-              rayColor1="#0FA5E9"
-              rayColor2="#4fc3f7"
-              speed={1.6}
-              intensity={1.2}
-              spread={1.6}
-              saturation={1.2}
-              blend={0.7}
-              falloff={2.2}
-              opacity={0.9}
-            />
-          </div>
-          {/* Soft fade at the very top so the grid/rays don't texture the strip
-              behind the topbar — blends cleanly into flat #151416, no hard edge. */}
-        </div>
 
         {/* Floating top items — NOT a reserved row. Absolutely positioned so the
             page fills the full height and the buttons just float in the corners
@@ -242,7 +209,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <header className="pointer-events-none absolute inset-x-0 top-0 z-30 flex h-16 items-center justify-between px-4 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
           <div className="flex items-center gap-3">
             <button
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#151416]/80 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/[0.06] md:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-white/70 transition-colors hover:bg-white/[0.06] md:hidden"
               onClick={() => setSidebarOpen(true)}
               aria-label="Open menu"
             >
@@ -254,35 +221,31 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Refresh countdown (Uiverse gradient-ring pill) */}
+            {/* Refresh countdown — flat minimal pill */}
             {countdown && (
-              <span className="tb-pill hidden sm:inline-flex">
-                <span className="tb-pill-inner gap-2 px-3.5 py-2 text-[13px] font-medium text-white/60">
-                  <span className="text-[#0FA5E9]"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
-                  Video refresh in <span className="font-semibold text-[#4fc3f7]">{countdown}</span>
-                </span>
+              <span className="hidden items-center gap-2 rounded-full border border-white/10 px-3.5 py-2 text-[13px] font-medium text-white/55 sm:inline-flex">
+                <span className="text-white/40"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
+                Video refresh in <span className="font-semibold text-white/80">{countdown}</span>
               </span>
             )}
 
-            {/* User menu (Uiverse gradient-ring pill) */}
+            {/* User menu — flat minimal pill */}
             <div className="relative" ref={menuRef}>
-              <button onClick={() => setMenuOpen((o) => !o)} className="tb-pill">
-                <span className="tb-pill-inner gap-2 py-1 pl-1 pr-2.5">
-                  {avatar ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full" />
-                  ) : (
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0FA5E9] text-[14px] font-bold text-white">
-                      {displayName.charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                  <span className="text-[13.5px] font-semibold text-white/90 max-sm:hidden">{displayName}</span>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/45 max-sm:hidden"><path d="m6 9 6 6 6-6" /></svg>
-                </span>
+              <button onClick={() => setMenuOpen((o) => !o)} className="flex items-center gap-2 rounded-full border border-white/10 py-1 pl-1 pr-2.5 transition-colors hover:border-white/20">
+                {avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full" />
+                ) : (
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-[14px] font-bold text-white">
+                    {displayName.charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <span className="text-[13.5px] font-semibold text-white/90 max-sm:hidden">{displayName}</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/45 max-sm:hidden"><path d="m6 9 6 6 6-6" /></svg>
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-white/[0.08] bg-[#1A1A20] shadow-[0_16px_50px_rgba(0,0,0,0.6)]">
+                <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-[#000101]">
                   <div className="border-b border-white/[0.06] px-4 py-3">
                     <div className="truncate text-[14px] font-semibold text-white">{displayName}</div>
                     <div className="truncate text-[12px] text-white/45">{user.email}</div>

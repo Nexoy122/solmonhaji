@@ -96,7 +96,7 @@ function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void
     <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative flex max-h-[90vh] w-full max-w-[760px] flex-col overflow-hidden border border-white/10 bg-[#0F0F14] shadow-[0_24px_80px_rgba(0,0,0,0.7)] transition-all duration-200 ${show ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
+        className={`relative flex max-h-[90vh] w-full max-w-[760px] flex-col overflow-hidden border border-white/10 bg-[#0F0F14] transition-all duration-200 ${show ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
       >
         {/* Header */}
         <div className="flex items-start gap-3 border-b border-white/[0.07] p-5">
@@ -467,7 +467,7 @@ export function Discover() {
             <Icon d="m6 9 6 6 6-6" size={14} />
           </button>
           {sortMenu && (
-            <div className="absolute left-0 z-30 mt-2 w-[170px] overflow-hidden rounded-none border border-white/12 bg-[#1a1a20] py-1 shadow-[0_12px_40px_rgba(23,28,31,0.18)]">
+            <div className="absolute left-0 z-30 mt-2 w-[170px] overflow-hidden rounded-none border border-white/12 bg-[#0c0c0f] py-1">
               {SORTS.map(([val, lbl]) => (
                 <button key={val} onClick={() => { setSort(val); setSortTouched(true); setSortMenu(false); }} className={`flex w-full items-center px-4 py-2 text-left text-[13.5px] transition-colors hover:bg-surface-container-high ${effectiveSort === val ? "font-semibold text-primary" : "text-on-surface"}`}>{lbl}</button>
               ))}
@@ -608,7 +608,7 @@ function FiltersUpsell({ onClose }: { onClose: () => void }) {
   if (!mounted) return null;
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-[420px] rounded-none border border-white/12 bg-[#16151a] p-6 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-[420px] rounded-none border border-white/12 bg-[#08080a] p-6 text-center" onClick={(e) => e.stopPropagation()}>
         <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary">
           <Icon d="M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z" size={22} />
         </div>

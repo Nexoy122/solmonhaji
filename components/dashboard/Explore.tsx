@@ -134,7 +134,7 @@ function FilterDropdown({ title, icon, options, value, onChange }: {
         <Icon d="m6 9 6 6 6-6" size={14} />
       </button>
       {open && (
-        <div className="absolute left-0 z-30 mt-2 w-full min-w-[180px] overflow-hidden rounded-none border border-white/12 bg-[#1a1a20] py-1 shadow-[0_12px_40px_rgba(23,28,31,0.18)]">
+        <div className="absolute left-0 z-30 mt-2 w-full min-w-[180px] overflow-hidden rounded-none border border-white/12 bg-[#0c0c0f] py-1">
           {options.map((o, i) => (
             <button
               key={o.label}
@@ -176,7 +176,7 @@ function SelectDropdown({ title, icon, options, value, onChange }: {
         <Icon d="m6 9 6 6 6-6" size={14} />
       </button>
       {open && (
-        <div className="absolute left-0 z-30 mt-2 max-h-[280px] w-full min-w-[180px] overflow-auto rounded-none border border-white/12 bg-[#1a1a20] py-1 shadow-[0_12px_40px_rgba(23,28,31,0.18)]">
+        <div className="absolute left-0 z-30 mt-2 max-h-[280px] w-full min-w-[180px] overflow-auto rounded-none border border-white/12 bg-[#0c0c0f] py-1">
           {options.map((o, idx) => (
             <button
               key={o}
@@ -263,7 +263,7 @@ function DurationRange({ min, max, onChange }: {
 function VideoCard({ v }: { v: ExploreVideo }) {
   const transcriptHref = `/dashboard/shorts-transcript?url=${encodeURIComponent(v.url)}`;
   return (
-    <div className="group flex flex-col overflow-hidden border border-white/[0.08] bg-[#1a1a20] transition-colors hover:border-white/25">
+    <div className="group flex flex-col overflow-hidden border border-white/[0.08] bg-[#0c0c0f] transition-colors hover:border-white/25">
       {/* Thumbnail */}
       <a href={v.url} target="_blank" rel="noopener noreferrer" className="relative block aspect-[9/16] overflow-hidden bg-black">
         {v.id || v.thumbnail ? (
@@ -397,7 +397,7 @@ export function Explore() {
   // transform (which makes position:fixed anchor to the zoomed container and
   // drift on scroll). Portaled + fixed = truly locked, full sidebar height.
   const railPanel = (
-    <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-white/[0.08] bg-[#141317] p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
+    <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-white/[0.08] bg-[#08080a] p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
       <div className="mb-5 flex items-center justify-between">
         <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/55">Filters</p>
         {(anyFilter || sort !== "views" || active !== "all") && (
@@ -428,7 +428,7 @@ export function Explore() {
       {/* Tabs — pulled up onto the topbar line (same row as the floating nav
           items / user menu). Offset accounts for <main>'s pt-20. */}
       <div className="flex items-center gap-3 lg:-mt-[68px]">
-        <div className="inline-flex shrink-0 overflow-hidden rounded-lg border border-white/10 bg-[#141317]">
+        <div className="inline-flex shrink-0 overflow-hidden rounded-lg border border-white/10 bg-[#08080a]">
           {([
             ["videos", "Videos", "M23 7l-7 5 7 5V7zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"],
             ["channels", "Channels", "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"],
@@ -452,7 +452,7 @@ export function Explore() {
       {/* Count badge (weekly-refresh countdown lives in the topbar). */}
       {!loading && (
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#1a1a20] py-1.5 pl-1.5 pr-3.5">
+          <div className="inline-flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#0c0c0f] py-1.5 pl-1.5 pr-3.5">
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(total)}</span>
             <span className="text-[13px] font-medium text-on-surface-variant">videos match your filters</span>
           </div>
@@ -470,7 +470,7 @@ export function Explore() {
       {loading ? (
         <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="overflow-hidden rounded-none border border-white/[0.08] bg-[#1a1a20]">
+            <div key={i} className="overflow-hidden rounded-none border border-white/[0.08] bg-[#0c0c0f]">
               <div className="aspect-[9/16] animate-pulse bg-white/[0.05]" />
               <div className="space-y-2 p-3">
                 <div className="h-3.5 w-full animate-pulse rounded bg-surface-container-high" />

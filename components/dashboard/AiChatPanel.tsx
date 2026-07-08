@@ -143,7 +143,7 @@ export function AiChatPanel({
       />
       {/* panel */}
       <aside
-        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] flex-col border-l border-outline-variant bg-surface shadow-2xl transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] flex-col border-l border-outline-variant bg-surface transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >

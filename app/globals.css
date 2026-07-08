@@ -101,20 +101,20 @@ body {
   --color-success: #34d399;
   --color-success-container: rgba(52,211,153,0.12);
 
-  /* surfaces (dark) */
-  --color-surface: #1a1a20;
-  --color-surface-dim: #121216;
-  --color-surface-bright: #23232b;
-  --color-surface-container-lowest: #141418;
-  --color-surface-container-low: #17171c;
-  --color-surface-container: #1c1c22;
-  --color-surface-container-high: #24242c;
-  --color-surface-container-highest: #2c2c35;
+  /* surfaces (dark, minimal flat near-black) */
+  --color-surface: #060608;
+  --color-surface-dim: #000101;
+  --color-surface-bright: #141418;
+  --color-surface-container-lowest: #000101;
+  --color-surface-container-low: #08080a;
+  --color-surface-container: #0c0c0f;
+  --color-surface-container-high: #141418;
+  --color-surface-container-highest: #1c1c20;
 
   --color-on-surface: #ededef;
-  --color-on-surface-variant: #9a99a1;
-  --color-outline: #55555f;
-  --color-outline-variant: #2b2b33;
+  --color-on-surface-variant: #8b8b93;
+  --color-outline: #3a3a42;
+  --color-outline-variant: #1e1e24;
 }
 .dashboard-dark ::selection { background: rgba(15,165,233,0.3); color: #fff; }
 /* Slim dark scrollbar for the dashboard — covers inner scroll areas AND the
@@ -124,7 +124,7 @@ html:has(.dashboard-dark)::-webkit-scrollbar,
 html:has(.dashboard-dark) body::-webkit-scrollbar { width: 9px; height: 9px; }
 .dashboard-dark ::-webkit-scrollbar-track,
 html:has(.dashboard-dark)::-webkit-scrollbar-track,
-html:has(.dashboard-dark) body::-webkit-scrollbar-track { background: #0D0D11; }
+html:has(.dashboard-dark) body::-webkit-scrollbar-track { background: #000101; }
 .dashboard-dark ::-webkit-scrollbar-thumb,
 html:has(.dashboard-dark)::-webkit-scrollbar-thumb,
 html:has(.dashboard-dark) body::-webkit-scrollbar-thumb {
@@ -134,7 +134,7 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb {
 .dashboard-dark ::-webkit-scrollbar-thumb:hover,
 html:has(.dashboard-dark)::-webkit-scrollbar-thumb:hover,
 html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba(15,165,233,0.55); background-clip: padding-box; }
-.dashboard-dark, html:has(.dashboard-dark) { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) #0D0D11; }
+.dashboard-dark, html:has(.dashboard-dark) { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) #000101; }
 /* Zoom the whole dashboard out for a denser, premium feel. */
 .dashboard-zoom { zoom: 0.92; }
 @supports not (zoom: 1) { .dashboard-zoom { transform: scale(0.92); transform-origin: top center; width: 108.7%; } }
@@ -508,28 +508,3 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
   .border-glow-card::before, .border-glow-card::after, .border-glow-card > .edge-light { transition: none; }
 }
 
-/* ---- Topbar pill (Uiverse by reglobby): gradient border ring + dark inner ----
-   A blue gradient-lit outer ring with a dark inner surface. Used for the
-   floating topbar buttons (user menu, refresh chip) now that the bar has no
-   background of its own. */
-.tb-pill {
-  border-radius: 13px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  background:
-    linear-gradient(to bottom right, #2e8eff 0%, rgba(46, 142, 255, 0) 30%);
-  background-color: rgba(46, 142, 255, 0.2);
-  padding: 2px; /* the ring thickness */
-}
-.tb-pill:hover, .tb-pill:focus-within {
-  background-color: rgba(46, 142, 255, 0.6);
-  box-shadow: 0 0 12px rgba(46, 142, 255, 0.4);
-  outline: none;
-}
-.tb-pill-inner {
-  border-radius: 11px;
-  background-color: #17161c;
-  display: flex;
-  align-items: center;
-  color: #fff;
-}

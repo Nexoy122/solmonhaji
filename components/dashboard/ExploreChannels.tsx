@@ -95,7 +95,7 @@ function Dropdown({ title, options, value, onChange }: { title: string; options:
         <Icon d="m6 9 6 6 6-6" size={14} />
       </button>
       {open && (
-        <div className="absolute left-0 z-30 mt-2 max-h-[280px] w-full overflow-auto rounded-none border border-white/12 bg-[#1a1a20] py-1 shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+        <div className="absolute left-0 z-30 mt-2 max-h-[280px] w-full overflow-auto rounded-none border border-white/12 bg-[#0c0c0f] py-1">
           {options.map((o, idx) => (
             <button key={o} onClick={() => { onChange(idx); setOpen(false); }} className={`flex w-full items-center gap-2 px-3.5 py-2 text-left text-[13.5px] transition-colors hover:bg-white/[0.06] ${idx === i ? "font-semibold text-primary" : "text-on-surface"}`}>
               {idx === i ? <Icon d="M20 6 9 17l-5-5" size={13} /> : <span className="w-[13px]" />}
@@ -123,7 +123,7 @@ function ChannelModal({ c, onClose }: { c: Channel; onClose: () => void }) {
   const topics = (c.aiTopics ?? []).slice(0, 8);
   return createPortal(
     <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className={`relative flex max-h-[90vh] w-full max-w-[760px] flex-col overflow-hidden border border-white/10 bg-[#0F0F14] shadow-[0_24px_80px_rgba(0,0,0,0.7)] transition-all duration-200 ${show ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}>
+      <div onClick={(e) => e.stopPropagation()} className={`relative flex max-h-[90vh] w-full max-w-[760px] flex-col overflow-hidden border border-white/10 bg-[#0F0F14] transition-all duration-200 ${show ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}>
         <div className="flex items-start gap-3 border-b border-white/[0.07] p-5">
           <div className="size-14 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.05]">
             {c.thumbnailUrl ? (
@@ -189,20 +189,20 @@ function ChannelCard({ c, onView }: { c: Channel; onView: () => void }) {
   const shorts = (c.recentVideos ?? []).filter((v) => v?.id).slice(0, 1);
   const bannerId = shorts[0]?.id;
   return (
-    <div className="flex flex-col overflow-hidden border border-white/[0.08] bg-[#1a1a20] transition-colors hover:border-white/25">
+    <div className="flex flex-col overflow-hidden border border-white/[0.08] bg-[#0c0c0f] transition-colors hover:border-white/25">
       {/* Banner (uses a recent Short thumbnail) */}
       <button onClick={onView} className="relative block h-[120px] overflow-hidden bg-black">
         {bannerId ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={thumb(bannerId)} alt="" loading="lazy" className="h-full w-full object-cover opacity-70" />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a20] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0f] to-transparent" />
         <span className="absolute right-2 top-2 rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-on-primary">{c.seedNicheLabel}</span>
       </button>
 
       {/* Header */}
       <div className="-mt-6 flex items-start gap-3 px-4">
-        <button onClick={onView} className="size-12 shrink-0 overflow-hidden rounded-full border-2 border-[#1a1a20] bg-white/[0.05] transition-transform hover:scale-105">
+        <button onClick={onView} className="size-12 shrink-0 overflow-hidden rounded-full border-2 border-[#0c0c0f] bg-white/[0.05] transition-transform hover:scale-105">
           {c.thumbnailUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={c.thumbnailUrl} alt="" loading="lazy" className="size-full object-cover" />
@@ -229,7 +229,7 @@ function ChannelCard({ c, onView }: { c: Channel; onView: () => void }) {
         <a href={c.url} target="_blank" rel="noreferrer" className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-md border border-white/12 bg-white/[0.02] text-[12.5px] font-semibold text-on-surface-variant transition-all hover:border-white/25 hover:bg-white/[0.06] hover:text-on-surface">
           <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={13} /> Open
         </a>
-        <button onClick={onView} className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-md bg-primary text-[12.5px] font-semibold text-on-primary shadow-[0_2px_10px_rgba(15,165,233,0.3)] transition-all hover:brightness-110">
+        <button onClick={onView} className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-md bg-primary text-[12.5px] font-semibold text-on-primary transition-all hover:brightness-110">
           <Icon d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" size={13} /> View details
         </button>
       </div>
@@ -292,7 +292,7 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
   useEffect(() => { setVisible(24); }, [sort, niche, fSubs, fAvg, fShorts, search]);
 
   const railPanel = (
-    <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-white/[0.08] bg-[#141317] p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
+    <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-white/[0.08] bg-[#08080a] p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
       <div className="mb-5 flex items-center justify-between">
         <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/55">Filters</p>
         {anyFilter && <button onClick={() => { setNiche("all"); setFSubs(0); setFAvg(0); setFShorts(0); }} className="text-[12.5px] font-semibold text-primary hover:underline">Clear</button>}
@@ -315,7 +315,7 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
       {/* Count badge (left) + search (right corner), same line */}
       {!loading && !error && (
         <div className="mb-4 flex items-center gap-3">
-          <div className="inline-flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#1a1a20] py-1.5 pl-1.5 pr-3.5">
+          <div className="inline-flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#0c0c0f] py-1.5 pl-1.5 pr-3.5">
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(filtered.length)}</span>
             <span className="text-[13px] font-medium text-on-surface-variant">channels match your filters</span>
           </div>
@@ -328,7 +328,7 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
               value={search}
               onChange={(e) => onSearch(e.target.value)}
               placeholder="Search channels…"
-              className="h-9 w-full rounded-md border border-white/12 bg-[#1a1a20] pl-9 pr-8 text-[13px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-primary"
+              className="h-9 w-full rounded-md border border-white/12 bg-[#0c0c0f] pl-9 pr-8 text-[13px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-primary"
             />
             {search && (
               <button onClick={() => onSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 transition-colors hover:text-white" aria-label="Clear">
@@ -348,7 +348,7 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
       {loading ? (
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="border border-white/[0.08] bg-[#1a1a20]">
+            <div key={i} className="border border-white/[0.08] bg-[#0c0c0f]">
               <div className="h-[120px] animate-pulse bg-white/[0.05]" />
               <div className="space-y-2 p-4"><div className="h-3.5 w-2/3 animate-pulse rounded bg-white/[0.06]" /><div className="h-3 w-1/2 animate-pulse rounded bg-white/[0.06]" /></div>
             </div>

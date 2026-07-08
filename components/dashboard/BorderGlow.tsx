@@ -56,7 +56,7 @@ export default function BorderGlow({
   children,
   className = "",
   glowColor = "199 89 55",
-  backgroundColor = "#141317",
+  backgroundColor = "#08080a",
   borderRadius = 16,
   glowRadius = 34,
   glowIntensity = 1.0,
