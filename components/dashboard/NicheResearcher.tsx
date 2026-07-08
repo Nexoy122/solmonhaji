@@ -127,14 +127,21 @@ export function NicheResearcher() {
         </div>
       )}
 
-      {/* ── Nothing picked yet: minimal — animated arrow + text, centered. ── */}
+      {/* ── Nothing picked yet: dimmed skeleton preview behind a centered prompt. ── */}
       {!picked && (
-        <div className="flex min-h-[55vh] flex-col items-center justify-center text-center">
-          <span className="nudge-up mb-5 flex size-12 items-center justify-center rounded-full border border-white/10 text-white/70">
-            <Icon d="M12 19V5M5 12l7-7 7 7" size={24} />
-          </span>
-          <p className="text-[18px] font-semibold text-on-surface">Select a niche</p>
-          <p className="mt-1.5 text-[13.5px] text-on-surface-variant">Pick one above to see what&apos;s working this week.</p>
+        <div className="relative">
+          <div className="pointer-events-none select-none opacity-[0.5] blur-[1px]">
+            <NichePreview />
+          </div>
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/70 to-[#000101] pt-[150px]">
+            <div className="text-center">
+              <span className="nudge-up mx-auto mb-5 flex size-12 items-center justify-center rounded-full border border-white/10 bg-[#000101] text-white/70">
+                <Icon d="M12 19V5M5 12l7-7 7 7" size={24} />
+              </span>
+              <p className="text-[18px] font-semibold text-on-surface">Select a niche</p>
+              <p className="mt-1.5 text-[13.5px] text-on-surface-variant">Pick one above to see what&apos;s working this week.</p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -166,10 +173,10 @@ export function NicheResearcher() {
             <div className="relative mt-5">
               <button
                 onClick={() => setWeekMenuOpen((o) => !o)}
-                className="flex items-center gap-2.5 rounded-none border border-white/10 bg-white/[0.02] px-4 py-2.5 text-[13.5px] font-medium text-on-surface transition-colors hover:bg-white/[0.05]"
+                className="flex w-[240px] items-center gap-2.5 rounded-none border border-white/10 bg-white/[0.02] px-4 py-2.5 text-[13.5px] font-medium text-on-surface transition-colors hover:bg-white/[0.05]"
               >
                 <Icon d="M12 8v4l3 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} />
-                {selectedWeek ? `Week of ${weekLabel(selectedWeek)}` : "Latest week"}
+                <span className="flex-1 text-left">{selectedWeek ? `Week of ${weekLabel(selectedWeek)}` : "Latest week"}</span>
                 <Icon d="m6 9 6 6 6-6" size={15} />
               </button>
               {weekMenuOpen && (
@@ -326,6 +333,43 @@ function SkeletonLines({ dim }: { dim?: boolean }) {
       <div className="h-3 w-[92%] animate-pulse rounded bg-white/10" />
       <div className="h-3 w-[78%] animate-pulse rounded bg-white/10" />
       <div className="h-3 w-[85%] animate-pulse rounded bg-white/10" />
+    </div>
+  );
+}
+
+const SkBar = ({ w = "100%", h = "h-3" }: { w?: string; h?: string }) => (
+  <div className={`${h} animate-pulse rounded bg-white/10`} style={{ width: w }} />
+);
+
+// Dimmed skeleton of the full page, shown behind the "Select a niche" prompt.
+function NichePreview() {
+  return (
+    <div>
+      {/* AI Analysis */}
+      <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
+      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
+        <SkBar w="30%" h="h-2.5" />
+        <div className="mt-4 space-y-2.5"><SkBar w="94%" /><SkBar w="88%" /><SkBar w="91%" /><SkBar w="70%" /></div>
+      </div>
+      {/* Filter */}
+      <div className="mt-5 h-10 w-[240px] animate-pulse rounded-md border border-white/10 bg-white/[0.03]" />
+      {/* Stats */}
+      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
+            <SkBar w="55%" h="h-2.5" /><div className="mt-3"><SkBar w="45%" h="h-6" /></div><div className="mt-2"><SkBar w="70%" h="h-2.5" /></div>
+          </div>
+        ))}
+      </div>
+      {/* Video grid */}
+      <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div key={i} className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.02]">
+            <div className="aspect-[9/16] animate-pulse bg-white/[0.05]" />
+            <div className="space-y-1.5 p-2"><SkBar h="h-2.5" /><SkBar w="60%" h="h-2" /></div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
