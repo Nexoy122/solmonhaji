@@ -162,13 +162,16 @@ export async function generateFromVideo(opts: {
 }): Promise<string> {
   // 1) Get the source video's transcript (what the video is about).
   let source = "";
+  let lastErr = "";
   if (opts.videoBuffer) {
-    try { source = (await transcribeBufferWithGroq(opts.videoBuffer, opts.videoMime ?? "audio/mpeg")).split(" ").slice(0, 900).join(" "); } catch { /* skip */ }
+    try { source = (await transcribeBufferWithGroq(opts.videoBuffer, opts.videoMime ?? "audio/mpeg")).split(" ").slice(0, 900).join(" "); }
+    catch (e) { lastErr = `upload: ${(e as Error).message}`; console.error("[from-video] upload transcribe failed:", (e as Error).message); }
   }
   if (!source && opts.youtubeUrl) {
-    try { source = (await getTranscript(opts.youtubeUrl)).split(" ").slice(0, 900).join(" "); } catch { /* skip */ }
+    try { source = (await getTranscript(opts.youtubeUrl)).split(" ").slice(0, 900).join(" "); }
+    catch (e) { lastErr = `url: ${(e as Error).message}`; console.error("[from-video] url transcribe failed:", (e as Error).message); }
   }
-  if (!source) throw new Error("Couldn't read the video. Try a shorter clip or a YouTube URL.");
+  if (!source) throw new Error(`Couldn't read the video. ${lastErr || "No audio was extracted."}`);
 
   // 2) Optional style reference (separate transcript).
   const ref = await resolveReference({ transcript: opts.transcript });
