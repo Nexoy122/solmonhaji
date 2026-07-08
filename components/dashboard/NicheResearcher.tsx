@@ -125,49 +125,13 @@ export function NicheResearcher() {
         </div>
       )}
 
-      {/* ── Nothing picked yet: whole page previews (dimmed skeletons) with a
-             centered "pick a niche" card floating over everything. ── */}
+      {/* ── Nothing picked yet: minimal — just an animated arrow + text. ── */}
       {!picked && (
-        <div className="relative">
-          <div className="pointer-events-none select-none blur-[1.5px]">
-            <PagePreview />
-          </div>
-          {/* Scrim + centered card */}
-          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-[#08080a]/40 via-[#08080a]/75 to-[#08080a] pt-[120px]">
-            <div className="relative w-full max-w-[460px] overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0f] px-10 py-10 text-center">
-              {/* top gradient accent line */}
-              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
-              {/* soft glow behind the icon */}
-              <div className="pointer-events-none absolute left-1/2 top-6 h-32 w-32 -translate-x-1/2 rounded-full bg-primary/15 blur-[50px]" />
-
-              {/* Animated arrow with pulsing halo */}
-              <span className="relative mx-auto mb-5 flex size-14 items-center justify-center">
-                <span className="halo-pulse absolute inset-0 rounded-full border border-primary/50" />
-                <span className="halo-pulse absolute inset-0 rounded-full border border-primary/30" style={{ animationDelay: "1s" }} />
-                <span className="relative flex size-14 items-center justify-center rounded-full border border-primary/40 bg-primary/12 text-primary">
-                  <span className="nudge-up"><Icon d="M12 19V5M5 12l7-7 7 7" size={24} /></span>
-                </span>
-              </span>
-
-              <p className="text-[19px] font-bold tracking-tight text-on-surface">Pick a niche to begin</p>
-              <p className="mx-auto mt-2.5 max-w-[360px] text-[13.5px] leading-relaxed text-on-surface-variant">
-                Tap any niche above and we&apos;ll pull live opportunity data, the most underserved sub-niches, and what&apos;s trending right now.
-              </p>
-
-              {/* feature chips */}
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-                {[
-                  ["M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z", "AI analysis"],
-                  ["M3 3v18h18M7 14l3-4 4 3 5-7", "Opportunity gaps"],
-                  ["M13 2L3 14h7l-1 8 10-12h-7z", "What's trending"],
-                ].map(([d, label]) => (
-                  <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[11.5px] font-medium text-on-surface-variant">
-                    <span className="text-primary"><Icon d={d} size={12} /></span> {label}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <span className="nudge-up mb-4 text-on-surface-variant">
+            <Icon d="M12 19V5M5 12l7-7 7 7" size={30} />
+          </span>
+          <p className="text-[17px] font-semibold text-on-surface">Select a niche</p>
         </div>
       )}
 
@@ -181,7 +145,7 @@ export function NicheResearcher() {
         <>
           {/* AI ANALYSIS panel — premium animated border glow */}
           <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
-          <BorderGlow borderRadius={16} backgroundColor="#000101" className="mb-1">
+          <BorderGlow borderRadius={16} backgroundColor="#000101" glowColor="0 0 100" glowIntensity={0.5} className="mb-1">
             <div className="p-6">
               <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
                 <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
@@ -363,55 +327,6 @@ function SkeletonLines({ dim }: { dim?: boolean }) {
   );
 }
 
-const Bar = ({ w = "100%", h = "h-3" }: { w?: string; h?: string }) => (
-  <div className={`${h} animate-pulse rounded bg-white/10`} style={{ width: w }} />
-);
-
-// Full-page skeleton shown behind the "pick a niche" card — mirrors the real
-// layout (AI panel, filter, stats, sub-niches, video grid) so the empty state
-// feels like the page is loading in the background.
-function PagePreview() {
-  return (
-    <div>
-      {/* AI Analysis */}
-      <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
-      <div className="rounded-none border border-white/10 bg-white/[0.02] p-6">
-        <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
-          <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
-        </p>
-        <div className="space-y-2.5">
-          <Bar w="94%" /><Bar w="88%" /><Bar w="91%" /><Bar w="72%" />
-        </div>
-      </div>
-
-      {/* Filter (week) */}
-      <div className="mt-5 h-10 w-[200px] animate-pulse rounded-none border border-white/10 bg-white/[0.03]" />
-
-      {/* Stats */}
-      <p className="mb-3 mt-6 text-[13px] text-on-surface-variant">The numbers at a glance — channels, videos, and how often they go viral.</p>
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="rounded-none border border-white/10 bg-white/[0.02] p-4">
-            <Bar w="55%" h="h-2.5" />
-            <div className="mt-3"><Bar w="45%" h="h-6" /></div>
-            <div className="mt-2"><Bar w="70%" h="h-2.5" /></div>
-          </div>
-        ))}
-      </div>
-
-      {/* Blowing up */}
-      <p className="mb-3 mt-7 text-[13px] text-on-surface-variant">What&apos;s blowing up in this niche right now, from the last 14 days.</p>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="overflow-hidden rounded-none border border-white/10 bg-white/[0.02]">
-            <div className="aspect-[9/16] animate-pulse bg-white/[0.05]" />
-            <div className="space-y-1.5 p-2"><Bar h="h-2.5" /><Bar w="60%" h="h-2" /></div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 // Opportunity → color. Green = underserved (untapped/hot demand, few creators),
 // red = saturated. Matches the "green is underserved, red is saturated" legend.

@@ -1,4 +1,22 @@
 @import "tailwindcss";
+/* Material Symbols (Rounded) — self-hosted via the material-symbols package. */
+@import "material-symbols/rounded.css";
+
+/* Base class for a Material Symbol glyph. */
+.msym {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
 
 /* ============================================================================
    NICHESPY — Google Material Design 3 (Expressive), light scheme.
@@ -138,11 +156,10 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
 /* Zoom the whole dashboard out for a denser, premium feel. */
 .dashboard-zoom { zoom: 0.92; }
 @supports not (zoom: 1) { .dashboard-zoom { transform: scale(0.92); transform-origin: top center; width: 108.7%; } }
-/* Heading font across the dashboard — heavy grotesque (Archivo Black). */
+/* Heading font across the dashboard — Google's product typeface (Roboto). */
 .dashboard-dark .font-heading, .dashboard-dark h1, .dashboard-dark h2, .dashboard-dark h3 {
-  font-family: var(--font-archivo-black), var(--font-roboto), -apple-system, "Segoe UI", system-ui, sans-serif;
-  font-weight: 400; /* Archivo Black is already black at 400 */
-  letter-spacing: -0.02em;
+  font-family: "Google Sans", "Product Sans", var(--font-roboto), -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }
 
 /* premium card entrance */
@@ -387,88 +404,30 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
 .range-thumb::-webkit-slider-runnable-track { background: transparent; }
 .range-thumb::-moz-range-track { background: transparent; }
 
-/* ---- BorderGlow (React Bits by ricardovaz-figma), always-on variant ----
-   Animated mesh-gradient border glow that sweeps continuously (no hover). Used
-   to give AI sections a premium look. The `.is-live` class keeps the glow
-   visible always (the original faded it out unless hovered). */
+/* ---- BorderGlow (simple single-color, always-on) ----
+   A soft SINGLE-COLOR glow that sweeps continuously around the border (no mesh
+   gradient, no hover). Color is set via --glow-color* (built from the glowColor
+   prop). Minimal to match the flat theme. */
 .border-glow-card {
   --edge-proximity: 0;
   --cursor-angle: 45deg;
   --edge-sensitivity: 30;
-  --color-sensitivity: calc(var(--edge-sensitivity) + 20);
   --border-radius: 16px;
   --glow-padding: 34px;
-  --cone-spread: 22;
   position: relative;
   border-radius: var(--border-radius);
   isolation: isolate;
   transform: translate3d(0, 0, 0.01px);
   display: grid;
   border: 1px solid rgb(255 255 255 / 12%);
-  background: var(--card-bg, #141317);
+  background: var(--card-bg, #000101);
   overflow: visible;
 }
-.border-glow-card::before,
-.border-glow-card::after,
 .border-glow-card > .edge-light {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  transition: opacity 0.25s ease-out;
-  z-index: -1;
-}
-/* colored mesh-gradient border */
-.border-glow-card::before {
-  border: 1px solid transparent;
-  background:
-    linear-gradient(var(--card-bg, #141317) 0 100%) padding-box,
-    linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box,
-    var(--gradient-one) border-box,
-    var(--gradient-two) border-box,
-    var(--gradient-three) border-box,
-    var(--gradient-four) border-box,
-    var(--gradient-five) border-box,
-    var(--gradient-six) border-box,
-    var(--gradient-seven) border-box,
-    var(--gradient-base) border-box;
-  opacity: calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
-  mask-image:
-    conic-gradient(
-      from var(--cursor-angle) at center,
-      black calc(var(--cone-spread) * 1%),
-      transparent calc((var(--cone-spread) + 15) * 1%),
-      transparent calc((100 - var(--cone-spread) - 15) * 1%),
-      black calc((100 - var(--cone-spread)) * 1%)
-    );
-}
-/* colored mesh-gradient fill near edges */
-.border-glow-card::after {
-  border: 1px solid transparent;
-  background:
-    var(--gradient-one) padding-box,
-    var(--gradient-two) padding-box,
-    var(--gradient-three) padding-box,
-    var(--gradient-four) padding-box,
-    var(--gradient-five) padding-box,
-    var(--gradient-six) padding-box,
-    var(--gradient-seven) padding-box,
-    var(--gradient-base) padding-box;
-  mask-image:
-    linear-gradient(to bottom, black, black),
-    radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%),
-    radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%),
-    radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%),
-    radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%),
-    radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%),
-    conic-gradient(from var(--cursor-angle) at center, transparent 5%, black 15%, black 85%, transparent 95%);
-  mask-composite: subtract, add, add, add, add, add;
-  opacity: calc(var(--fill-opacity, 0.5) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
-  mix-blend-mode: soft-light;
-}
-/* outer glow layer */
-.border-glow-card > .edge-light {
   inset: calc(var(--glow-padding) * -1);
+  border-radius: inherit;
   pointer-events: none;
   z-index: 1;
   mask-image:
@@ -502,6 +461,17 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
   position: relative;
   overflow: auto;
   z-index: 1;
+}
+
+/* Topbar pills — subtle cyan border glow (static, minimal). */
+.tb-glow {
+  border: 1px solid rgba(15,165,233,0.4);
+  box-shadow: 0 0 0 1px rgba(15,165,233,0.15), 0 0 12px rgba(15,165,233,0.25);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.tb-glow:hover {
+  border-color: rgba(15,165,233,0.7);
+  box-shadow: 0 0 0 1px rgba(15,165,233,0.25), 0 0 18px rgba(15,165,233,0.4);
 }
 @media (prefers-reduced-motion: reduce) {
   /* Keep a soft static glow but no rotation (angle held by JS). */

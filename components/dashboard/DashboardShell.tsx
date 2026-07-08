@@ -126,11 +126,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               const inner = (
                 <>
                   {active ? (
-                    <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#0FA5E9]/[0.18] to-[#0FA5E9]/[0.04] ring-1 ring-inset ring-[#0FA5E9]/20" />
+                    <span className="absolute inset-0 rounded-lg bg-[#363738]" />
                   ) : (
-                    <span className="absolute inset-0 scale-95 rounded-lg bg-white/[0.05] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100" />
+                    <span className="absolute inset-0 scale-95 rounded-lg bg-[#363738] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100" />
                   )}
-                  {active && <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#0FA5E9]" />}
                   {/* animated icon: cyan when active, animates on hover */}
                   <span className={`relative shrink-0 ${active ? "text-[#0FA5E9]" : "text-white/50 group-hover:text-white/90"}`}>
                     {IconCmp ? <IconCmp /> : null}
@@ -183,13 +182,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
         {/* Bottom: settings + logout */}
         <div className="shrink-0 border-t border-white/[0.06] p-3">
-          <Link href="/dashboard/settings" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/55 transition-colors hover:bg-white/[0.04] hover:text-white/90">
+          <Link href="/dashboard/settings" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/55 transition-colors hover:bg-[#363738] hover:text-white/90">
             <span className="text-white/45"><Icon d={SETTINGS_ICON} size={17} /></span>
             Settings
           </Link>
           <button
             onClick={async () => { await signOut(); router.replace("/login"); }}
-            className="mt-0.5 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/55 transition-colors hover:bg-white/[0.04] hover:text-white/90"
+            className="mt-0.5 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/55 transition-colors hover:bg-[#363738] hover:text-white/90"
           >
             <span className="text-white/45"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg></span>
             Log out
@@ -221,27 +220,25 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Refresh countdown — flat minimal pill */}
+            {/* Refresh countdown — cyan border-glow pill */}
             {countdown && (
-              <span className="hidden items-center gap-2 rounded-full border border-white/10 px-3.5 py-2 text-[13px] font-medium text-white/55 sm:inline-flex">
-                <span className="text-white/40"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
-                Video refresh in <span className="font-semibold text-white/80">{countdown}</span>
+              <span className="tb-glow hidden items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-medium text-white/60 sm:inline-flex">
+                <span className="text-[#0FA5E9]"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
+                Video refresh in <span className="font-semibold text-white/85">{countdown}</span>
               </span>
             )}
 
-            {/* User menu — flat minimal pill */}
+            {/* User menu — avatar only, cyan border-glow */}
             <div className="relative" ref={menuRef}>
-              <button onClick={() => setMenuOpen((o) => !o)} className="flex items-center gap-2 rounded-full border border-white/10 py-1 pl-1 pr-2.5 transition-colors hover:border-white/20">
+              <button onClick={() => setMenuOpen((o) => !o)} aria-label="Account menu" className="tb-glow flex size-10 items-center justify-center overflow-hidden rounded-full p-0">
                 {avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full" />
+                  <img src={avatar} alt="" width={40} height={40} className="h-full w-full rounded-full object-cover" />
                 ) : (
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-[14px] font-bold text-white">
+                  <span className="flex h-full w-full items-center justify-center rounded-full bg-white/10 text-[15px] font-bold text-white">
                     {displayName.charAt(0).toUpperCase()}
                   </span>
                 )}
-                <span className="text-[13.5px] font-semibold text-white/90 max-sm:hidden">{displayName}</span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/45 max-sm:hidden"><path d="m6 9 6 6 6-6" /></svg>
               </button>
 
               {menuOpen && (
@@ -250,7 +247,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     <div className="truncate text-[14px] font-semibold text-white">{displayName}</div>
                     <div className="truncate text-[12px] text-white/45">{user.email}</div>
                   </div>
-                  <Link href="/dashboard/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-[14px] text-white/70 transition-colors hover:bg-white/[0.04] hover:text-white">
+                  <Link href="/dashboard/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-[14px] text-white/70 transition-colors hover:bg-[#363738] hover:text-white">
                     <Icon d={SETTINGS_ICON} size={15} /> Settings
                   </Link>
                   <button

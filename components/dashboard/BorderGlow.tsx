@@ -14,8 +14,6 @@ interface BorderGlowProps {
   borderRadius?: number;
   glowRadius?: number;
   glowIntensity?: number;
-  coneSpread?: number;
-  colors?: [string, string, string];
   speedMs?: number;          // ms for one full rotation
   proximity?: number;        // held edge-proximity (0-100); higher = brighter
 }
@@ -38,30 +36,14 @@ function buildGlowVars(glowColor: string, intensity: number): Record<string, str
   return vars;
 }
 
-const GRADIENT_POSITIONS = ["80% 55%", "69% 34%", "8% 6%", "41% 38%", "86% 85%", "82% 18%", "51% 4%"];
-const GRADIENT_KEYS = ["--gradient-one", "--gradient-two", "--gradient-three", "--gradient-four", "--gradient-five", "--gradient-six", "--gradient-seven"];
-const COLOR_MAP = [0, 1, 2, 0, 1, 2, 1];
-
-function buildGradientVars(colors: string[]): Record<string, string> {
-  const vars: Record<string, string> = {};
-  for (let i = 0; i < 7; i++) {
-    const c = colors[Math.min(COLOR_MAP[i], colors.length - 1)];
-    vars[GRADIENT_KEYS[i]] = `radial-gradient(at ${GRADIENT_POSITIONS[i]}, ${c} 0px, transparent 50%)`;
-  }
-  vars["--gradient-base"] = `linear-gradient(${colors[0]} 0 100%)`;
-  return vars;
-}
-
 export default function BorderGlow({
   children,
   className = "",
   glowColor = "199 89 55",
-  backgroundColor = "#08080a",
+  backgroundColor = "#000101",
   borderRadius = 16,
   glowRadius = 34,
   glowIntensity = 1.0,
-  coneSpread = 22,
-  colors = ["#0FA5E9", "#4fc3f7", "#7c3aed"],
   speedMs = 6000,
   proximity = 100,
 }: BorderGlowProps) {
@@ -95,10 +77,7 @@ export default function BorderGlow({
     "--edge-sensitivity": 30,
     "--border-radius": `${borderRadius}px`,
     "--glow-padding": `${glowRadius}px`,
-    "--cone-spread": coneSpread,
-    "--fill-opacity": 0.5,
     ...buildGlowVars(glowColor, glowIntensity),
-    ...buildGradientVars(colors),
   } as CSSProperties;
 
   return (
