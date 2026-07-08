@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS discovery_channels (
   title            TEXT NOT NULL DEFAULT '',
   handle           TEXT,
   thumbnail_url    TEXT,
+  banner_url       TEXT,
   url              TEXT,
   subscriber_count BIGINT NOT NULL DEFAULT 0,
   view_count       BIGINT NOT NULL DEFAULT 0,
@@ -78,6 +79,9 @@ CREATE TABLE IF NOT EXISTS discovery_channels (
   updated_at       BIGINT NOT NULL DEFAULT 0,
   created_at       BIGINT NOT NULL DEFAULT 0
 );
+
+-- Migration: add banner_url to an existing table (safe if already present).
+ALTER TABLE discovery_channels ADD COLUMN IF NOT EXISTS banner_url TEXT;
 
 -- Indexes for the Discover feed's sorts + filters.
 CREATE INDEX IF NOT EXISTS idx_disc_niche      ON discovery_channels (ai_niche);

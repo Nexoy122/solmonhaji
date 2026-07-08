@@ -14,6 +14,7 @@ interface Row {
   title: string;
   handle: string | null;
   thumbnail_url: string | null;
+  banner_url: string | null;
   url: string | null;
   subscriber_count: string | number;
   view_count: string | number;
@@ -44,6 +45,7 @@ function rowToChannel(r: Row): DiscoveryChannel {
     title: r.title ?? "",
     handle: r.handle,
     thumbnailUrl: r.thumbnail_url,
+    bannerUrl: r.banner_url,
     url: r.url ?? `https://www.youtube.com/channel/${r.channel_id}`,
     subscriberCount: n(r.subscriber_count),
     viewCount: n(r.view_count),
@@ -74,10 +76,10 @@ export async function upsertChannel(c: DiscoveryChannel): Promise<void> {
        channel_id, title, handle, thumbnail_url, url, subscriber_count, view_count,
        shorts_count, total_videos, avg_shorts_views, views_48h, views_7d, country,
        ai_niche, niche_label, format, faceless, primary_language, description,
-       ai_topics, recent_videos, source_keyword, updated_at, created_at
+       ai_topics, recent_videos, source_keyword, updated_at, created_at, banner_url
      ) VALUES (
        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,
-       $20::jsonb,$21::jsonb,$22,$23,$24
+       $20::jsonb,$21::jsonb,$22,$23,$24,$25
      )
      ON CONFLICT (channel_id) DO UPDATE SET
        title=EXCLUDED.title, handle=EXCLUDED.handle, thumbnail_url=EXCLUDED.thumbnail_url,
@@ -88,13 +90,14 @@ export async function upsertChannel(c: DiscoveryChannel): Promise<void> {
        niche_label=EXCLUDED.niche_label, format=EXCLUDED.format, faceless=EXCLUDED.faceless,
        primary_language=EXCLUDED.primary_language, description=EXCLUDED.description,
        ai_topics=EXCLUDED.ai_topics, recent_videos=EXCLUDED.recent_videos,
-       source_keyword=EXCLUDED.source_keyword, updated_at=EXCLUDED.updated_at`,
+       source_keyword=EXCLUDED.source_keyword, updated_at=EXCLUDED.updated_at,
+       banner_url=EXCLUDED.banner_url`,
     [
       c.channelId, c.title, c.handle, c.thumbnailUrl, c.url, c.subscriberCount, c.viewCount,
       c.shortsCount, c.totalVideos, c.avgShortsViews, c.views48h, c.views7d, c.country,
       c.aiNiche, c.nicheLabel, c.format, c.faceless, c.primaryLanguage, c.description,
       JSON.stringify(c.aiTopics ?? []), JSON.stringify(c.recentVideos ?? []),
-      c.sourceKeyword, c.updatedAt, c.createdAt,
+      c.sourceKeyword, c.updatedAt, c.createdAt, c.bannerUrl ?? null,
     ]
   );
 }

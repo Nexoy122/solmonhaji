@@ -21,7 +21,7 @@ function NicheBadge({ niche, label, className = "" }: { niche: string; label: st
 interface NicheDef { id: string; label: string }
 interface DiscoveryShort { id: string; title: string; views: number; publishedAt: string }
 interface Channel {
-  channelId: string; title: string; handle: string | null; thumbnailUrl: string | null; url: string;
+  channelId: string; title: string; handle: string | null; thumbnailUrl: string | null; bannerUrl?: string | null; url: string;
   subscriberCount: number; viewCount: number; shortsCount: number; totalVideos?: number; avgShortsViews: number;
   views48h: number; views7d: number; country: string | null;
   aiNiche: string | null; nicheLabel: string | null; format: string | null; faceless: boolean;
@@ -200,15 +200,16 @@ function ChannelModal({ c, onClose }: { c: Channel; onClose: () => void }) {
 }
 
 function ChannelCard({ c, onView }: { c: Channel; onView: () => void }) {
-  const shorts = (c.recentVideos ?? []).filter((v) => v?.id).slice(0, 1);
-  const bannerId = shorts[0]?.id;
+  // Prefer the real channel banner; fall back to a recent Short thumbnail.
+  const shortId = (c.recentVideos ?? []).find((v) => v?.id)?.id;
+  const bannerSrc = c.bannerUrl || (shortId ? thumb(shortId) : null);
   return (
     <div className="flex flex-col overflow-hidden border border-white/[0.08] bg-[#0c0c0f] transition-colors hover:border-white/25">
-      {/* Banner (uses a recent Short thumbnail) */}
+      {/* Channel banner */}
       <button onClick={onView} className="relative block h-[120px] overflow-hidden bg-black">
-        {bannerId ? (
+        {bannerSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={thumb(bannerId)} alt="" loading="lazy" className="h-full w-full object-cover opacity-70" />
+          <img src={bannerSrc} alt="" loading="lazy" className="h-full w-full object-cover opacity-80" />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0f] to-transparent" />
         <span className="absolute right-2 top-2"><NicheBadge niche={c.seedNiche} label={c.seedNicheLabel} className="uppercase tracking-wide" /></span>

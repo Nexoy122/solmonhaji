@@ -55,6 +55,7 @@ export interface DiscoveryShort {
 }
 
 export interface DiscoveryChannel {
+  bannerUrl?: string | null;
   channelId: string;
   title: string;
   handle: string | null;
@@ -169,6 +170,7 @@ interface RawChannel {
   title: string;
   handle: string | null;
   thumbnailUrl: string | null;
+  bannerUrl: string | null;
   subs: number;
   views: number;
   videoCount: number;
@@ -183,19 +185,24 @@ async function fetchChannelsRaw(ids: string[]): Promise<RawChannel[]> {
     const batch = ids.slice(i, i + 50);
     try {
       const data = (await youtubeFetch(
-        (key) => `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&id=${batch.join(",")}&key=${key}`
+        // brandingSettings adds the channel banner at no extra quota cost.
+        (key) => `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails,brandingSettings&id=${batch.join(",")}&key=${key}`
       )) as { items?: {
         id: string;
         snippet?: { title?: string; description?: string; country?: string; customUrl?: string; thumbnails?: Record<string, { url?: string }> };
         statistics?: { subscriberCount?: string; viewCount?: string; videoCount?: string };
         contentDetails?: { relatedPlaylists?: { uploads?: string } };
+        brandingSettings?: { image?: { bannerExternalUrl?: string } };
       }[] };
       for (const ch of data.items ?? []) {
+        const banner = ch.brandingSettings?.image?.bannerExternalUrl;
         out.push({
           id: ch.id,
           title: ch.snippet?.title ?? "Unknown",
           handle: ch.snippet?.customUrl ? (ch.snippet.customUrl.startsWith("@") ? ch.snippet.customUrl : `@${ch.snippet.customUrl}`) : null,
           thumbnailUrl: ch.snippet?.thumbnails?.medium?.url ?? ch.snippet?.thumbnails?.default?.url ?? null,
+          // Request a sized crop of the banner (wide, ~1280px).
+          bannerUrl: banner ? `${banner}=w1280-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj` : null,
           subs: parseInt(ch.statistics?.subscriberCount ?? "0") || 0,
           views: parseInt(ch.statistics?.viewCount ?? "0") || 0,
           videoCount: parseInt(ch.statistics?.videoCount ?? "0") || 0,
@@ -359,6 +366,7 @@ export async function enrichChannel(raw: RawChannel, sourceKeyword: string | nul
     title: raw.title,
     handle: raw.handle,
     thumbnailUrl: raw.thumbnailUrl,
+    bannerUrl: raw.bannerUrl,
     url: raw.handle ? `https://www.youtube.com/${raw.handle}` : `https://www.youtube.com/channel/${raw.id}`,
     subscriberCount: raw.subs,
     viewCount: raw.views,
