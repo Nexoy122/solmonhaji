@@ -132,15 +132,39 @@ export function NicheResearcher() {
             <PagePreview />
           </div>
           {/* Scrim + centered card */}
-          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-[#141317]/40 via-[#141317]/75 to-[#141317] pt-[130px]">
-            <div className="max-w-[440px] rounded-none border border-primary/25 bg-[#17161c] px-10 py-9 text-center shadow-[0_24px_70px_rgba(0,0,0,0.6)]">
-              <span className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary">
-                <Icon d="M12 19V5M5 12l7-7 7 7" size={22} />
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-[#141317]/40 via-[#141317]/75 to-[#141317] pt-[120px]">
+            <div className="relative w-full max-w-[460px] overflow-hidden rounded-2xl border border-white/10 bg-[#17161c] px-10 py-10 text-center shadow-[0_30px_80px_rgba(0,0,0,0.65)]">
+              {/* top gradient accent line */}
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+              {/* soft glow behind the icon */}
+              <div className="pointer-events-none absolute left-1/2 top-6 h-32 w-32 -translate-x-1/2 rounded-full bg-primary/15 blur-[50px]" />
+
+              {/* Animated arrow with pulsing halo */}
+              <span className="relative mx-auto mb-5 flex size-14 items-center justify-center">
+                <span className="halo-pulse absolute inset-0 rounded-full border border-primary/50" />
+                <span className="halo-pulse absolute inset-0 rounded-full border border-primary/30" style={{ animationDelay: "1s" }} />
+                <span className="relative flex size-14 items-center justify-center rounded-full border border-primary/40 bg-primary/12 text-primary shadow-[0_0_24px_rgba(15,165,233,0.35)]">
+                  <span className="nudge-up"><Icon d="M12 19V5M5 12l7-7 7 7" size={24} /></span>
+                </span>
               </span>
-              <p className="text-[18px] font-bold text-on-surface">Pick a niche to begin</p>
-              <p className="mx-auto mt-2 max-w-[350px] text-[13.5px] leading-relaxed text-on-surface-variant">
+
+              <p className="text-[19px] font-bold tracking-tight text-on-surface">Pick a niche to begin</p>
+              <p className="mx-auto mt-2.5 max-w-[360px] text-[13.5px] leading-relaxed text-on-surface-variant">
                 Tap any niche above and we&apos;ll pull live opportunity data, the most underserved sub-niches, and what&apos;s trending right now.
               </p>
+
+              {/* feature chips */}
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                {[
+                  ["M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z", "AI analysis"],
+                  ["M3 3v18h18M7 14l3-4 4 3 5-7", "Opportunity gaps"],
+                  ["M13 2L3 14h7l-1 8 10-12h-7z", "What's trending"],
+                ].map(([d, label]) => (
+                  <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[11.5px] font-medium text-on-surface-variant">
+                    <span className="text-primary"><Icon d={d} size={12} /></span> {label}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -156,6 +156,22 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
   50% { opacity: 0.7; transform: scale(1.05); }
 }
 
+/* "Pick a niche" prompt — gently bobbing up arrow + a pulsing halo. */
+@keyframes nudge-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.nudge-up { animation: nudge-up 1.6s ease-in-out infinite; }
+@keyframes halo-pulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  70% { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.halo-pulse { animation: halo-pulse 2s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .nudge-up, .halo-pulse { animation: none; }
+}
+
 /* ---- Rocket "speeder" loader (Uiverse by anand_4957), themed cyan ---- */
 .rocket-loader { --rk: #0FA5E9; position: relative; width: 220px; height: 90px; overflow: hidden; }
 .rocket-loader .loader { position: absolute; top: 50%; margin-left: -50px; left: 50%; animation: rk-speeder 0.4s linear infinite; }
