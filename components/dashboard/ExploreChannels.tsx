@@ -335,7 +335,7 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(filtered.length)}</span>
             <span className="text-[13px] font-medium text-on-surface-variant">channels match your filters</span>
           </div>
-          <BorderGlow mesh borderRadius={8} glowRadius={16} glowColor="0 0 100" glowIntensity={0.35} className="ml-auto w-full max-w-[260px]">
+          <BorderGlow borderRadius={8} glowRadius={16} glowColor="0 0 100" glowIntensity={0.5} className="ml-auto w-full max-w-[260px]">
             <div className="relative">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
                 <Icon d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3" size={15} />

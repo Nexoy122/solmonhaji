@@ -452,8 +452,8 @@ export function Discover() {
 
       {/* Controls */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        {/* Search — animated mesh border glow (no hover) */}
-        <BorderGlow mesh borderRadius={10} glowRadius={20} glowColor="0 0 100" glowIntensity={0.4} className="w-full max-w-[440px]">
+        {/* Search — soft white border glow (same as the AI Analysis box) */}
+        <BorderGlow borderRadius={10} glowRadius={20} glowColor="0 0 100" glowIntensity={0.5} className="w-full max-w-[440px]">
           <div className="relative flex items-center">
             <span className="pointer-events-none absolute left-3.5 text-white/40">
               <Icon d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3" size={16} />
