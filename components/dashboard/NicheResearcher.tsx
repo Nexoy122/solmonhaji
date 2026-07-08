@@ -347,6 +347,7 @@ function NichePreview() {
     <div>
       {/* AI Analysis */}
       <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
+      {/* AI Analysis (full width) */}
       <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
         <SkBar w="30%" h="h-2.5" />
         <div className="mt-4 space-y-2.5"><SkBar w="94%" /><SkBar w="88%" /><SkBar w="91%" /><SkBar w="70%" /></div>
@@ -361,15 +362,56 @@ function NichePreview() {
           </div>
         ))}
       </div>
-      {/* Video grid */}
-      <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.02]">
-            <div className="aspect-[9/16] animate-pulse bg-white/[0.05]" />
-            <div className="space-y-1.5 p-2"><SkBar h="h-2.5" /><SkBar w="60%" h="h-2" /></div>
+      {/* Viral this week */}
+      <div className="mt-7"><SkBar w="180px" h="h-4" /></div>
+      <SkVideoGrid />
+      {/* Resurging */}
+      <div className="mt-7"><SkBar w="150px" h="h-4" /></div>
+      <SkVideoGrid />
+      {/* Channels of the week (3 columns) */}
+      <div className="mt-8"><SkBar w="200px" h="h-4" /></div>
+      <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="rounded-lg border border-white/10 bg-white/[0.02] p-5">
+            <SkBar w="45%" h="h-2.5" />
+            <div className="mt-4 space-y-3">
+              {[0, 1, 2, 3].map((j) => (
+                <div key={j} className="flex items-center gap-2.5">
+                  <div className="size-8 shrink-0 animate-pulse rounded-full bg-white/10" />
+                  <div className="flex-1 space-y-1.5"><SkBar w="70%" h="h-2.5" /><SkBar w="40%" h="h-2" /></div>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
+      {/* Sub-niche breakdown (2 columns) */}
+      <div className="mt-8"><SkBar w="220px" h="h-4" /></div>
+      <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {[0, 1].map((i) => (
+          <div key={i} className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+            <SkBar w="40%" h="h-3" />
+            <div className="mt-3 grid grid-cols-3 gap-3">
+              {[0, 1, 2].map((j) => <div key={j} className="rounded-lg bg-white/[0.03] p-3"><SkBar w="60%" h="h-4" /><div className="mt-1.5"><SkBar w="80%" h="h-2" /></div></div>)}
+            </div>
+            <div className="mt-4 space-y-2"><SkBar w="90%" h="h-2.5" /><SkBar w="75%" h="h-2.5" /></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Full-width 7-across video-card skeleton row.
+function SkVideoGrid() {
+  return (
+    <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
+      {Array.from({ length: 7 }).map((_, i) => (
+        <div key={i} className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.02]">
+          <div className="aspect-[9/16] animate-pulse bg-white/[0.05]" />
+          <div className="space-y-1.5 p-2"><SkBar h="h-2.5" /><SkBar w="60%" h="h-2" /></div>
+        </div>
+      ))}
     </div>
   );
 }
