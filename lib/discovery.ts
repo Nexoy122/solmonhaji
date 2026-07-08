@@ -201,8 +201,8 @@ async function fetchChannelsRaw(ids: string[]): Promise<RawChannel[]> {
           title: ch.snippet?.title ?? "Unknown",
           handle: ch.snippet?.customUrl ? (ch.snippet.customUrl.startsWith("@") ? ch.snippet.customUrl : `@${ch.snippet.customUrl}`) : null,
           thumbnailUrl: ch.snippet?.thumbnails?.medium?.url ?? ch.snippet?.thumbnails?.default?.url ?? null,
-          // Request a sized crop of the banner (wide, ~1280px).
-          bannerUrl: banner ? `${banner}=w1280-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj` : null,
+          // Request a sized banner (wide). Simple =wNNNN suffix is reliable.
+          bannerUrl: banner ? `${banner}=w1280` : null,
           subs: parseInt(ch.statistics?.subscriberCount ?? "0") || 0,
           views: parseInt(ch.statistics?.viewCount ?? "0") || 0,
           videoCount: parseInt(ch.statistics?.videoCount ?? "0") || 0,
@@ -459,7 +459,9 @@ export async function seedIndex(): Promise<{ seeds: number; enriched: number }> 
   let enriched = 0;
   const rawList = await fetchChannelsRaw(seedIds);
   for (const raw of rawList) {
-    const res = await enrichChannel(raw, "seed:reseed", true); // isSeed → region-exempt
+    // isSeed → region-exempt; skipAi → reuse stored tags (fast; just refresh
+    // stats + banner). Falls back to a full AI tag when the channel is new.
+    const res = await enrichChannel(raw, "seed:reseed", true, true);
     if (res) enriched++;
   }
   return { seeds: seedIds.length, enriched };
