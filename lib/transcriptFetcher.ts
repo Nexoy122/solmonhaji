@@ -70,10 +70,26 @@ async function fetchViaWhisper(url: string): Promise<string> {
   const normalized = normalizeYoutubeUrl(url);
   const outPath = path.join(os.tmpdir(), `yt_audio_${Date.now()}.mp3`);
 
-  await execFileAsync("yt-dlp", [
+  // Flags that help get past YouTube's bot checks on VPS IPs. If a cookies file
+  // is provided (YT_DLP_COOKIES env → path), use it — most reliable bypass.
+  const args = [
     "-x", "--audio-format", "mp3", "--audio-quality", "5",
-    "--no-playlist", "--no-warnings", "-o", outPath, normalized,
-  ]);
+    "--no-playlist", "--no-warnings", "--retries", "3",
+    "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36",
+    "--extractor-args", "youtube:player_client=android,web",
+  ];
+  if (process.env.YT_DLP_COOKIES && fs.existsSync(process.env.YT_DLP_COOKIES)) {
+    args.push("--cookies", process.env.YT_DLP_COOKIES);
+  }
+  args.push("-o", outPath, normalized);
+
+  try {
+    await execFileAsync("yt-dlp", args, { maxBuffer: 1024 * 1024 * 32 });
+  } catch (e) {
+    // Surface the real yt-dlp stderr (bot check, geo-block, etc.).
+    const msg = (e as { stderr?: string; message?: string }).stderr || (e as Error).message || "";
+    throw new Error(`yt-dlp download failed: ${msg.slice(-300)}`);
+  }
 
   try {
     const text = await whisperTranscribeFile(outPath);

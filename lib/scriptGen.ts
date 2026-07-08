@@ -113,11 +113,16 @@ export async function generateFromIdeaWithReference(opts: {
   withTimestamps?: boolean;
 }): Promise<string> {
   const ref = await resolveReference(opts);
+  // If a reference URL was given but couldn't be read, tell the user (don't
+  // silently generate without the style they asked for).
+  if (opts.youtubeUrl && !ref.text) {
+    throw new Error("Couldn't read the reference video (YouTube blocked the download). Paste its transcript instead to copy its style.");
+  }
   let content = `The creator's video idea/topic:\n"${opts.idea}"\n\n`;
   if (ref.text) {
-    content += `Here is a REFERENCE script to copy the STYLE, pacing, and hook energy from (do NOT copy its topic or facts):\n"${ref.text}"\n\nStudy how it builds curiosity, its sentence length, and its rhythm.\n\n`;
+    content += `Here is a REFERENCE SCRIPT. Copy its STYLE precisely — the hook structure, sentence length, rhythm, tone, and how it escalates curiosity. Do NOT copy its topic or facts, only its writing style:\n"${ref.text}"\n\nMirror this reference's hook pattern and pacing as closely as possible.\n\n`;
   }
-  content += `Now write a NEW original YouTube Shorts script about the creator's idea above, in that same style and pacing.`;
+  content += `Now write a NEW original YouTube Shorts script about the creator's idea above, written in the EXACT style/pacing of the reference.`;
   content += timestampRule(opts.withTimestamps ?? false);
   content += `\n\nOnly output the final script.`;
   return callGroq(content);
