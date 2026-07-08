@@ -138,9 +138,10 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
 /* Zoom the whole dashboard out for a denser, premium feel. */
 .dashboard-zoom { zoom: 0.92; }
 @supports not (zoom: 1) { .dashboard-zoom { transform: scale(0.92); transform-origin: top center; width: 108.7%; } }
-/* Heading font across the dashboard — clean, tight system sans (not Space Grotesk). */
+/* Heading font across the dashboard — heavy grotesque (Archivo Black). */
 .dashboard-dark .font-heading, .dashboard-dark h1, .dashboard-dark h2, .dashboard-dark h3 {
-  font-family: var(--font-roboto), -apple-system, "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-archivo-black), var(--font-roboto), -apple-system, "Segoe UI", system-ui, sans-serif;
+  font-weight: 400; /* Archivo Black is already black at 400 */
   letter-spacing: -0.02em;
 }
 

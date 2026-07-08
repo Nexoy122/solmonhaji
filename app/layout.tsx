@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto, Roboto_Mono, Space_Grotesk } from "next/font/google";
+import { Roboto, Roboto_Mono, Space_Grotesk, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -23,6 +23,14 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+// Heavy grotesque for big headings (dashboard page titles etc.).
+const archivoBlack = Archivo_Black({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-archivo-black",
   display: "swap",
 });
 
@@ -79,7 +87,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${roboto.variable} ${robotoMono.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${roboto.variable} ${robotoMono.variable} ${spaceGrotesk.variable} ${archivoBlack.variable}`}>
       {/* suppressHydrationWarning: browser extensions (e.g. Bitdefender) inject
           attributes like bis_skin_checked into <body> before React hydrates. */}
       <body suppressHydrationWarning>
