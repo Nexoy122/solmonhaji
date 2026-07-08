@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/AuthProvider";
+import BorderGlow from "@/components/dashboard/BorderGlow";
 
 interface NicheDef { id: string; label: string }
 interface ViralVideo { id: string; title: string; channelName: string; thumbnail: string; views: number; url: string; outlierX: number; publishedAt?: string }
@@ -173,18 +174,20 @@ export function NicheResearcher() {
       {/* ── A niche is picked: real content ── */}
       {picked && (
         <>
-          {/* AI ANALYSIS panel */}
+          {/* AI ANALYSIS panel — premium animated border glow */}
           <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
-          <div className="relative overflow-hidden rounded-none border border-white/10 bg-white/[0.02] p-6">
-            <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
-              <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
-            </p>
-            {recap?.brief ? (
-              <p className="text-[14px] leading-relaxed text-on-surface">{recap.brief}</p>
-            ) : (
-              <SkeletonLines />
-            )}
-          </div>
+          <BorderGlow borderRadius={16} className="mb-1">
+            <div className="p-6">
+              <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-primary">
+                <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
+              </p>
+              {recap?.brief ? (
+                <p className="text-[14px] leading-relaxed text-on-surface">{recap.brief}</p>
+              ) : (
+                <SkeletonLines />
+              )}
+            </div>
+          </BorderGlow>
 
           {/* Week history dropdown */}
           {weeks.length > 0 && (
