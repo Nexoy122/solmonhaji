@@ -130,11 +130,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   ) : (
                     <span className="absolute inset-0 scale-95 rounded-lg bg-[#363738] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100" />
                   )}
-                  {/* animated icon: cyan when active, animates on hover */}
-                  <span className={`relative shrink-0 ${active ? "text-[#0FA5E9]" : "text-white/50 group-hover:text-white/90"}`}>
+                  {/* icon — white/muted (no cyan), vertically centered with text */}
+                  <span className={`relative flex shrink-0 items-center ${active ? "text-white" : "text-white/60 group-hover:text-white/90"}`}>
                     {IconCmp ? <IconCmp /> : null}
                   </span>
-                  <span className="relative flex-1 truncate whitespace-nowrap transition-transform duration-200 group-hover:translate-x-0.5">{item.label}</span>
+                  <span className="relative flex-1 truncate whitespace-nowrap leading-none">{item.label}</span>
                   {item.soon && (
                     <span className="relative shrink-0 rounded-full bg-white/[0.06] px-1.5 py-0.5 text-[9.5px] font-semibold text-white/50">Soon</span>
                   )}

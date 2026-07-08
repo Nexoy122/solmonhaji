@@ -102,16 +102,14 @@ export function NicheResearcher() {
       {/* Header — the page title lives in the fixed topbar (no duplicate H1). */}
       <p className="mb-4 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
 
-      {/* Niche tabs — sharp, full width, evenly spread */}
-      <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+      {/* Niche tabs — cyan border-glow buttons */}
+      <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
         {tabNiches.map((n) => (
           <button
             key={n.id}
             onClick={() => { setActive(n.id); setSelectedWeek(""); }}
-            className={`rounded-none border px-4 py-3 text-[13.5px] font-semibold transition-colors ${
-              active === n.id
-                ? "border-primary bg-primary-container text-on-primary-container"
-                : "border-white/10 bg-black/25 text-on-surface hover:border-white/25 hover:bg-black/40"
+            className={`niche-glow rounded-lg px-4 py-3 text-[13.5px] font-semibold transition-all ${
+              active === n.id ? "is-active text-white" : "text-white/80 hover:text-white"
             }`}
           >
             {n.label}
@@ -125,13 +123,14 @@ export function NicheResearcher() {
         </div>
       )}
 
-      {/* ── Nothing picked yet: minimal — just an animated arrow + text. ── */}
+      {/* ── Nothing picked yet: minimal — animated arrow + text, centered. ── */}
       {!picked && (
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <span className="nudge-up mb-4 text-on-surface-variant">
-            <Icon d="M12 19V5M5 12l7-7 7 7" size={30} />
+        <div className="flex min-h-[55vh] flex-col items-center justify-center text-center">
+          <span className="nudge-up mb-5 flex size-12 items-center justify-center rounded-full border border-white/10 text-white/70">
+            <Icon d="M12 19V5M5 12l7-7 7 7" size={24} />
           </span>
-          <p className="text-[17px] font-semibold text-on-surface">Select a niche</p>
+          <p className="text-[18px] font-semibold text-on-surface">Select a niche</p>
+          <p className="mt-1.5 text-[13.5px] text-on-surface-variant">Pick one above to see what&apos;s working this week.</p>
         </div>
       )}
 

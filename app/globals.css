@@ -10,9 +10,10 @@
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
-  display: inline-block;
+  display: block;
   white-space: nowrap;
   direction: ltr;
+  vertical-align: middle;
   -webkit-font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
@@ -472,6 +473,23 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
 .tb-glow:hover {
   border-color: rgba(15,165,233,0.7);
   box-shadow: 0 0 0 1px rgba(15,165,233,0.25), 0 0 18px rgba(15,165,233,0.4);
+}
+
+/* Niche tabs — cyan border glow; brighter when selected. */
+.niche-glow {
+  background: #050506;
+  border: 1px solid rgba(15,165,233,0.25);
+  box-shadow: 0 0 10px rgba(15,165,233,0.12);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.niche-glow:hover {
+  border-color: rgba(15,165,233,0.55);
+  box-shadow: 0 0 16px rgba(15,165,233,0.3);
+}
+.niche-glow.is-active {
+  border-color: rgba(15,165,233,0.9);
+  background: rgba(15,165,233,0.1);
+  box-shadow: 0 0 0 1px rgba(15,165,233,0.4), 0 0 22px rgba(15,165,233,0.5);
 }
 @media (prefers-reduced-motion: reduce) {
   /* Keep a soft static glow but no rotation (angle held by JS). */
