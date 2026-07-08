@@ -1,5 +1,5 @@
 import "server-only";
-import { getTranscript, transcribeBufferWithGroq } from "@/lib/transcriptFetcher";
+import { getTranscript, transcribeBufferWithGroq, understandVideoFromBuffer } from "@/lib/transcriptFetcher";
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
@@ -160,23 +160,23 @@ export async function generateFromVideo(opts: {
   transcript?: string | null; // reference for style
   withTimestamps?: boolean;
 }): Promise<string> {
-  // 1) Get the source video's transcript (what the video is about).
+  // 1) Understand the source video — speech AND/OR visuals (works even silent).
   let source = "";
   let lastErr = "";
   if (opts.videoBuffer) {
-    try { source = (await transcribeBufferWithGroq(opts.videoBuffer, opts.videoMime ?? "audio/mpeg")).split(" ").slice(0, 900).join(" "); }
-    catch (e) { lastErr = `upload: ${(e as Error).message}`; console.error("[from-video] upload transcribe failed:", (e as Error).message); }
+    try { source = (await understandVideoFromBuffer(opts.videoBuffer, opts.videoMime ?? "video/mp4", true)).text; }
+    catch (e) { lastErr = `upload: ${(e as Error).message}`; console.error("[from-video] upload understand failed:", (e as Error).message); }
   }
   if (!source && opts.youtubeUrl) {
     try { source = (await getTranscript(opts.youtubeUrl)).split(" ").slice(0, 900).join(" "); }
     catch (e) { lastErr = `url: ${(e as Error).message}`; console.error("[from-video] url transcribe failed:", (e as Error).message); }
   }
-  if (!source) throw new Error(`Couldn't read the video. ${lastErr || "No audio was extracted."}`);
+  if (!source) throw new Error(`Couldn't read the video. ${lastErr || "No audio or visuals were readable."}`);
 
   // 2) Optional style reference (separate transcript).
   const ref = await resolveReference({ transcript: opts.transcript });
 
-  let content = `Below is the full spoken content (transcript) of the creator's video:\n"${source}"\n\nANALYZE this video: identify its core topic, the key message/story, the most interesting facts, and its emotional angle. Then write a POLISHED, punchier YouTube Shorts script that delivers the same idea far more effectively — a stronger hook, tighter pacing, and a share-worthy ending. Do NOT just copy the transcript; improve and restructure it.`;
+  let content = `Below is an analysis of the creator's video (its spoken audio and/or on-screen visuals & text):\n${source}\n\nANALYZE this video: identify its core topic, the key message/story, the most interesting facts, and its emotional angle. Then write a POLISHED, punchier YouTube Shorts script that delivers the same idea far more effectively — a stronger hook, tighter pacing, and a share-worthy ending. Do NOT just copy it; improve and restructure it.`;
   if (ref.text) content += `\n\nWrite it in the STYLE/pacing of this reference (do not copy its content):\n"${ref.text}"`;
   content += timestampRule(opts.withTimestamps ?? false);
   content += `\n\nOnly output the final script.`;
