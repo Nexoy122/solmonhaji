@@ -44,7 +44,8 @@ export async function POST(req: NextRequest) {
       const options = (Array.isArray(body.options) ? body.options : []).filter(
         (o): o is ImproveOption => typeof o === "string"
       ) as ImproveOption[];
-      script = await improveScript({ script: src, options, transcript, youtubeUrl, withTimestamps });
+      const instruction = str(body.instruction) || null;
+      script = await improveScript({ script: src, options, instruction, transcript, youtubeUrl, withTimestamps });
     } else {
       // legacy topic mode
       const topic = str(body.topic);

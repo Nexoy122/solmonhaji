@@ -143,14 +143,15 @@ const IMPROVE_LABELS: Record<ImproveOption, string> = {
 
 export async function improveScript(opts: {
   script: string;
-  options: ImproveOption[];
+  options?: ImproveOption[];
+  instruction?: string | null; // free-text change request (from the output panel)
   transcript?: string | null;
   youtubeUrl?: string | null;
   withTimestamps?: boolean;
 }): Promise<string> {
-  const asks = opts.options.length
-    ? opts.options.map((o) => `- ${IMPROVE_LABELS[o]}`).join("\n")
-    : "- overall quality, retention, and shareability";
+  const optionAsks = (opts.options ?? []).map((o) => `- ${IMPROVE_LABELS[o]}`);
+  if (opts.instruction?.trim()) optionAsks.push(`- ${opts.instruction.trim()}`);
+  const asks = optionAsks.length ? optionAsks.join("\n") : "- overall quality, retention, and shareability";
   const ref = await resolveReference(opts);
   let content = `Here is the creator's current script:\n"${opts.script}"\n\nRewrite and IMPROVE it. Specifically apply:\n${asks}\n`;
   if (ref.text) content += `\nMatch the STYLE/pacing of this reference (do not copy its content):\n"${ref.text}"\n`;

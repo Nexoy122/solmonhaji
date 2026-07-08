@@ -190,6 +190,25 @@ export function ScriptGenerator() {
     setBusy(false);
   };
 
+  // Refine the CURRENT output with a free-text instruction (from the output panel).
+  const [refining, setRefining] = useState(false);
+  const improveInline = async (instruction: string) => {
+    if (!script || !instruction.trim()) return;
+    setRefining(true); setErr("");
+    try {
+      const res = await fetch("/api/script/generate", {
+        method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) },
+        body: JSON.stringify({ mode: "improve", script, instruction: instruction.trim(), withTimestamps }),
+      });
+      const data = await readJson(res);
+      if (!res.ok) throw new Error(data.error || "Couldn't improve the script.");
+      const out = data.script ?? "";
+      setScript(out);
+      setHistory((h) => [{ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, title: instruction.trim().slice(0, 50), script: out, at: Date.now() }, ...h].slice(0, 20));
+    } catch (e) { setErr((e as Error).message); }
+    setRefining(false);
+  };
+
   return (
     <div className="dash-fade-up w-full">
       <p className="mb-5 text-[14px] text-on-surface-variant">Turn any idea, script, or video into a scroll-stopping YouTube Shorts script — step by step.</p>
@@ -269,7 +288,7 @@ export function ScriptGenerator() {
           <div className="min-h-[500px] flex-1 p-5">
             {outTab === "output" ? (
               busy ? <GeneratingLoader /> :
-              script ? <ScriptOutput text={script} /> : (
+              script ? <ScriptOutput text={script} onImprove={improveInline} refining={refining} /> : (
                 <div className="flex h-full min-h-[460px] flex-col items-center justify-center text-center">
                   <span className="mb-4 flex size-14 items-center justify-center rounded-xl border border-white/10 text-white/40">
                     <Icon d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" size={24} />
@@ -309,8 +328,21 @@ function OrDivider() {
   );
 }
 
-function ScriptOutput({ text }: { text: string }) {
+const IMPROVE_CHIPS = [
+  "Make the hook more controversial",
+  "Shorten the middle section",
+  "Add a question at the start",
+  "Make it more conversational",
+  "Tighten the pacing",
+];
+
+function ScriptOutput({ text, onImprove, refining }: { text: string; onImprove: (s: string) => void; refining: boolean }) {
   const [copied, setCopied] = useState(false);
+  const [change, setChange] = useState("");
+
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const secs = Math.round((words / 150) * 60); // ~150 wpm spoken
+
   const copy = async () => {
     try {
       if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
@@ -318,16 +350,60 @@ function ScriptOutput({ text }: { text: string }) {
       setCopied(true); setTimeout(() => setCopied(false), 2000);
     } catch { /* ignore */ }
   };
+
+  const submit = (val: string) => { if (val.trim() && !refining) { onImprove(val); setChange(""); } };
+
   return (
-    <div className="step-in">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/70">Your script</span>
+    <div className="step-in flex h-full flex-col">
+      <div className="mb-2 flex items-start justify-between">
+        <div>
+          <p className="text-[15px] font-bold text-on-surface">Your Script</p>
+          <p className="mt-0.5 flex items-center gap-3 text-[12px] text-on-surface-variant">
+            <span className="inline-flex items-center gap-1"><Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={12} /> {words} words</span>
+            <span className="inline-flex items-center gap-1"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={12} /> ~{secs}s spoken</span>
+          </p>
+        </div>
         <button onClick={copy} className="gbtn inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-white/80">
           <Icon d={copied ? "M20 6 9 17l-5-5" : "M9 9h10v10H9zM5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"} size={14} />
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-on-surface">{text}</p>
+
+      {/* Script text */}
+      <div className="relative flex-1">
+        <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-on-surface">{text}</p>
+        {refining && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#050506]/70 backdrop-blur-[1px]">
+            <span className="flex items-center gap-2 text-[13px] text-white/80"><span className="size-4 animate-spin rounded-full border-2 border-white/20 border-t-white/70" /> Improving…</span>
+          </div>
+        )}
+      </div>
+
+      {/* Inline improve box */}
+      <div className="mt-4 border-t border-white/[0.06] pt-4">
+        <div className="flex items-center gap-2">
+          <input
+            value={change}
+            onChange={(e) => setChange(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submit(change)}
+            placeholder="What would you like to change?"
+            disabled={refining}
+            className="h-11 flex-1 border border-white/12 bg-[#1E1F21] px-4 text-[13.5px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-white/30 disabled:opacity-50"
+          />
+          <button onClick={() => submit(change)} disabled={!change.trim() || refining} className="btn-donate flex items-center gap-1.5 px-5 text-[13px] disabled:cursor-not-allowed disabled:opacity-40">
+            <Icon d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" size={15} /> Improve
+          </button>
+        </div>
+        {/* Quick chips */}
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          {IMPROVE_CHIPS.map((c) => (
+            <button key={c} onClick={() => submit(c)} disabled={refining}
+              className="rounded-full border border-white/12 bg-[#1E1F21] px-3 py-1 text-[11.5px] font-medium text-white/55 transition-colors hover:border-white/25 hover:text-white/80 disabled:opacity-40">
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
