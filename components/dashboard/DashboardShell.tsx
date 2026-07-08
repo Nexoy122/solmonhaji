@@ -203,10 +203,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
       {/* Main column */}
       <div className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
-        {/* Ambient background depth — starts BELOW the 64px topbar so the top
-            strip behind the floating pills stays perfectly flat #151416. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 top-16 overflow-hidden">
-          <div className="absolute -right-40 top-10 h-96 w-96 rounded-full bg-[#0FA5E9]/[0.05] blur-[120px]" />
+        {/* Ambient background depth — covers the full column (incl. behind the
+            transparent topbar) so there's no dark band at the top. */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-40 -top-32 h-96 w-96 rounded-full bg-[#0FA5E9]/[0.05] blur-[120px]" />
           <div className="absolute -left-20 top-1/3 h-80 w-80 rounded-full bg-[#0FA5E9]/[0.03] blur-[120px]" />
           <div
             className="absolute inset-0 opacity-[0.6]"
