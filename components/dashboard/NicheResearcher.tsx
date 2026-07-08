@@ -171,8 +171,13 @@ export function NicheResearcher() {
         </div>
       )}
 
-      {/* ── A niche is picked: real content ── */}
-      {picked && (
+      {/* ── A niche is picked ── */}
+      {/* While loading, show ONE rocket loader for the whole page (AI panel +
+          data appear together once ready). */}
+      {picked && loading && <RocketLoader label={`Analyzing ${tabNiches.find((n) => n.id === active)?.label ?? "this niche"}`} />}
+
+      {/* ── A niche is picked and loaded: real content ── */}
+      {picked && !loading && (
         <>
           {/* AI ANALYSIS panel — premium animated border glow */}
           <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
@@ -222,9 +227,7 @@ export function NicheResearcher() {
             </div>
           )}
 
-          {loading ? (
-            <div className="flex justify-center py-16"><div className="h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-primary" /></div>
-          ) : !recap ? (
+          {!recap ? (
             <div className="mt-5 rounded-none border border-white/10 bg-white/[0.02] p-10 text-center">
               <p className="text-[16px] font-bold text-on-surface">No data yet for this niche</p>
               <p className="mx-auto mt-2 max-w-[440px] text-[14px] text-on-surface-variant">
@@ -314,6 +317,29 @@ function SectionHead({ icon, title, subtitle, iconColor }: { icon: string; title
         {title}
         <span className="text-[13px] font-normal text-on-surface-variant">{subtitle}</span>
       </p>
+    </div>
+  );
+}
+
+// Rocket "speeder" loader (Uiverse by anand_4957) — one loader for the whole
+// page while the niche's recap + AI analysis load together.
+function RocketLoader({ label }: { label: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-28 text-center">
+      <div className="rocket-loader">
+        <div className="loader">
+          <span><span></span><span></span><span></span><span></span></span>
+          <div className="base">
+            <span></span>
+            <div className="face"></div>
+          </div>
+        </div>
+        <div className="longfazers">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <p className="mt-4 text-[15px] font-semibold text-white">{label}…</p>
+      <p className="mt-1.5 text-[13px] text-on-surface-variant">Pulling viral videos, movers, and where the opportunity is</p>
     </div>
   );
 }
