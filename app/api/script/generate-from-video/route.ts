@@ -3,9 +3,9 @@ import { verifyRequest } from "@/lib/firebaseAdmin";
 import { generateFromVideo } from "@/lib/scriptGen";
 
 export const runtime = "nodejs";
-export const maxDuration = 120; // transcription can take a bit
+export const maxDuration = 300; // ffmpeg extraction + transcription + analysis
 
-const MAX_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
+const MAX_FILE_BYTES = 500 * 1024 * 1024; // 500 MB (audio is extracted server-side)
 
 export async function POST(req: NextRequest) {
   const uid = await verifyRequest(req.headers.get("authorization"));
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   let videoMime: string | null = null;
   if (file && typeof file.arrayBuffer === "function") {
     if (file.size > MAX_FILE_BYTES) {
-      return NextResponse.json({ error: "Video is too large (max 25 MB)." }, { status: 413 });
+      return NextResponse.json({ error: "Video is too large (max 500 MB)." }, { status: 413 });
     }
     videoBuffer = Buffer.from(await file.arrayBuffer());
     videoMime = file.type || "video/mp4";

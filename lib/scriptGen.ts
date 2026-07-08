@@ -173,7 +173,7 @@ export async function generateFromVideo(opts: {
   // 2) Optional style reference (separate transcript).
   const ref = await resolveReference({ transcript: opts.transcript });
 
-  let content = `Here is the transcript of the creator's own video:\n"${source}"\n\nWrite a polished YouTube Shorts script based on THIS video's topic and content.`;
+  let content = `Below is the full spoken content (transcript) of the creator's video:\n"${source}"\n\nANALYZE this video: identify its core topic, the key message/story, the most interesting facts, and its emotional angle. Then write a POLISHED, punchier YouTube Shorts script that delivers the same idea far more effectively — a stronger hook, tighter pacing, and a share-worthy ending. Do NOT just copy the transcript; improve and restructure it.`;
   if (ref.text) content += `\n\nWrite it in the STYLE/pacing of this reference (do not copy its content):\n"${ref.text}"`;
   content += timestampRule(opts.withTimestamps ?? false);
   content += `\n\nOnly output the final script.`;

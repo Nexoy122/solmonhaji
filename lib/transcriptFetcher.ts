@@ -54,13 +54,21 @@ async function fetchViaWhisper(url: string): Promise<string> {
 
 // Transcribe an uploaded video/audio buffer via Groq Whisper.
 export async function transcribeBufferWithGroq(buffer: Buffer, mimeType = "audio/mpeg"): Promise<string> {
-  const ext = mimeType.includes("mp4") ? "mp4" : mimeType.includes("webm") ? "webm" : "mp3";
-  const tmpPath = path.join(os.tmpdir(), `upload_audio_${Date.now()}.${ext}`);
-  fs.writeFileSync(tmpPath, buffer);
+  const ext = mimeType.includes("mp4") ? "mp4" : mimeType.includes("webm") ? "webm" : mimeType.includes("mov") || mimeType.includes("quicktime") ? "mov" : "bin";
+  const srcPath = path.join(os.tmpdir(), `upload_src_${Date.now()}.${ext}`);
+  const audioPath = path.join(os.tmpdir(), `upload_audio_${Date.now()}.mp3`);
+  fs.writeFileSync(srcPath, buffer);
 
   try {
+    // Extract audio (mono, 16kHz, low bitrate) so even a large video → tiny mp3
+    // that Whisper accepts — works with NO captions on any video.
+    try {
+      await execFileAsync("ffmpeg", ["-y", "-i", srcPath, "-vn", "-ac", "1", "-ar", "16000", "-b:a", "64k", audioPath], { maxBuffer: 1024 * 1024 * 32 });
+    } catch (e) {
+      throw new Error(`Audio extraction failed (ffmpeg): ${(e as Error).message.slice(0, 160)}`);
+    }
     const form = new FormData();
-    form.append("file", fs.createReadStream(tmpPath), { filename: path.basename(tmpPath), contentType: mimeType });
+    form.append("file", fs.createReadStream(audioPath), { filename: "audio.mp3", contentType: "audio/mpeg" });
     form.append("model", "whisper-large-v3-turbo");
     form.append("response_format", "text");
 
@@ -72,7 +80,8 @@ export async function transcribeBufferWithGroq(buffer: Buffer, mimeType = "audio
     if (!res.ok) throw new Error(`Groq Whisper error: ${(await res.text()).slice(0, 200)}`);
     return await res.text();
   } finally {
-    fs.unlink(tmpPath, () => {});
+    fs.unlink(srcPath, () => {});
+    fs.unlink(audioPath, () => {});
   }
 }
 
