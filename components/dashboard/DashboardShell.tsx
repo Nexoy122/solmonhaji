@@ -197,9 +197,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* mobile backdrop */}
       {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setSidebarOpen(false)} />}
 
-      {/* Floating top items — FIXED to the viewport, OUTSIDE the zoomed column so
-          no ancestor transform/zoom can move them. Offset for the sidebar. */}
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-4 md:left-64 md:px-7 [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_span]:pointer-events-auto">
+      {/* Main column: a fixed header row + a scrolling <main>. Only <main>
+          scrolls, so the header physically cannot move. */}
+      <div className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
+        <header className="z-50 flex h-16 shrink-0 items-center justify-between bg-[#000101] px-4 md:px-7">
           <div className="flex items-center gap-3">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-white/70 transition-colors hover:bg-white/[0.06] md:hidden"
@@ -210,7 +211,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </button>
             {/* Page title. Hidden on desktop only for Explore (its filter rail
                 occupies that top-left spot). */}
-            <h1 className={`font-heading text-[22px] font-bold tracking-[-0.01em] text-white ${pathname.startsWith("/dashboard/explore") ? "md:hidden" : ""}`}>{pageTitle(pathname)}</h1>
+            <h1 className="font-heading text-[22px] font-bold tracking-[-0.01em] text-white">{pageTitle(pathname)}</h1>
           </div>
 
           <div className="flex items-center gap-2.5">
@@ -257,9 +258,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-      {/* Main column — flat minimal background. Scrolls under the fixed header. */}
-      <div className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
-        <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 pt-20 text-white md:p-6 md:pt-20 lg:p-8 lg:pt-20">{children}</main>
+        {/* Only this scrolls — the header above stays put. */}
+        <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 text-white md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

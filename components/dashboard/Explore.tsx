@@ -425,9 +425,8 @@ export function Explore() {
 
       {/* Main content */}
       <div className="min-w-0 flex-1">
-      {/* Tabs — pulled up onto the topbar line (same row as the floating nav
-          items / user menu). Offset accounts for <main>'s pt-20. */}
-      <div className="flex items-center gap-3 lg:-mt-[68px]">
+      {/* Tabs */}
+      <div className="flex items-center gap-3">
         <div className="inline-flex shrink-0 gap-2">
           {([
             ["videos", "Videos", "M23 7l-7 5 7 5V7zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"],
