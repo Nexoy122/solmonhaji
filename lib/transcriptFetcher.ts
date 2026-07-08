@@ -5,7 +5,6 @@ import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import os from "os";
-import FormData from "form-data";
 
 const execFileAsync = promisify(execFile);
 const GROQ_WHISPER_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
@@ -34,22 +33,28 @@ async function fetchViaWhisper(url: string): Promise<string> {
   ]);
 
   try {
-    const form = new FormData();
-    form.append("file", fs.createReadStream(outPath), { filename: path.basename(outPath), contentType: "audio/mpeg" });
-    form.append("model", "whisper-large-v3-turbo");
-    form.append("response_format", "text");
-
-    const res = await fetch(GROQ_WHISPER_URL, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, ...form.getHeaders() },
-      body: form as unknown as BodyInit,
-    });
-    if (!res.ok) throw new Error(`Groq Whisper error: ${(await res.text()).slice(0, 200)}`);
-    const text = await res.text();
+    const text = await whisperTranscribeFile(outPath);
     return text.split(" ").slice(0, 800).join(" ");
   } finally {
     fs.unlink(outPath, () => {});
   }
+}
+
+// Send an audio file to Groq Whisper using NATIVE Web FormData + Blob (so Node's
+// global fetch produces a valid multipart body — the form-data stream truncates).
+async function whisperTranscribeFile(filePath: string): Promise<string> {
+  const buf = fs.readFileSync(filePath);
+  const form = new globalThis.FormData();
+  form.append("file", new Blob([new Uint8Array(buf)], { type: "audio/mpeg" }), "audio.mp3");
+  form.append("model", "whisper-large-v3-turbo");
+  form.append("response_format", "text");
+  const res = await fetch(GROQ_WHISPER_URL, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
+    body: form,
+  });
+  if (!res.ok) throw new Error(`Groq Whisper error: ${(await res.text()).slice(0, 200)}`);
+  return (await res.text()).trim();
 }
 
 // Transcribe an uploaded video/audio buffer via Groq Whisper.
@@ -67,18 +72,7 @@ export async function transcribeBufferWithGroq(buffer: Buffer, mimeType = "audio
     } catch (e) {
       throw new Error(`Audio extraction failed (ffmpeg): ${(e as Error).message.slice(0, 160)}`);
     }
-    const form = new FormData();
-    form.append("file", fs.createReadStream(audioPath), { filename: "audio.mp3", contentType: "audio/mpeg" });
-    form.append("model", "whisper-large-v3-turbo");
-    form.append("response_format", "text");
-
-    const res = await fetch(GROQ_WHISPER_URL, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, ...form.getHeaders() },
-      body: form as unknown as BodyInit,
-    });
-    if (!res.ok) throw new Error(`Groq Whisper error: ${(await res.text()).slice(0, 200)}`);
-    return await res.text();
+    return await whisperTranscribeFile(audioPath);
   } finally {
     fs.unlink(srcPath, () => {});
     fs.unlink(audioPath, () => {});
