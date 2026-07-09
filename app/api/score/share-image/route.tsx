@@ -34,11 +34,30 @@ export async function GET(req: NextRequest) {
 
   // Read the heavy display font (Anton) + logo from /public on disk. Anton is an
   // ultra-bold condensed face, so every element renders thick regardless of the
-  // fontWeight Satori would otherwise ignore.
-  const pub = path.join(process.cwd(), "public");
-  const fontData = await readFile(path.join(pub, "font-black.ttf"));
-  const logoBuf = await readFile(path.join(pub, "logo-mark.png"));
-  const logoSrc = `data:image/png;base64,${logoBuf.toString("base64")}`;
+  // fontWeight Satori would otherwise ignore. Try a few candidate locations so
+  // it works in dev, a normal `.next` build, and a standalone output.
+  async function readAsset(file: string): Promise<Buffer> {
+    const candidates = [
+      path.join(process.cwd(), "public", file),
+      path.join(process.cwd(), ".next", "standalone", "public", file),
+      path.join(process.cwd(), "..", "public", file),
+    ];
+    for (const p of candidates) {
+      try { return await readFile(p); } catch { /* try next */ }
+    }
+    throw new Error(`asset not found: ${file} (cwd=${process.cwd()})`);
+  }
+
+  let fontData: Buffer;
+  let logoSrc = "";
+  try {
+    fontData = await readAsset("font-black.ttf");
+    const logoBuf = await readAsset("logo-mark.png");
+    logoSrc = `data:image/png;base64,${logoBuf.toString("base64")}`;
+  } catch (e) {
+    console.error("[share-image] asset load failed:", (e as Error).message);
+    throw e;
+  }
 
   // Canvas / ring geometry
   const W = 840;
@@ -115,6 +134,10 @@ export async function GET(req: NextRequest) {
       width: W,
       height: H,
       fonts: [{ name: "Anton", data: fontData, weight: 400, style: "normal" }],
+      headers: {
+        // Don't let the browser/CDN serve a stale (old, thin-font) render.
+        "Cache-Control": "public, max-age=0, must-revalidate",
+      },
     }
   );
 }
