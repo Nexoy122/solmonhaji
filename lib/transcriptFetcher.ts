@@ -164,16 +164,35 @@ export async function understandVideoFromBuffer(
   return { text: parts.join("\n\n"), hadSpeech: Boolean(speech), hadVisual: Boolean(visual) };
 }
 
-// Main: try captions first, fall back to yt-dlp + Whisper.
+// Strategy 0: third-party transcript API (Supadata). Handles proxies + blocking
+// on their side, so it works from a datacenter IP without cookies. Enable by
+// setting SUPADATA_API_KEY. Docs: https://supadata.ai
+async function fetchViaSupadata(url: string): Promise<string> {
+  const key = process.env.SUPADATA_API_KEY;
+  if (!key) throw new Error("no supadata key");
+  const res = await fetch(
+    `https://api.supadata.ai/v1/youtube/transcript?url=${encodeURIComponent(normalizeYoutubeUrl(url))}&text=true`,
+    { headers: { "x-api-key": key } }
+  );
+  if (!res.ok) throw new Error(`Supadata ${res.status}: ${(await res.text()).slice(0, 160)}`);
+  const data = (await res.json()) as { content?: string; text?: string };
+  const text = (data.content || data.text || "").trim();
+  if (!text) throw new Error("Supadata returned no transcript.");
+  return text.split(" ").slice(0, 800).join(" ");
+}
+
+// Main transcript resolver. Order (each falls back to the next):
+//   1) Supadata API (reliable, no cookies)  →  2) caption scrape  →  3) yt-dlp+Whisper
 export async function getTranscript(url: string): Promise<string> {
-  try {
-    return await fetchCaptions(url);
-  } catch {
-    // no captions → fall back
-  }
-  try {
-    return await fetchViaWhisper(url);
-  } catch (err) {
-    throw new Error(`Transcription failed. Captions unavailable and Whisper failed: ${(err as Error).message}`);
-  }
+  const errors: string[] = [];
+  // 1) Third-party API (best for a VPS).
+  try { return await fetchViaSupadata(url); }
+  catch (e) { const m = (e as Error).message; if (m !== "no supadata key") errors.push(`api: ${m}`); }
+  // 2) Free caption scrape.
+  try { return await fetchCaptions(url); }
+  catch (e) { errors.push(`captions: ${(e as Error).message}`); }
+  // 3) yt-dlp + Whisper (needs cookies/proxy on a VPS).
+  try { return await fetchViaWhisper(url); }
+  catch (e) { errors.push(`whisper: ${(e as Error).message}`); }
+  throw new Error(`Transcription failed. ${errors.join(" | ").slice(0, 300)}`);
 }
