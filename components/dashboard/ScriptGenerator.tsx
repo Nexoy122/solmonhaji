@@ -44,6 +44,17 @@ const IMPROVE_OPTS: { id: string; label: string }[] = [
 
 const inputCls = "w-full rounded-md border border-white/20 bg-[#1E1F21] px-4 py-3 text-[14px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-[#2e8eff]/70";
 
+// Idea starter chips — fill the idea box on click.
+const IDEA_CHIPS = ["Weird product review", "Internet drama recap", "“Healthy” habit myth", "Overrated or underrated"];
+
+// Static tips for the "How to get the best script" help panel.
+const HELP_TIPS = [
+  "Be specific: name the exact topic, angle, or hook you want.",
+  "Add a reference (URL or transcript) to copy a creator's style & hook.",
+  "For a silent/aesthetic clip, use From Video — the AI reads the on-screen text and visuals.",
+  "After it generates, refine it with the improve box — e.g. “make the hook more controversial”.",
+];
+
 export function ScriptGenerator() {
   const { user } = useAuth();
   const authHeader = useCallback(async (): Promise<Record<string, string>> => {
@@ -53,6 +64,7 @@ export function ScriptGenerator() {
 
   const [mode, setModeRaw] = useState<Mode>("idea");
   const [step, setStep] = useState(0); // 0-indexed active step
+  const [helpOpen, setHelpOpen] = useState(false);
 
   // shared reference + options
   const [refUrl, setRefUrl] = useState("");
@@ -119,7 +131,20 @@ export function ScriptGenerator() {
   const steps: Step[] =
     mode === "idea" ? [
       { title: "Your idea", hint: "Describe the video you want to make — the topic, angle, or hook.", canNext: idea.trim().length >= 5,
-        content: <textarea value={idea} onChange={(e) => setIdea(e.target.value)} rows={5} maxLength={10000} placeholder="e.g. A video comparing Iran vs USA military power" className={inputCls + " resize-none"} /> },
+        content: (
+          <div>
+            <textarea value={idea} onChange={(e) => setIdea(e.target.value)} rows={5} maxLength={10000} placeholder="e.g. A video comparing Iran vs USA military power" className={inputCls + " resize-none"} />
+            <p className="mt-1.5 text-right text-[11px] text-on-surface-variant">{idea.length}/10000</p>
+            <p className="mb-2 mt-1 flex items-center gap-1.5 text-[12px] font-medium text-on-surface-variant">
+              <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={13} /> Try one of these
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {IDEA_CHIPS.map((c) => (
+                <button key={c} onClick={() => setIdea(c)} className="rounded-full border border-white/15 bg-[#1E1F21] px-3.5 py-1.5 text-[12px] font-medium text-white/70 transition-colors hover:border-white/30 hover:text-white">{c}</button>
+              ))}
+            </div>
+          </div>
+        ) },
       { title: "Reference style", hint: "Optional — give a video or transcript to copy its style & hook.", canNext: true, optional: true, content: refStep },
       { title: "Options", hint: "Choose how the final script is formatted.", canNext: true, content: optionsStep },
     ] :
@@ -211,7 +236,27 @@ export function ScriptGenerator() {
 
   return (
     <div className="dash-fade-up w-full">
-      <p className="mb-5 text-[14px] text-on-surface-variant">Turn any idea, script, or video into a scroll-stopping YouTube Shorts script — step by step.</p>
+      <p className="mb-4 text-[14px] text-on-surface-variant">Write scroll-stopping YouTube Shorts scripts — from an idea, a script, or a video.</p>
+
+      {/* How to get the best script — collapsible help */}
+      <div className="mb-5 overflow-hidden rounded-xl border border-white/15 bg-[#0a0a0c]">
+        <button onClick={() => setHelpOpen((o) => !o)} className="flex w-full items-center gap-2.5 px-5 py-3.5 text-left transition-colors hover:bg-white/[0.02]">
+          <span className="text-[#2e8eff]"><Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 16v-4M12 8h.01" size={17} /></span>
+          <span className="flex-1 text-[14px] font-semibold text-white">How to get the best script</span>
+          <Icon d={helpOpen ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6"} size={17} />
+        </button>
+        {helpOpen && (
+          <div className="step-in border-t border-white/[0.07] px-5 py-4">
+            <ul className="space-y-2">
+              {HELP_TIPS.map((t, i) => (
+                <li key={i} className="flex gap-2.5 text-[13px] leading-relaxed text-on-surface-variant">
+                  <span className="mt-0.5 shrink-0 text-[#2e8eff]"><Icon d="M20 6 9 17l-5-5" size={14} /></span> {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2">
         {/* ── Left: wizard ── */}
