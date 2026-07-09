@@ -16,6 +16,7 @@ interface AuditResult {
   coachReview: string;
 }
 
+// ── Shared helpers (match Trust Score's design language) ──
 function Icon({ d, size = 18 }: { d: string; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -23,23 +24,68 @@ function Icon({ d, size = 18 }: { d: string; size?: number }) {
     </svg>
   );
 }
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">{children}</p>;
+}
 function fmtNum(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
   return n.toLocaleString();
 }
-function scoreColor(s: number) {
-  // s is /10
-  if (s >= 8) return "#16a34a";
-  if (s >= 6) return "#0FA5E9";
-  if (s >= 4) return "#d97706";
-  return "#e11d48";
+// overall is /100
+function overallHex(s: number) {
+  if (s >= 75) return "#34d399";
+  if (s >= 60) return "#01D4FF";
+  if (s >= 45) return "#e0b341";
+  return "#f87171";
 }
-function gradeColor(g: string) {
-  if (g.startsWith("A")) return "#16a34a";
-  if (g.startsWith("B")) return "#0FA5E9";
-  if (g.startsWith("C")) return "#d97706";
-  return "#e11d48";
+// category score is /10
+function catHex(s: number) {
+  if (s >= 8) return "#34d399";
+  if (s >= 6) return "#01D4FF";
+  if (s >= 4) return "#e0b341";
+  return "#f87171";
+}
+
+// Score ring (overall /100)
+function ScoreRing({ score, size = 168 }: { score: number; size?: number }) {
+  const stroke = 9;
+  const r = size / 2 - stroke;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (score / 100) * circ;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={stroke} />
+        <circle
+          cx={size / 2} cy={size / 2} r={r} fill="none"
+          stroke={overallHex(score)} strokeWidth={stroke} strokeDasharray={circ}
+          strokeDashoffset={offset} strokeLinecap="round"
+          style={{ transition: "stroke-dashoffset 1.1s cubic-bezier(0.4,0,0.2,1)" }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-[46px] font-extrabold leading-none tracking-tight tabular-nums text-on-surface">{Math.round(score)}</span>
+        <span className="mt-1 text-[12px] text-on-surface-variant">/ 100</span>
+      </div>
+    </div>
+  );
+}
+
+// Brand "Auditing" letter loader (shared Uiverse style, from globals.css).
+function AuditingLoader({ progress }: { progress: string }) {
+  return (
+    <div className="flex min-h-[440px] flex-col items-center justify-center gap-6 rounded-none border border-white/10 bg-[#1B1D1F] p-10">
+      <div className="loader-wrapper">
+        {"Auditing".split("").map((ch, i) => <span key={i} className="loader-letter">{ch}</span>)}
+        <div className="gloader" />
+      </div>
+      <div className="text-center">
+        <p className="text-[14px] font-semibold text-on-surface">{progress || "Processing…"}</p>
+        <p className="mt-1.5 text-[12px] text-on-surface-variant">Downloading, transcribing & reviewing your best and worst Shorts — this takes 8–15 minutes.</p>
+      </div>
+    </div>
+  );
 }
 
 export function ChannelAudit() {
@@ -61,7 +107,6 @@ export function ChannelAudit() {
     return t ? { Authorization: `Bearer ${t}` } : {};
   }, [user]);
 
-  // Check if the user has a connected YouTube channel (for the deep audit).
   const loadStatus = useCallback(async () => {
     if (!user) return;
     try {
@@ -90,7 +135,6 @@ export function ChannelAudit() {
     } catch { setError("Couldn't start the connection."); }
   };
 
-  // Deep audit of the user's own connected channel (real analytics + video-ML).
   const runConnectedAudit = async () => {
     if (running) return;
     setError(""); setWarning(""); setResult(null); setRunning(true); setProgress("Fetching your analytics…"); setIsDeep(true);
@@ -148,23 +192,22 @@ export function ChannelAudit() {
   const stop = () => { if (pollRef.current) clearInterval(pollRef.current); pollRef.current = null; setRunning(false); };
 
   return (
-    <div className="mx-auto max-w-[1000px]">
-      {/* Header */}
+    <div className="dash-fade-up w-full overflow-x-hidden">
+      {/* Intro */}
       <div className="mb-6">
-        <h1 className="text-[26px] font-bold text-on-surface">Channel Audit</h1>
-        <p className="mt-1 text-[15px] text-on-surface-variant">A full Shorts review — hooks, editing, voiceover, music &amp; captions, from your best 5 &amp; worst 5 Shorts.</p>
+        <p className="text-[14px] text-on-surface-variant">A full Shorts review — hooks, editing, voiceover, music &amp; captions — from your best 5 &amp; worst 5 Shorts.</p>
       </div>
 
       {error && (
-        <div className="mb-5 flex items-center gap-2 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-[14px] font-medium text-error">
+        <div className="mb-5 flex items-center gap-2 rounded-none border border-error/30 bg-error/10 px-4 py-3 text-[14px] font-medium text-error">
           <Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8v4M12 16h.01" size={17} />
           {error}
         </div>
       )}
 
       {warning && (
-        <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-[#d97706]/30 bg-[#d97706]/10 px-4 py-3.5 text-[14px] text-[#92400e]">
-          <span className="mt-0.5 shrink-0 text-[#d97706]"><Icon d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01" size={18} /></span>
+        <div className="mb-5 flex items-start gap-2.5 rounded-none border border-[#d97706]/30 bg-[#d97706]/10 px-4 py-3.5 text-[14px] text-[#d97706]">
+          <span className="mt-0.5 shrink-0"><Icon d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01" size={18} /></span>
           <div>
             <p className="font-semibold">Can&apos;t audit this channel</p>
             <p className="mt-0.5 leading-relaxed">{warning}</p>
@@ -172,163 +215,179 @@ export function ChannelAudit() {
         </div>
       )}
 
-      {/* Input */}
-      {!result && (
-        <div className="space-y-5">
-          {/* Option 1: Connect your own channel — DEEP audit (real analytics) */}
-          <div className="rounded-3xl border border-outline-variant bg-surface p-6">
-            <div className="flex flex-wrap items-center gap-4">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fde8e8] text-[#dc2626]">
-                <Icon d="M22 8.5c0-1.4-.1-2.4-.3-3-.2-.7-.7-1.2-1.4-1.4C18.9 3.7 12 3.7 12 3.7s-6.9 0-8.3.4c-.7.2-1.2.7-1.4 1.4-.2.6-.3 1.6-.3 3v3c0 1.4.1 2.4.3 3 .2.7.7 1.2 1.4 1.4 1.4.4 8.3.4 8.3.4s6.9 0 8.3-.4c.7-.2 1.2-.7 1.4-1.4.2-.6.3-1.6.3-3v-3zM10 14V7l6 3.5-6 3.5z" size={22} />
+      {/* STATE 1 — running */}
+      {running && <AuditingLoader progress={progress} />}
+
+      {/* STATE 2 — input (two ways to audit) */}
+      {!running && !result && (
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          {/* Deep audit — your own channel */}
+          <div className="flex flex-col rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-[#01D4FF]/10 text-[#01D4FF]">
+                <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={22} />
               </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[15px] font-bold text-on-surface">Audit your own channel <span className="ml-1.5 rounded-full bg-primary-container px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-on-primary-container">Deep</span></p>
-                <p className="mt-0.5 text-[13px] leading-relaxed text-on-surface-variant">
-                  {connected
-                    ? `Connected: ${connectedName || "your channel"}. Adds REAL analytics — retention, CTR, traffic sources & subscriber conversion.`
-                    : "Connect your YouTube for a deep audit with real retention, CTR & traffic data."}
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 text-[15px] font-bold text-on-surface">
+                  Your own channel
+                  <span className="rounded-full bg-[#01D4FF]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#01D4FF]">Deep</span>
                 </p>
+                <p className="text-[12px] text-on-surface-variant">Adds real private analytics</p>
               </div>
-              {connected ? (
-                <button onClick={runConnectedAudit} disabled={running} className="m3-btn-filled inline-flex items-center gap-2 disabled:opacity-60">
-                  {running && isDeep ? (
-                    <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" /> {progress}</>
-                  ) : (
-                    <><Icon d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" size={16} /> Deep Audit</>
-                  )}
-                </button>
-              ) : (
-                <button onClick={connectChannel} disabled={running} className="m3-btn-tonal inline-flex items-center gap-2">
-                  Connect YouTube
-                </button>
-              )}
             </div>
+            <p className="mt-4 flex-1 text-[13px] leading-relaxed text-on-surface-variant">
+              {connected
+                ? `Connected: ${connectedName || "your channel"}. Combines the video review with your real retention, traffic sources & subscriber conversion.`
+                : "Connect your YouTube for a deep audit with your real retention, traffic & conversion data layered on top of the video review."}
+            </p>
+            {connected ? (
+              <button onClick={runConnectedAudit} disabled={running} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 !rounded-none disabled:opacity-50">
+                <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={16} /> Run deep audit
+              </button>
+            ) : (
+              <button onClick={connectChannel} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 !rounded-none">
+                <Icon d="M12 5v14M5 12h14" size={16} /> Connect YouTube
+              </button>
+            )}
           </div>
 
-          <div className="flex items-center gap-3 text-[12px] font-medium text-on-surface-variant/60">
-            <span className="h-px flex-1 bg-outline-variant" /> or audit any public channel <span className="h-px flex-1 bg-outline-variant" />
-          </div>
-
-          {/* Option 2: Public URL/handle audit (kept as-is; free later) */}
-          <div className="rounded-3xl border border-outline-variant bg-surface p-6">
-            <label className="text-[13px] font-semibold uppercase tracking-wider text-on-surface-variant/70">Any channel by URL or @handle</label>
+          {/* Public audit — any channel */}
+          <div className="flex flex-col rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-white/[0.05] text-white/70">
+                <Icon d="M21 21l-4-4M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" size={22} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[15px] font-bold text-on-surface">Any public channel</p>
+                <p className="text-[12px] text-on-surface-variant">By URL or @handle</p>
+              </div>
+            </div>
             <input
               value={channel}
               onChange={(e) => setChannel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && runAudit()}
               disabled={running}
               placeholder="@ZackDFilms  ·  or a channel URL"
-              className="mt-2 h-12 w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-4 text-[15px] text-on-surface outline-none transition-colors placeholder:text-on-surface-variant focus:border-primary disabled:opacity-60"
+              className="mt-4 h-12 w-full rounded-none border border-white/10 bg-[#0f1113] px-4 text-[14px] text-on-surface outline-none transition-colors placeholder:text-on-surface-variant/60 focus:border-white/25 disabled:opacity-60"
             />
-            <button onClick={runAudit} disabled={running || !channel.trim()} className="m3-btn-filled mt-4 inline-flex w-full items-center justify-center gap-2 disabled:opacity-60">
-              {running && !isDeep ? (
-                <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" /> {progress}</>
-              ) : (
-                <><Icon d="M21 21l-4-4M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" size={16} /> Run Audit</>
-              )}
+            <button onClick={runAudit} disabled={running || !channel.trim()} className="btn-donate mt-4 inline-flex w-full items-center justify-center gap-2 !rounded-none disabled:opacity-50">
+              <Icon d="M21 21l-4-4M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" size={16} /> Run audit
             </button>
-            <p className="mt-3 text-center text-[12px] text-on-surface-variant">
-              Analyzes the channel&apos;s best 5 &amp; worst 5 Shorts — downloads, transcribes, and reviews them. Takes 8–15 minutes.
-            </p>
+            <p className="mt-3 text-center text-[12px] text-on-surface-variant">Reviews the best 5 &amp; worst 5 Shorts. Takes 8–15 min.</p>
           </div>
         </div>
       )}
 
-      {/* Result */}
-      {result && <Results r={result} deep={isDeep} onReset={() => { setResult(null); setChannel(""); }} />}
+      {/* STATE 3 — result */}
+      {!running && result && <Results r={result} deep={isDeep} onReset={() => { setResult(null); setChannel(""); }} />}
     </div>
   );
 }
 
 function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset: () => void }) {
   return (
-    <div className="space-y-5">
-      {deep && (
-        <div className="flex items-center gap-2 rounded-xl border border-primary/30 bg-primary-container/30 px-4 py-2.5 text-[13px] font-semibold text-on-primary-container">
-          <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z" size={16} />
-          Deep audit — includes your real private analytics (retention, CTR, traffic).
-        </div>
-      )}
-      {/* Channel header */}
-      <div className="rounded-3xl border border-outline-variant bg-surface p-6">
-        <div className="flex flex-wrap items-center gap-4">
-          {r.channel.thumbnail ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={r.channel.thumbnail} alt="" className="h-14 w-14 rounded-full" />
-          ) : (
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-on-primary">{r.channel.title.charAt(0)}</span>
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="text-[20px] font-bold text-on-surface">{r.channel.title}</p>
-            <p className="text-[13px] text-on-surface-variant">{fmtNum(r.channel.subscriberCount)} subscribers · {fmtNum(r.channel.videoCount)} videos</p>
-          </div>
-          <div className="text-right">
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[30px] font-bold leading-none" style={{ color: gradeColor(r.grade) }}>{r.grade}</span>
-              <span className="font-mono text-[18px] font-semibold text-on-surface-variant">{r.overall}/100</span>
+    <div className="space-y-6">
+      {/* HERO — score on top */}
+      <div className="relative overflow-hidden rounded-none border border-white/10 bg-[#1B1D1F] px-6 py-10">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.12] blur-3xl" style={{ background: overallHex(r.overall) }} />
+        <div className="relative flex flex-col items-center text-center">
+          {/* channel identity */}
+          <div className="mb-6 flex items-center gap-3">
+            {r.channel.thumbnail ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={r.channel.thumbnail} alt="" className="h-10 w-10 rounded-full" />
+            ) : (
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-[15px] font-bold text-on-primary">{r.channel.title.charAt(0)}</span>
+            )}
+            <div className="text-left">
+              <p className="text-[15px] font-bold text-on-surface">{r.channel.title}</p>
+              <p className="text-[12px] text-on-surface-variant">{fmtNum(r.channel.subscriberCount)} subscribers · {fmtNum(r.channel.videoCount)} videos</p>
             </div>
           </div>
+          <ScoreRing score={r.overall} />
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+            <span className="rounded-full px-3 py-1 text-[14px] font-bold" style={{ background: `${overallHex(r.overall)}1a`, color: overallHex(r.overall) }}>
+              Grade {r.grade}
+            </span>
+            {deep && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#01D4FF]/12 px-3 py-1 text-[12px] font-bold text-[#01D4FF]">
+                <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z" size={13} /> Deep · real analytics
+              </span>
+            )}
+          </div>
+          {r.summary && <p className="mt-4 max-w-[620px] text-[14px] leading-relaxed text-on-surface-variant">{r.summary}</p>}
+          <div className="mt-6">
+            <button onClick={onReset} className="inline-flex items-center gap-2 rounded-none border border-white/15 px-5 py-2.5 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
+              <Icon d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.7 3M3 4v4h4" size={15} /> Audit another
+            </button>
+          </div>
         </div>
-        {r.summary && <p className="mt-4 rounded-2xl bg-surface-container-low p-4 text-[14px] leading-relaxed text-on-surface">{r.summary}</p>}
       </div>
 
       {/* Category cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {r.categories.map((c) => (
-          <div key={c.name} className="rounded-2xl border border-outline-variant bg-surface p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-[15px] font-bold text-on-surface">{c.name}</span>
-              <span className="font-mono text-[18px] font-bold" style={{ color: scoreColor(c.score) }}>{c.score}/10</span>
+      <div>
+        <h3 className="mb-3 text-[15px] font-bold text-on-surface">Breakdown</h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {r.categories.map((c) => (
+            <div key={c.name} className="rounded-none border border-white/10 bg-[#1B1D1F] p-5">
+              <div className="flex items-center justify-between">
+                <span className="text-[14px] font-bold text-on-surface">{c.name}</span>
+                <span className="text-[16px] font-extrabold tabular-nums" style={{ color: catHex(c.score) }}>{c.score}<span className="text-[12px] text-on-surface-variant">/10</span></span>
+              </div>
+              <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
+                <div className="h-full rounded-full" style={{ width: `${c.score * 10}%`, background: catHex(c.score) }} />
+              </div>
+              <p className="mt-3 text-[13px] leading-relaxed text-on-surface-variant">{c.note}</p>
             </div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-container-high">
-              <div className="h-full rounded-full" style={{ width: `${c.score * 10}%`, background: scoreColor(c.score) }} />
-            </div>
-            <p className="mt-3 text-[13px] leading-relaxed text-on-surface-variant">{c.note}</p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      {/* Strengths */}
-      {r.strengths.length > 0 && (
-        <div className="rounded-3xl border border-outline-variant bg-surface p-6">
-          <h3 className="text-[15px] font-bold text-[#16a34a]">Strengths</h3>
-          <ul className="mt-3 space-y-1.5">
-            {r.strengths.map((s, i) => (
-              <li key={i} className="flex gap-2 text-[14px] text-on-surface"><span className="text-[#16a34a]">+</span> {s}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Strengths + Improvements side by side */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {r.strengths.length > 0 && (
+          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+            <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#34d399]">
+              <Icon d="M20 6 9 17l-5-5" size={17} /> Strengths
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {r.strengths.map((s, i) => (
+                <li key={i} className="flex gap-2.5 text-[14px] leading-relaxed text-on-surface">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#34d399]" /> {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      {/* Improvements */}
-      {r.improvements.length > 0 && (
-        <div className="rounded-3xl border border-[#d97706]/30 bg-[#d97706]/[0.06] p-6">
-          <h3 className="text-[15px] font-bold text-[#b45309]">Top Improvements</h3>
-          <ol className="mt-3 space-y-2">
-            {r.improvements.map((s, i) => (
-              <li key={i} className="flex gap-2.5 text-[14px] leading-relaxed text-on-surface">
-                <span className="font-bold text-[#b45309]">{i + 1}.</span> {s}
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
+        {r.improvements.length > 0 && (
+          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+            <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#e0b341]">
+              <Icon d="M13 2L3 14h7l-1 8 10-12h-7z" size={17} /> Top improvements
+            </h3>
+            <ol className="mt-4 space-y-3">
+              {r.improvements.map((s, i) => (
+                <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-on-surface">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#e0b341]/15 text-[12px] font-bold text-[#e0b341]">{i + 1}</span>
+                  <span className="pt-0.5">{s}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </div>
 
       {/* Coach review */}
       {r.coachReview && (
-        <div className="rounded-3xl border border-outline-variant bg-surface p-6">
-          <h3 className="flex items-center gap-2 text-[15px] font-bold text-primary">
+        <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+          <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#01D4FF]">
             <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={17} /> What NicheSpy AI thinks
           </h3>
-          <div className="mt-3 space-y-3 text-[14px] leading-relaxed text-on-surface">
+          <div className="mt-4 space-y-3 text-[14px] leading-relaxed text-on-surface">
             {r.coachReview.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
           </div>
         </div>
       )}
-
-      <button onClick={onReset} className="inline-flex items-center gap-2 rounded-full border border-outline-variant px-5 py-2.5 text-[14px] font-semibold text-on-surface transition-colors hover:bg-surface-container-high">
-        <Icon d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.7 3M3 4v4h4" size={15} /> Audit another channel
-      </button>
     </div>
   );
 }
