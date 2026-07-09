@@ -102,13 +102,14 @@ export function NicheResearcher() {
       {/* Header — the page title lives in the fixed topbar (no duplicate H1). */}
       <p className="mb-4 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
 
-      {/* Niche tabs — Uiverse cyan shine buttons */}
+      {/* Niche tabs — Uiverse gradient (btn-donate) */}
       <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
         {tabNiches.map((n) => (
           <button
             key={n.id}
             onClick={() => { setActive(n.id); setSelectedWeek(""); }}
-            className={`niche-shine rounded-md px-4 py-3 text-[13px] font-semibold ${active === n.id ? "is-active" : ""}`}
+            style={{ minWidth: 0 }}
+            className={`btn-donate !text-[13px] transition-all ${active === n.id ? "scale-[1.03] ring-2 ring-white/70" : "opacity-70 hover:opacity-100"}`}
           >
             {n.label}
           </button>
