@@ -120,6 +120,7 @@ export function TrustScore() {
   const [days, setDays] = useState<7 | 28 | 90>(90);
   const [openCat, setOpenCat] = useState<CategoryKey | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [pendingRemove, setPendingRemove] = useState<ConnectedChannel | null>(null);
 
   // ── Manual inputs (data YouTube's API can't share) ──
   const [swipeRate, setSwipeRate] = useState("");
@@ -168,8 +169,10 @@ export function TrustScore() {
     }
   };
 
-  const disconnect = async (youtubeId: string) => {
-    if (!confirm("Remove this channel? You can reconnect it anytime.")) return;
+  const confirmRemove = async () => {
+    const youtubeId = pendingRemove?.youtubeId;
+    setPendingRemove(null);
+    if (!youtubeId) return;
     setError("");
     try {
       const res = await fetch("/api/youtube/disconnect", {
@@ -275,21 +278,14 @@ export function TrustScore() {
               </div>
             </div>
 
-            {connected ? (
-              <button onClick={analyze} disabled={analyzing} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 disabled:opacity-50">
-                {analyzing ? (
-                  <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" /> Analyzing…</>
-                ) : (
-                  <><Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={16} /> {result ? "Re-analyze" : "Analyze channel"}</>
-                )}
-              </button>
-            ) : (
+            {!connected && (
               <button onClick={connect} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2">
                 <Icon d="M12 5v14M5 12h14" size={16} /> Connect
               </button>
             )}
             {connected && (
-              <p className="mt-3 text-center text-[12px] text-on-surface-variant">
+              <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[12px] text-on-surface-variant">
+                <Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM9 12l2 2 4-4" size={14} />
                 Reads your private YouTube Analytics — read-only.
               </p>
             )}
@@ -335,10 +331,10 @@ export function TrustScore() {
                           setError("");
                         }
                       }}
-                      className={`flex cursor-pointer items-center gap-3 rounded-none border p-2.5 transition-colors ${
+                      className={`flex cursor-pointer items-center gap-3 rounded-xl border p-2.5 transition-all ${
                         isSel
-                          ? "border-primary bg-primary-container/40"
-                          : "border-transparent bg-white/[0.03] hover:bg-white/[0.06]"
+                          ? "border-[#01D4FF]/60 bg-[#01D4FF]/10"
+                          : "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.08]"
                       }`}
                     >
                       {c.thumbnailUrl ? (
@@ -357,7 +353,7 @@ export function TrustScore() {
                         </span>
                       )}
                       <button
-                        onClick={(e) => { e.stopPropagation(); disconnect(c.youtubeId); }}
+                        onClick={(e) => { e.stopPropagation(); setPendingRemove(c); }}
                         title="Remove channel"
                         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-error/10 hover:text-error"
                       >
@@ -502,7 +498,58 @@ export function TrustScore() {
       {shareOpen && result && (
         <ShareCard score={result} channelName={ch?.name ?? "Your channel"} onClose={() => setShareOpen(false)} />
       )}
+
+      {/* Remove-channel confirm modal (in-app, not the browser alert) */}
+      {pendingRemove && (
+        <ConfirmModal
+          title="Remove this channel?"
+          message={`"${pendingRemove.name}" will be disconnected. You can reconnect it anytime.`}
+          confirmLabel="Remove"
+          onConfirm={confirmRemove}
+          onCancel={() => setPendingRemove(null)}
+        />
+      )}
     </div>
+  );
+}
+
+// In-app confirm dialog — portaled to <body> so the dashboard zoom transform
+// doesn't push it off-screen. Replaces the native window.confirm().
+function ConfirmModal({
+  title, message, confirmLabel = "Confirm", onConfirm, onCancel,
+}: { title: string; message: string; confirmLabel?: string; onConfirm: () => void; onCancel: () => void }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+  if (!mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onCancel}>
+      <div className="w-full max-w-[400px] rounded-2xl border border-white/10 bg-[#131417] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start gap-3.5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error/15 text-error">
+            <Icon d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6" size={19} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[17px] font-extrabold text-white">{title}</h3>
+            <p className="mt-1.5 text-[13.5px] leading-relaxed text-on-surface-variant">{message}</p>
+          </div>
+        </div>
+        <div className="mt-5 flex justify-end gap-2.5">
+          <button onClick={onCancel} className="rounded-lg border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white/85 transition-colors hover:bg-white/10">
+            Cancel
+          </button>
+          <button onClick={onConfirm} className="rounded-lg bg-error px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-error/85">
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }
 
@@ -658,12 +705,27 @@ function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channe
     } catch { /* ignore */ }
   };
 
-  const copyLink = async () => {
+  // Copy the actual PNG to the clipboard so pasting into Discord/Slack/etc drops
+  // the IMAGE, not a link. Falls back to copying the link if the browser can't
+  // put an image on the clipboard.
+  const copyImage = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.origin + url);
+      const res = await fetch(url);
+      const blob = await res.blob();
+      if (typeof ClipboardItem !== "undefined" && navigator.clipboard?.write) {
+        await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+      } else {
+        await navigator.clipboard.writeText(window.location.origin + url);
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch { /* ignore */ }
+    } catch {
+      try {
+        await navigator.clipboard.writeText(window.location.origin + url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch { /* ignore */ }
+    }
   };
 
   if (!mounted) return null;
@@ -689,9 +751,9 @@ function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channe
           <button onClick={download} className="btn-donate flex-1 inline-flex items-center justify-center gap-2 !text-[14px] !font-bold">
             <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M8 12l4 4 4-4M12 2v14" size={16} /> Download
           </button>
-          <button onClick={copyLink} className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-white/10">
-            <Icon d={copied ? "M20 6 9 17l-5-5" : "M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"} size={16} />
-            {copied ? "Copied!" : "Copy link"}
+          <button onClick={copyImage} className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-white/10">
+            <Icon d={copied ? "M20 6 9 17l-5-5" : "M9 9V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-4M4 9h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"} size={16} />
+            {copied ? "Copied!" : "Copy image"}
           </button>
         </div>
       </div>

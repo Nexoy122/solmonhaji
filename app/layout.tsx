@@ -80,6 +80,17 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${roboto.variable} ${robotoMono.variable} ${spaceGrotesk.variable}`}>
+      <head>
+        {/* Preload the Material Symbols font so sidebar icons render fast (it's
+            large — without this the browser fetches it late and icons flash in). */}
+        <link
+          rel="preload"
+          href="/material-symbols-rounded.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       {/* suppressHydrationWarning: browser extensions (e.g. Bitdefender) inject
           attributes like bis_skin_checked into <body> before React hydrates. */}
       <body suppressHydrationWarning>
