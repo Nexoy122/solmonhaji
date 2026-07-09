@@ -208,17 +208,14 @@ export function TrustScore() {
   const retention = result ? rs(result.retention.score) : null;
 
   return (
-    <div className="mx-auto max-w-[1180px]">
-      {/* Header */}
-      <div className="mb-6 flex items-center gap-2.5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fef0e6] text-[#ea580c]">
-          <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4zM9 12l2 2 4-4" size={19} />
-        </span>
-        <h1 className="text-[19px] font-bold uppercase tracking-[0.14em] text-on-surface">Trust Score</h1>
+    <div className="dash-fade-up w-full">
+      {/* Header — page title lives in the fixed topbar */}
+      <div className="mb-5 flex items-center gap-3">
+        <p className="text-[14px] text-on-surface-variant">Connect your channel for a full Trust Score across 5 growth signals.</p>
         {result && (
           <button
             onClick={() => setAiOpen(true)}
-            className="ml-auto inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-on-primary transition-opacity hover:opacity-90"
+            className="btn-donate ml-auto inline-flex items-center gap-2 !py-2 text-[13px]"
           >
             <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2zM19 3v4M21 5h-4" size={16} />
             Ask AI
@@ -227,14 +224,14 @@ export function TrustScore() {
       </div>
 
       {error && (
-        <div className="mb-5 flex items-center gap-2 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-[14px] font-medium text-error">
+        <div className="mb-5 flex items-center gap-2 rounded-md border border-error/30 bg-error/10 px-4 py-3 text-[14px] font-medium text-error">
           <Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8v4M12 16h.01" size={17} />
           {error}
         </div>
       )}
 
       {warning && (
-        <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-[#d97706]/30 bg-[#d97706]/10 px-4 py-3.5 text-[14px] text-[#92400e]">
+        <div className="mb-5 flex items-start gap-2.5 rounded-md border border-[#d97706]/30 bg-[#d97706]/10 px-4 py-3.5 text-[14px] text-[#d97706]">
           <span className="mt-0.5 shrink-0 text-[#d97706]"><Icon d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01" size={18} /></span>
           <div>
             <p className="font-semibold">{warningTitle || "Can't analyze this channel"}</p>
@@ -247,7 +244,7 @@ export function TrustScore() {
         {/* ───── LEFT COLUMN ───── */}
         <div className="space-y-5">
           {/* Channel card */}
-          <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+          <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="truncate text-[16px] font-bold text-on-surface">{ch ? ch.name : "No channel selected"}</p>
@@ -259,7 +256,7 @@ export function TrustScore() {
             </div>
 
             {connected ? (
-              <button onClick={analyze} disabled={analyzing} className="m3-btn-filled mt-5 inline-flex w-full items-center justify-center gap-2 disabled:opacity-60">
+              <button onClick={analyze} disabled={analyzing} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 disabled:opacity-50">
                 {analyzing ? (
                   <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" /> Analyzing…</>
                 ) : (
@@ -267,7 +264,7 @@ export function TrustScore() {
                 )}
               </button>
             ) : (
-              <button onClick={connect} className="m3-btn-filled mt-5 inline-flex w-full items-center justify-center gap-2">
+              <button onClick={connect} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2">
                 <Icon d="M12 5v14M5 12h14" size={16} /> Connect
               </button>
             )}
@@ -280,7 +277,7 @@ export function TrustScore() {
 
           {/* Analysis settings — directly under the channel card */}
           {connected && (
-            <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+            <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
               <h3 className="text-[15px] font-bold text-on-surface">Analysis settings</h3>
               <p className="mt-1 text-[12px] text-on-surface-variant">Analyzes your whole channel (Shorts + long-form).</p>
               <div className="mt-4">
@@ -293,7 +290,7 @@ export function TrustScore() {
           )}
 
           {/* Channels list */}
-          <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+          <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
             <div className="flex items-center justify-between">
               <h3 className="text-[15px] font-bold text-on-surface">Channels</h3>
               <span className="text-[13px] text-on-surface-variant">{channels?.length ?? 0}</span>
@@ -321,7 +318,7 @@ export function TrustScore() {
                       className={`flex cursor-pointer items-center gap-3 rounded-xl border p-2.5 transition-colors ${
                         isSel
                           ? "border-primary bg-primary-container/40"
-                          : "border-transparent bg-surface-container-low hover:bg-surface-container-high"
+                          : "border-transparent bg-white/[0.03] hover:bg-white/[0.06]"
                       }`}
                     >
                       {c.thumbnailUrl ? (
@@ -349,7 +346,7 @@ export function TrustScore() {
                     </div>
                     );
                   })}
-                  <button onClick={connect} className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-outline-variant py-2.5 text-[13px] font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface">
+                  <button onClick={connect} className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-white/15 py-2.5 text-[13px] font-medium text-white/55 transition-colors hover:bg-white/[0.04] hover:text-white/80">
                     <Icon d="M12 5v14M5 12h14" size={15} /> Add another channel
                   </button>
                 </div>
@@ -362,7 +359,7 @@ export function TrustScore() {
         <div className="space-y-5">
           {/* Score hero (with confidence badge + share) */}
           {result && (
-            <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+            <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
               <div className="flex flex-wrap items-center gap-6">
                 <ScoreRing score={result.overall} size={120} />
                 <div className="min-w-0 flex-1">
@@ -393,7 +390,7 @@ export function TrustScore() {
           </div>
 
           {/* Focus this week */}
-          <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+          <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
             <Eyebrow>Focus this week</Eyebrow>
             {result ? (
               <FocusBlock result={result} />
@@ -403,7 +400,7 @@ export function TrustScore() {
           </div>
 
           {/* Score breakdown */}
-          <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+          <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
             <h3 className="text-[16px] font-bold text-on-surface">Score breakdown</h3>
             {result ? (
               <Breakdown result={result} openCat={openCat} setOpenCat={setOpenCat} />
@@ -417,14 +414,14 @@ export function TrustScore() {
 
           {/* Recommendations */}
           {result && result.recommendations?.length > 0 && (
-            <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+            <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
               <h3 className="text-[16px] font-bold text-on-surface">Fine-tune accuracy</h3>
               <p className="mt-1 text-[13px] text-on-surface-variant">What to improve to raise your Trust Score, ranked by impact.</p>
               <div className="mt-4 space-y-3">
                 {result.recommendations.slice(0, 5).map((rec, i) => {
                   const color = rec.level === "critical" ? "#e11d48" : rec.level === "warning" ? "#d97706" : "#0FA5E9";
                   return (
-                    <div key={i} className="flex gap-3 rounded-2xl border border-outline-variant bg-surface-container-low p-4">
+                    <div key={i} className="flex gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-4">
                       <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
@@ -480,12 +477,12 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
   const cats: CategoryKey[] = ["engagement", "retention", "upload", "authority", "velocity"];
   const all = cats.flatMap((k) => (result[k] as CategoryScore).metrics ?? []);
   return (
-    <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+    <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
       <h3 className="text-[16px] font-bold text-on-surface">Full breakdown</h3>
       <p className="mt-1 text-[12px] text-on-surface-variant">Every signal we measured, scored 0–100.</p>
       <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         {all.map((m) => (
-          <div key={m.key} className="flex items-center justify-between rounded-xl bg-surface-container-low px-4 py-3">
+          <div key={m.key} className="flex items-center justify-between rounded-lg bg-white/[0.03] px-4 py-3">
             <span className="text-[13px] text-on-surface-variant">{m.name}</span>
             <span className="font-mono text-[15px] font-bold tabular-nums" style={{ color: scoreHex(m.score) }}>{rs(m.score)}</span>
           </div>
@@ -498,7 +495,7 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
 // ── Sub-components ──
 function StatCard({ label, value, foot, up, muted }: { label: string; value: string | null; foot: string; up?: boolean; muted?: boolean }) {
   return (
-    <div className="rounded-2xl border border-outline-variant bg-surface p-4">
+    <div className="rounded-lg border border-white/10 bg-[#0a0a0c] p-4">
       <Eyebrow>{label}</Eyebrow>
       <p className={`mt-3 font-mono text-[22px] font-bold tracking-tight ${value === null ? "text-on-surface-variant/40" : "text-on-surface"}`}>
         {value ?? "—"}
@@ -537,7 +534,7 @@ function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channe
     <>
       <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-        <div className="w-full max-w-[420px] rounded-3xl border border-outline-variant bg-surface p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="w-full max-w-[420px] rounded-xl border border-white/10 bg-[#0a0a0c] p-6" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-between">
             <h3 className="text-[17px] font-bold text-on-surface">Share your Trust Score</h3>
             <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high">
@@ -545,9 +542,9 @@ function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channe
             </button>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={url} alt="Trust Score card" className="mt-4 w-full rounded-2xl border border-outline-variant" />
+          <img src={url} alt="Trust Score card" className="mt-4 w-full rounded-lg border border-white/10" />
           <div className="mt-4 flex gap-2">
-            <button onClick={download} className="m3-btn-filled flex-1 inline-flex items-center justify-center gap-2 !text-[14px]">
+            <button onClick={download} className="btn-donate flex-1 inline-flex items-center justify-center gap-2 !text-[14px]">
               <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M8 12l4 4 4-4M12 2v14" size={16} /> Download
             </button>
             <button onClick={copyLink} className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-outline-variant px-4 py-2.5 text-[14px] font-semibold text-on-surface transition-colors hover:bg-surface-container-high">
@@ -585,7 +582,7 @@ function FocusBlock({ result }: { result: ScoreResult }) {
       </div>
       <p className="mt-3 text-[14px] leading-relaxed text-on-surface">{result.trustMeaning}</p>
       {top && (
-        <div className="mt-4 rounded-2xl bg-surface-container-low p-4">
+        <div className="mt-4 rounded-lg bg-white/[0.03] p-4">
           <p className="text-[14px] font-semibold text-on-surface">{top.title}</p>
           <p className="mt-1 text-[13px] leading-relaxed text-on-surface-variant">{top.description}</p>
         </div>
@@ -603,7 +600,7 @@ function Breakdown({ result, openCat, setOpenCat }: { result: ScoreResult; openC
         const meta = CATEGORY_META[key];
         const open = openCat === key;
         return (
-          <div key={key} className="rounded-2xl border border-outline-variant bg-surface-container-low">
+          <div key={key} className="rounded-lg border border-white/10 bg-white/[0.03]">
             <button onClick={() => setOpenCat(open ? null : key)} className="flex w-full items-center gap-3 p-4">
               <span className="text-on-surface-variant"><Icon d={meta.icon} size={17} /></span>
               <span className="text-[14px] font-semibold text-on-surface">{meta.label}</span>
