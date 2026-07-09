@@ -22,6 +22,23 @@ export async function POST(req: NextRequest) {
     const windowDays: number = [7, 28, 90].includes(Number(body.days)) ? Number(body.days) : 90;
     const youtubeId: string | undefined = body.channelId;
 
+    // ── Manual inputs (data YouTube's API can't provide) ──
+    const clampInt = (v: unknown, lo: number, hi: number): number | undefined => {
+      const n = Number(v);
+      return Number.isFinite(n) ? Math.min(hi, Math.max(lo, Math.round(n))) : undefined;
+    };
+    const clampNum = (v: unknown, lo: number, hi: number): number | undefined => {
+      const n = Number(v);
+      return Number.isFinite(n) && n > 0 ? Math.min(hi, Math.max(lo, n)) : undefined;
+    };
+    const ct = body.manual?.contentType;
+    const manual = {
+      swipeRate: clampNum(body.manual?.swipeRate, 0, 100),
+      communityStrikes: clampInt(body.manual?.communityStrikes, 0, 3),
+      copyrightStrikes: clampInt(body.manual?.copyrightStrikes, 0, 3),
+      contentType: (ct === "shorts" || ct === "long" || ct === "mixed") ? ct : undefined,
+    } as { swipeRate?: number; communityStrikes?: number; copyrightStrikes?: number; contentType?: "shorts" | "long" | "mixed" };
+
     // ── Resolve which channel to analyze ──
     const col = adminDb().collection("users").doc(uid).collection("youtube_channels");
     let chanDoc;
@@ -225,7 +242,8 @@ export async function POST(req: NextRequest) {
       channel,
       channel.videoCount,
       videoData,
-      mostlyShorts
+      mostlyShorts,
+      manual
     );
 
     // ── Confidence (data completeness, not just volume) ──

@@ -76,6 +76,11 @@ export interface MetricInput {
   hasDislikeData?: boolean;       // did Analytics return real like/dislike counts?
   hasSavesData?: boolean;         // did videosAddedToPlaylists return real data?
 
+  // ── Manual inputs (data YouTube's API can't give — user types from Studio) ──
+  manualSwipeRate?: number;       // swipe rate % from Studio (Shorts feed retention)
+  communityStrikes?: number;      // active community guideline strikes (0-3)
+  copyrightStrikes?: number;      // active copyright strikes (0-3)
+
   // Context for niche/size-aware benchmarks
   niche?: string;                 // optional niche/category hint
 }
@@ -281,6 +286,27 @@ function uploadFreqScore(uploadsPerMonth: number, isShorts = false): number {
   if (uploadsPerMonth >= 2)  return 48;
   if (uploadsPerMonth >= 1)  return 32;
   return 15;
+}
+
+/**
+ * Multiplicative penalty for active channel strikes (manual input from Studio).
+ * Copyright and Community Guidelines strikes both cap distribution/monetization;
+ * 3 of either = channel termination, so we scale steeply toward it.
+ *   0 strikes → ×1.00 (no penalty)
+ *   1 strike  → ×0.82
+ *   2 strikes → ×0.60
+ *   3 strikes → ×0.35 (near-terminal)
+ */
+function strikePenalty(community = 0, copyright = 0): { mult: number; total: number } {
+  const c = clamp(Math.round(community), 0, 3);
+  const r = clamp(Math.round(copyright), 0, 3);
+  const total = c + r;
+  const STEP: Record<number, number> = { 0: 1, 1: 0.82, 2: 0.6, 3: 0.35 };
+  // Worst single category drives the floor; a second category compounds lightly.
+  const worst = Math.max(c, r);
+  const other = Math.min(c, r);
+  const mult = clamp((STEP[worst] ?? 0.35) * (other > 0 ? 0.85 : 1), 0.2, 1);
+  return { mult, total };
 }
 
 // ─── Category: Engagement ────────────────────────────────────────────────────
@@ -567,7 +593,35 @@ export function calculateRetention(input: MetricInput): CategoryScore {
     trend: null,
   });
 
-  const score = clamp(metrics.reduce((acc, m) => acc + m.score * m.weight, 0));
+  // 4. Swipe rate (weight 20%, ONLY when the user provides it manually).
+  // YouTube's API doesn't expose it; read from Studio → Shorts → "Viewed vs
+  // swiped away". Higher = the feed is holding people. Benchmark ~70%.
+  if (input.manualSwipeRate != null && input.manualSwipeRate > 0) {
+    const swipe = clamp(input.manualSwipeRate, 0, 100);
+    const swipeScore = clamp(sigmoidScore(swipe / 70));
+    metrics.push({
+      key: "swipe_rate",
+      name: "Swipe Rate",
+      value: parseFloat(swipe.toFixed(1)),
+      score: swipeScore,
+      weight: 0.20,
+      unit: "% viewed",
+      benchmark: 70,
+      benchmarkLabel: "70%+ held (from Studio)",
+      percentile: swipe >= 80 ? "Top 20%" : swipe >= 70 ? "Strong" : swipe >= 55 ? "Average" : "Below average",
+      hasIssue: swipeScore < 45,
+      issueLevel: swipeScore < 25 ? "critical" : swipeScore < 45 ? "warning" : null,
+      recommendation: swipeScore < 45
+        ? "Too many people swipe away before watching. Your first frame + first spoken words must land instantly — lead with the payoff, not a setup, and test a bolder on-screen hook."
+        : null,
+      trend: null,
+    });
+  }
+
+  // Normalize by the weights actually present so optional metrics (swipe rate)
+  // don't distort the average when absent.
+  const wSum = metrics.reduce((acc, m) => acc + m.weight, 0);
+  const score = clamp(wSum > 0 ? metrics.reduce((acc, m) => acc + m.score * m.weight, 0) / wSum : 0);
 
   return {
     score,
@@ -1003,13 +1057,19 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
   const velocity   = calculateVelocity(input);
 
   // Weighted overall — weights match category.weight values
-  const overall = clamp(
+  const baseOverall =
     engagement.score * engagement.weight +
     retention.score  * retention.weight  +
     upload.score     * upload.weight     +
     authority.score  * authority.weight  +
-    velocity.score   * velocity.weight
-  );
+    velocity.score   * velocity.weight;
+
+  // ── Strike penalty (manual input) ──
+  // Active strikes are a real, severe trust signal the API can't expose. A
+  // channel under strikes has capped monetization + limited distribution, so
+  // each one applies a multiplicative penalty to the whole score.
+  const strikes = strikePenalty(input.communityStrikes, input.copyrightStrikes);
+  const overall = clamp(baseOverall * strikes.mult);
 
   // Collect and rank all recommendations by impact
   const allMetrics = [
@@ -1029,6 +1089,7 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
     saves_rate: "Engagement",
     avg_view_percentage: "Retention",
     completion_rate: "Retention",
+    swipe_rate: "Retention",
     audience_loyalty: "Retention",
     upload_frequency: "Consistency",
     upload_recency: "Consistency",
@@ -1061,6 +1122,22 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
     })
     .sort((a, b) => b.impact - a.impact)
     .slice(0, 8);
+
+  // Active strikes: surface as the #1 critical recommendation (manual input).
+  if (strikes.total > 0) {
+    const lost = Math.round(baseOverall - overall);
+    const parts: string[] = [];
+    if ((input.copyrightStrikes ?? 0) > 0) parts.push(`${input.copyrightStrikes} copyright`);
+    if ((input.communityStrikes ?? 0) > 0) parts.push(`${input.communityStrikes} community`);
+    recommendations.unshift({
+      category: "Trust",
+      level: "critical",
+      title: "Resolve active strikes",
+      description: `You reported ${parts.join(" + ")} strike${strikes.total > 1 ? "s" : ""}. Active strikes cap your distribution and monetization, and 3 in either category terminates the channel. Dispute invalid ones, wait out the 90-day expiry on the rest, and avoid any new violations. This is costing you ~${lost} points.`,
+      impact: lost,
+      action: "Resolve or wait out your active strikes — they expire 90 days after issue.",
+    });
+  }
 
   // Generate 3 key insights
   const categories = [engagement, retention, upload, authority, velocity];
@@ -1139,7 +1216,13 @@ export function calculateScoreFromAnalytics(
     daysSinceLastUpload: number;
     avgVideoDurationSeconds: number;
   },
-  isShorts = false
+  isShorts = false,
+  manual?: {
+    swipeRate?: number;
+    communityStrikes?: number;
+    copyrightStrikes?: number;
+    contentType?: "shorts" | "long" | "mixed";
+  }
 ): ScoreResult {
   const channelAgeInDays = Math.floor(
     (Date.now() - new Date(channel.publishedAt).getTime()) / (1000 * 60 * 60 * 24)
@@ -1150,6 +1233,12 @@ export function calculateScoreFromAnalytics(
   const uploadsLast90 = videoData?.uploadsLast90Days ?? Math.round(videoCount / (channelAgeInDays / 90));
   const daysSinceLast = videoData?.daysSinceLastUpload ?? 7;
   const avgVideoDur   = videoData?.avgVideoDurationSeconds ?? (analytics.avgViewDuration / Math.max(analytics.avgViewPercentage / 100, 0.1));
+
+  // A manual "content type" selection overrides the auto-detected Shorts flag.
+  const isShortsResolved =
+    manual?.contentType === "shorts" ? true :
+    manual?.contentType === "long" ? false :
+    isShorts;
 
   const input: MetricInput = {
     // Engagement
@@ -1173,7 +1262,7 @@ export function calculateScoreFromAnalytics(
     uploadsLast30Days: uploadsLast30,
     uploadsLast90Days: uploadsLast90,
     daysSinceLastUpload: daysSinceLast,
-    isShorts,
+    isShorts: isShortsResolved,
 
     // Authority
     totalViews: channel.viewCount,
@@ -1202,6 +1291,11 @@ export function calculateScoreFromAnalytics(
     // Data-availability flags → feed the confidence rating & avoid scoring gaps.
     hasDislikeData: analytics.hasDislikeData,
     hasSavesData: analytics.savesRate > 0,
+
+    // Manual inputs (data YouTube's API can't give).
+    manualSwipeRate: manual?.swipeRate,
+    communityStrikes: manual?.communityStrikes,
+    copyrightStrikes: manual?.copyrightStrikes,
 
     // Niche: use an explicit tag if the caller set one, else infer from text.
     niche: (channel as { niche?: string }).niche

@@ -107,6 +107,12 @@ export function TrustScore() {
   const [openCat, setOpenCat] = useState<CategoryKey | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
 
+  // ── Manual inputs (data YouTube's API can't share) ──
+  const [swipeRate, setSwipeRate] = useState("");
+  const [communityStrikes, setCommunityStrikes] = useState("");
+  const [copyrightStrikes, setCopyrightStrikes] = useState("");
+  const [contentType, setContentType] = useState("");
+
   const authHeader = useCallback(async (): Promise<Record<string, string>> => {
     const token = await user?.getIdToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
@@ -176,10 +182,16 @@ export function TrustScore() {
     setResult(null);
     setConfidence(null);
     try {
+      const manual = {
+        swipeRate: swipeRate.trim() === "" ? undefined : Number(swipeRate),
+        communityStrikes: communityStrikes === "" ? undefined : Number(communityStrikes),
+        copyrightStrikes: copyrightStrikes === "" ? undefined : Number(copyrightStrikes),
+        contentType: contentType || undefined,
+      };
       const res = await fetch("/api/score/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(await authHeader()) },
-        body: JSON.stringify({ days, channelId: selectedId }),
+        body: JSON.stringify({ days, channelId: selectedId, manual }),
       });
       const data = await res.json();
       if (data.unsupported) {
@@ -378,6 +390,15 @@ export function TrustScore() {
             <StatCard label="Last run" value={result ? "just now" : null} foot={result ? `${days}-day window` : "never"} muted />
           </div>
 
+          {/* Manual inputs — data YouTube doesn't share via the API */}
+          <ManualInputs
+            swipeRate={swipeRate} setSwipeRate={setSwipeRate}
+            communityStrikes={communityStrikes} setCommunityStrikes={setCommunityStrikes}
+            copyrightStrikes={copyrightStrikes} setCopyrightStrikes={setCopyrightStrikes}
+            contentType={contentType} setContentType={setContentType}
+            onSave={analyze} busy={analyzing} disabled={!connected}
+          />
+
           {/* Focus this week */}
           <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
             <Eyebrow>Focus this week</Eyebrow>
@@ -481,6 +502,81 @@ function StatCard({ label, value, foot, up, muted }: { label: string; value: str
         {value ?? "—"}
       </p>
       <p className={`mt-1 text-[11px] font-medium ${muted ? "text-on-surface-variant" : up ? "text-[#34d399]" : "text-on-surface-variant"}`}>{foot}</p>
+    </div>
+  );
+}
+
+// Manual inputs the YouTube API can't provide — the creator reads these from
+// YouTube Studio. Feeds swipe rate + strikes + content type into the score.
+function ManualInputs({
+  swipeRate, setSwipeRate,
+  communityStrikes, setCommunityStrikes,
+  copyrightStrikes, setCopyrightStrikes,
+  contentType, setContentType,
+  onSave, busy, disabled,
+}: {
+  swipeRate: string; setSwipeRate: (v: string) => void;
+  communityStrikes: string; setCommunityStrikes: (v: string) => void;
+  copyrightStrikes: string; setCopyrightStrikes: (v: string) => void;
+  contentType: string; setContentType: (v: string) => void;
+  onSave: () => void; busy: boolean; disabled: boolean;
+}) {
+  const fieldCls = "w-full rounded-md border border-white/10 bg-[#0f1113] px-3.5 py-2.5 text-[14px] text-on-surface outline-none transition-colors focus:border-white/25";
+  const strikeOpts = [0, 1, 2, 3];
+  return (
+    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+      <p className="text-[13px] text-on-surface-variant">
+        <span className="font-semibold text-[#e0b341]">Add data YouTube doesn&apos;t share via API</span> for a more accurate score.
+      </p>
+
+      <div className="mt-4 grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <label className="block">
+          <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Swipe rate</span>
+          <div className="relative">
+            <input
+              type="number" min={0} max={100} inputMode="decimal"
+              value={swipeRate} onChange={(e) => setSwipeRate(e.target.value)}
+              placeholder="—"
+              className={`${fieldCls} pr-8 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none`}
+            />
+            <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[13px] text-on-surface-variant">%</span>
+          </div>
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Community strikes</span>
+          <select value={communityStrikes} onChange={(e) => setCommunityStrikes(e.target.value)} className={fieldCls}>
+            <option value="">—</option>
+            {strikeOpts.map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Copyright strikes</span>
+          <select value={copyrightStrikes} onChange={(e) => setCopyrightStrikes(e.target.value)} className={fieldCls}>
+            <option value="">—</option>
+            {strikeOpts.map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Content type</span>
+          <select value={contentType} onChange={(e) => setContentType(e.target.value)} className={fieldCls}>
+            <option value="">—</option>
+            <option value="shorts">Shorts</option>
+            <option value="long">Long-form</option>
+            <option value="mixed">Mixed</option>
+          </select>
+        </label>
+      </div>
+
+      <button
+        onClick={onSave}
+        disabled={busy || disabled}
+        className="mt-5 w-full rounded-md bg-[#3f6212] py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#4d7c0f] disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {busy ? "Recalculating…" : "Save & recalculate"}
+      </button>
     </div>
   );
 }
