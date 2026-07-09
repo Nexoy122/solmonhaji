@@ -325,7 +325,7 @@ export function ChannelAudit() {
 
 function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset: () => void }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden">
       {/* HERO — score on top */}
       <div className="relative overflow-hidden rounded-none border border-white/10 bg-[#1B1D1F] px-6 py-10">
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.12] blur-3xl" style={{ background: overallHex(r.overall) }} />

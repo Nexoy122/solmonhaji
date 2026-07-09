@@ -481,7 +481,7 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: #33d
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: auto;
+  overflow: hidden;
   z-index: 1;
 }
 
