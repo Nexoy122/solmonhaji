@@ -233,7 +233,7 @@ export function TrustScore() {
         {/* ───── LEFT COLUMN ───── */}
         <div className="space-y-5">
           {/* Channel card */}
-          <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
+          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="truncate text-[16px] font-bold text-on-surface">{ch ? ch.name : "No channel selected"}</p>
@@ -266,7 +266,7 @@ export function TrustScore() {
 
           {/* Analysis settings — directly under the channel card */}
           {connected && (
-            <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
+            <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
               <h3 className="text-[15px] font-bold text-on-surface">Analysis settings</h3>
               <p className="mt-1 text-[12px] text-on-surface-variant">Analyzes your whole channel (Shorts + long-form).</p>
               <div className="mt-4">
@@ -279,7 +279,7 @@ export function TrustScore() {
           )}
 
           {/* Channels list */}
-          <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
+          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
             <div className="flex items-center justify-between">
               <h3 className="text-[15px] font-bold text-on-surface">Channels</h3>
               <span className="text-[13px] text-on-surface-variant">{channels?.length ?? 0}</span>
@@ -304,7 +304,7 @@ export function TrustScore() {
                           setError("");
                         }
                       }}
-                      className={`flex cursor-pointer items-center gap-3 rounded-xl border p-2.5 transition-colors ${
+                      className={`flex cursor-pointer items-center gap-3 rounded-none border p-2.5 transition-colors ${
                         isSel
                           ? "border-primary bg-primary-container/40"
                           : "border-transparent bg-white/[0.03] hover:bg-white/[0.06]"
@@ -348,7 +348,7 @@ export function TrustScore() {
         <div className="space-y-5">
           {/* Score hero (with confidence badge + share) */}
           {result && (
-            <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
+            <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
               <div className="flex flex-wrap items-center gap-6">
                 <ScoreRing score={result.overall} size={120} />
                 <div className="min-w-0 flex-1">
@@ -379,7 +379,7 @@ export function TrustScore() {
           </div>
 
           {/* Focus this week */}
-          <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
+          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
             <Eyebrow>Focus this week</Eyebrow>
             {result ? (
               <FocusBlock result={result} />
@@ -389,7 +389,7 @@ export function TrustScore() {
           </div>
 
           {/* Score breakdown */}
-          <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
+          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
             <h3 className="text-[16px] font-bold text-on-surface">Score breakdown</h3>
             {result ? (
               <Breakdown result={result} openCat={openCat} setOpenCat={setOpenCat} />
@@ -403,14 +403,14 @@ export function TrustScore() {
 
           {/* Recommendations */}
           {result && result.recommendations?.length > 0 && (
-            <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
+            <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
               <h3 className="text-[16px] font-bold text-on-surface">Fine-tune accuracy</h3>
               <p className="mt-1 text-[13px] text-on-surface-variant">What to improve to raise your Trust Score, ranked by impact.</p>
               <div className="mt-4 space-y-3">
                 {result.recommendations.slice(0, 5).map((rec, i) => {
                   const color = rec.level === "critical" ? "#f87171" : rec.level === "warning" ? "#e0b341" : "#01D4FF";
                   return (
-                    <div key={i} className="flex gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                    <div key={i} className="flex gap-3 rounded-none border border-white/10 bg-white/[0.03] p-4">
                       <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
@@ -457,12 +457,12 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
   const cats: CategoryKey[] = ["engagement", "retention", "upload", "authority", "velocity"];
   const all = cats.flatMap((k) => (result[k] as CategoryScore).metrics ?? []);
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0a0a0c] p-6">
+    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
       <h3 className="text-[16px] font-bold text-on-surface">Full breakdown</h3>
       <p className="mt-1 text-[12px] text-on-surface-variant">Every signal we measured, scored 0–100.</p>
       <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         {all.map((m) => (
-          <div key={m.key} className="flex items-center justify-between rounded-lg bg-white/[0.03] px-4 py-3">
+          <div key={m.key} className="flex items-center justify-between rounded-none bg-white/[0.03] px-4 py-3">
             <span className="text-[13px] text-on-surface-variant">{m.name}</span>
             <span className="text-[15px] font-bold tabular-nums" style={{ color: scoreHex(m.score) }}>{rs(m.score)}</span>
           </div>
@@ -475,7 +475,7 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
 // ── Sub-components ──
 function StatCard({ label, value, foot, up, muted }: { label: string; value: string | null; foot: string; up?: boolean; muted?: boolean }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-[#0a0a0c] p-4">
+    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-4">
       <Eyebrow>{label}</Eyebrow>
       <p className={`mt-3 text-[22px] font-bold tracking-tight tabular-nums ${value === null ? "text-on-surface-variant/40" : "text-on-surface"}`}>
         {value ?? "—"}
@@ -514,7 +514,7 @@ function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channe
     <>
       <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-        <div className="w-full max-w-[420px] rounded-xl border border-white/10 bg-[#0a0a0c] p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="w-full max-w-[420px] rounded-none border border-white/10 bg-[#1B1D1F] p-6" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-between">
             <h3 className="text-[17px] font-bold text-on-surface">Share your Trust Score</h3>
             <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high">
@@ -562,7 +562,7 @@ function FocusBlock({ result }: { result: ScoreResult }) {
       </div>
       <p className="mt-3 text-[14px] leading-relaxed text-on-surface">{result.trustMeaning}</p>
       {top && (
-        <div className="mt-4 rounded-lg bg-white/[0.03] p-4">
+        <div className="mt-4 rounded-none bg-white/[0.03] p-4">
           <p className="text-[14px] font-semibold text-on-surface">{top.title}</p>
           <p className="mt-1 text-[13px] leading-relaxed text-on-surface-variant">{top.description}</p>
         </div>
@@ -580,7 +580,7 @@ function Breakdown({ result, openCat, setOpenCat }: { result: ScoreResult; openC
         const meta = CATEGORY_META[key];
         const open = openCat === key;
         return (
-          <div key={key} className="rounded-lg border border-white/10 bg-white/[0.03]">
+          <div key={key} className="rounded-none border border-white/10 bg-white/[0.03]">
             <button onClick={() => setOpenCat(open ? null : key)} className="flex w-full items-center gap-3 p-4">
               <span className="text-on-surface-variant"><Icon d={meta.icon} size={17} /></span>
               <span className="text-[14px] font-semibold text-on-surface">{meta.label}</span>
