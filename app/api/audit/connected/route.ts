@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
     const lines: string[] = [
       `Avg view duration: ${Math.round(a.avgViewDuration)}s (${a.avgViewPercentage.toFixed(0)}% of video watched — RETENTION)`,
       `Engagement: like rate ${a.likeRate.toFixed(1)}%, comment rate ${a.commentRate.toFixed(2)}%, share rate ${a.shareRate.toFixed(2)}%, saves ${a.savesRate.toFixed(2)}%`,
-      a.ctr > 0 ? `CTR (thumbnail/title): ${a.ctr.toFixed(1)}%` : `CTR: not reported by API`,
       `Subscriber conversion: ${a.subsPerThousandViews.toFixed(1)} net subs per 1,000 views (gained ${a.subscribersGained}, lost ${a.subscribersLost})`,
       `Traffic sources: ${a.browsePct.toFixed(0)}% browse/home, ${a.suggestedPct.toFixed(0)}% suggested, ${a.searchPct.toFixed(0)}% search, ${a.externalPct.toFixed(0)}% external`,
       `Audience loyalty: ${a.subscriberViewPct.toFixed(0)}% of views from subscribers`,

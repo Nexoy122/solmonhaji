@@ -210,11 +210,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Analytics for the whole channel ──
-    const analytics = await fetchYouTubeAnalytics(accessToken, ytId, "ALL", windowDays);
-
-    // ── Score ── (treat as Shorts-style cadence if the channel is mostly Shorts)
+    // ── Analytics ── This is a Shorts tool: score Shorts-only metrics when the
+    // channel is mostly Shorts, so retention/engagement reflect the Shorts feed.
     const mostlyShorts = shortsCount >= longCount;
+    let analytics = await fetchYouTubeAnalytics(accessToken, ytId, mostlyShorts ? "SHORTS" : "ALL", windowDays);
+    // Some channels don't expose the SHORTS content-type filter; fall back to ALL.
+    if (mostlyShorts && analytics.views === 0) {
+      analytics = await fetchYouTubeAnalytics(accessToken, ytId, "ALL", windowDays);
+    }
+
+    // ── Score ── (Shorts cadence + benchmarks when the channel is mostly Shorts)
     const score = calculateScoreFromAnalytics(
       analytics,
       channel,
@@ -223,11 +228,20 @@ export async function POST(req: NextRequest) {
       mostlyShorts
     );
 
-    // ── Confidence (data completeness) ──
+    // ── Confidence (data completeness, not just volume) ──
+    // Count how many of the key real signals actually came back from Analytics.
     const analyzedVideos = shortsCount + longCount;
+    const dataSignals = [
+      analytics.views > 0,
+      analytics.avgViewPercentage > 0,   // retention (heaviest weight)
+      analytics.hasDislikeData,          // sentiment
+      analytics.savesRate > 0,           // saves
+      analytics.subscriberViewPct > 0,   // loyalty / traffic mix
+    ].filter(Boolean).length;
+
     let confidence: "high" | "medium" | "low";
-    if (analyzedVideos >= 20 && analytics.views > 0) confidence = "high";
-    else if (analyzedVideos >= 8) confidence = "medium";
+    if (analyzedVideos >= 20 && analytics.views > 0 && dataSignals >= 4) confidence = "high";
+    else if (analyzedVideos >= 8 && analytics.views > 0 && dataSignals >= 3) confidence = "medium";
     else confidence = "low";
 
     // Persist latest channel stats (best-effort).

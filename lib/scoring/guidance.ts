@@ -25,16 +25,13 @@ export const EXPERT_GUIDANCE: Record<string, ExpertTip> = {
   // ── Retention (the #1 lever the creator stresses) ──
   avg_view_percentage: {
     metricKey: "avg_view_percentage",
-    tip: "Retention is the #1 trust signal. Aim for 100%+ retention on Shorts (people re-watch) and a flat retention graph on long-form. Hook hard in the first 1-3 seconds, then use a pattern interrupt every ~90 seconds (cut, text, music change) so nobody drops.",
-    target: "Shorts: 100%+ · Long-form: 50%+",
+    tip: "Retention is the #1 Shorts trust signal. Because Shorts loop, aim for 75%+ (and 90-100%+ is viral territory — people re-watch). Hook hard in the first 1-2 seconds, cut every dead beat, and loop the last frame back into the first so it replays seamlessly.",
+    target: "Shorts: 75%+ (viral 90-100%+)",
   },
-  avg_watch_duration: {
-    metricKey: "avg_watch_duration",
-    tip: "Front-load your best content and tease what's coming. Don't 'warm up' — viewers decide in seconds. Every extra second of watch time tells YouTube to push you wider.",
-  },
-  video_length: {
-    metricKey: "video_length",
-    tip: "Match length to retention: if you can't hold attention, go shorter. A tight 6-10 min video beats a padded 20 min one. Cut anything that doesn't earn its place.",
+  completion_rate: {
+    metricKey: "completion_rate",
+    tip: "This is how much of each Short people actually finish. Keep clips tight (15-35s converts best), front-load the payoff, and don't 'warm up' — viewers decide in the first second. A clean loop pushes this past 100%.",
+    target: "85%+ watched",
   },
   audience_loyalty: {
     metricKey: "audience_loyalty",

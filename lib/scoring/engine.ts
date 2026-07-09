@@ -1,9 +1,15 @@
 /**
- * Eggar Trust Score Engine
+ * Eggar Trust Score Engine — YouTube SHORTS channel health scoring.
  *
- * Industry-standard YouTube channel health scoring.
- * All benchmarks sourced from YouTube Creator Academy, Social Blade data,
- * and published YouTube algorithm research.
+ * This tool scores Shorts-first channels, so every benchmark below is tuned to
+ * Shorts norms (much higher completion/retention, daily posting, feed-driven
+ * reach) rather than long-form. Benchmarks are informed by YouTube Creator
+ * Insider guidance + public Shorts performance data; they are conservative
+ * ballparks, not per-niche calibrated targets.
+ *
+ * Metrics we do NOT score: CTR / impressions / swipe rate. The Shorts feed has
+ * no thumbnail-CTR equivalent and the Analytics API does not expose reliable
+ * impression data for Shorts, so we omit them entirely rather than show 0s.
  *
  * Score ranges:
  *   90-100  Exceptional  (top 5% of channels)
@@ -34,7 +40,6 @@ export interface MetricInput {
   avgViewDuration: number;        // seconds
   avgVideoDuration: number;       // seconds (from video data)
   avgViewPercentage: number;      // 0-100 (from analytics, most accurate)
-  avgCtr: number;                 // impressions CTR % (0 — not available via public API)
 
   // Upload consistency (from video list)
   uploadsLast7Days: number;
@@ -59,10 +64,6 @@ export interface MetricInput {
   subsMomentum: number;           // % change recent 28d vs prior 28d
   viewsPerUniqueViewer: number;   // returning-audience loyalty signal
 
-  // Trust signals
-  impressions: number;            // last 90 days (0 — not available via public API)
-  swipeRatio: number;             // views/impressions * 100 (0 — not available)
-
   // ── NEW real signals ──
   savesRate: number;              // playlist adds / views * 100
   browsePct: number;              // % views from browse/home + subscriber feed
@@ -70,6 +71,10 @@ export interface MetricInput {
   searchPct: number;              // % views from YouTube search
   externalPct: number;            // % views from off-platform
   subscriberViewPct: number;      // % views from subscribed viewers (loyalty)
+
+  // Data-availability flags (drive confidence + avoid scoring on absent data)
+  hasDislikeData?: boolean;       // did Analytics return real like/dislike counts?
+  hasSavesData?: boolean;         // did videosAddedToPlaylists return real data?
 
   // Context for niche/size-aware benchmarks
   niche?: string;                 // optional niche/category hint
@@ -216,9 +221,11 @@ const SIZE_VSR_MULT: Record<string, number> = {
  * engagement. Defaults to 1.0 when the niche is unknown.
  */
 const NICHE_ENGAGEMENT_MULT: Record<string, number> = {
-  gaming: 1.15, entertainment: 1.1, comedy: 1.15, music: 0.85,
+  gaming: 1.15, entertainment: 1.1, comedy: 1.15, memes: 1.2, music: 0.85,
   education: 0.85, finance: 0.8, news: 0.75, tech: 0.95, howto: 0.9,
-  vlog: 1.05, fitness: 1.0, beauty: 1.05,
+  vlog: 1.05, fitness: 1.0, beauty: 1.05, sports: 1.0, food: 1.0,
+  motivation: 0.95, facts: 1.05, story: 1.1, animation: 1.1,
+  commentary: 1.05, reaction: 1.1, asmr: 0.9, art: 1.0, lifestyle: 1.0,
 };
 
 function engagementBenchmark(base: number, subs: number, niche?: string): number {
@@ -344,8 +351,11 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
   // Real, valid Analytics metric. 90%+ is healthy; below 80% signals content issues.
   const sentimentBenchmark = 92;
   const sentiment = input.likeToDislikeRatio;
-  // Scale: 92%+ → strong, linear penalty below
+  const sentimentKnown = input.hasDislikeData !== false && sentiment > 0;
+  // Scale: 92%+ → strong, linear penalty below. When there's no like/dislike
+  // data at all, score neutral (50) rather than fabricating a perfect ratio.
   const sentimentScore = clamp(
+    !sentimentKnown ? 50 :
     sentiment >= 95 ? 100 :
     sentiment >= 90 ? 85 :
     sentiment >= 85 ? 70 :
@@ -361,11 +371,11 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
     weight: 0.12,
     unit: "%",
     benchmark: sentimentBenchmark,
-    benchmarkLabel: "92% positive (like ratio)",
-    percentile: sentimentScore >= 85 ? "Top 20%" : sentimentScore >= 55 ? "Average" : "Below average",
-    hasIssue: sentimentScore < 55,
-    issueLevel: sentimentScore < 38 ? "critical" : sentimentScore < 55 ? "warning" : null,
-    recommendation: sentimentScore < 55
+    benchmarkLabel: sentimentKnown ? "92% positive (like ratio)" : "not enough data yet",
+    percentile: !sentimentKnown ? "No data" : sentimentScore >= 85 ? "Top 20%" : sentimentScore >= 55 ? "Average" : "Below average",
+    hasIssue: sentimentKnown && sentimentScore < 55,
+    issueLevel: !sentimentKnown ? null : sentimentScore < 38 ? "critical" : sentimentScore < 55 ? "warning" : null,
+    recommendation: sentimentKnown && sentimentScore < 55
       ? "Your like-to-dislike ratio is low. Review which videos draw dislikes — misleading titles/thumbnails or controversial framing often cause this."
       : null,
     trend: null,
@@ -462,19 +472,22 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
 
 // ─── Category: Retention ─────────────────────────────────────────────────────
 /**
- * Measures how long viewers watch your videos.
- * YouTube's #1 ranking factor for suggested video placement.
+ * Measures how much of each Short people actually watch.
+ * On Shorts this is THE ranking signal — the feed pushes clips that hold and
+ * loop viewers. Because Shorts loop, average view percentage routinely lands
+ * 60-100%+ (a rewatch counts as >100%), so the benchmarks here are far higher
+ * than long-form. There is no "video length optimization" — a Short is a Short.
  *
- * Industry benchmarks:
- *   - Avg view percentage: 40-60% (strong = 50%+)
- *   - Optimal video length: 7-20 min for most niches
- *   - Swipe ratio (views/impressions): 5-15%
+ * Shorts benchmarks:
+ *   - Avg view percentage: strong = 75%+, viral = 90-100%+
+ *   - Completion (avg watch ÷ clip length): strong = 80%+
  */
 export function calculateRetention(input: MetricInput): CategoryScore {
   const metrics: MetricResult[] = [];
 
-  // 1. Average View Percentage (weight 55%) — the gold standard metric
-  const avpBenchmark = 45; // 45% is solid. 50%+ is strong.
+  // 1. Average View Percentage (weight 60%) — the gold-standard Shorts signal.
+  // Shorts loop, so 75% is solid and 90%+ is viral territory.
+  const avpBenchmark = 75;
   const avp = input.avgViewPercentage;
   const avpRatio = avp / avpBenchmark;
   const avpScore = clamp(sigmoidScore(avpRatio));
@@ -483,86 +496,46 @@ export function calculateRetention(input: MetricInput): CategoryScore {
     name: "Average View Retention",
     value: parseFloat(avp.toFixed(1)),
     score: avpScore,
-    weight: 0.48,
+    weight: 0.60,
     unit: "%",
     benchmark: avpBenchmark,
-    benchmarkLabel: "45% industry standard",
-    percentile: avp >= 55 ? "Top 10%" : avp >= 45 ? "Top 30%" : avp >= 35 ? "Average" : "Below average",
+    benchmarkLabel: "75%+ strong (Shorts loop)",
+    percentile: avp >= 90 ? "Top 10%" : avp >= 75 ? "Top 30%" : avp >= 60 ? "Average" : "Below average",
     hasIssue: avpScore < 50,
     issueLevel: avpScore < 30 ? "critical" : avpScore < 50 ? "warning" : null,
     recommendation: avpScore < 50
-      ? "Retention below 40% means viewers are leaving early. Hook them in the first 30 seconds with your best content. Use pattern interrupts (cuts, text, music changes) every 90 seconds."
+      ? "Viewers swipe away before the end. On Shorts the first 1-2 seconds decide everything — open on the payoff, cut every dead beat, and loop the ending back to the start so it replays seamlessly."
       : null,
     trend: null,
   });
 
-  // 2. Avg watch duration absolute (weight 25%)
-  // Longer absolute watch time = more ad revenue signal to YouTube
-  const watchDurBenchmark = input.avgVideoDuration * 0.45; // 45% of video length
-  const watchDurScore = watchDurBenchmark > 0
-    ? clamp(sigmoidScore(input.avgViewDuration / watchDurBenchmark))
+  // 2. Completion — avg watch time as a fraction of clip length (weight 25%).
+  // For Shorts we WANT this near (or above) 100% — a full watch plus rewatches.
+  const clipLen = input.avgVideoDuration;
+  const completion = clipLen > 0 ? (input.avgViewDuration / clipLen) * 100 : 0;
+  // Benchmark 85%: a Short held almost to the end. Ratio caps naturally >1 on loops.
+  const completionScore = clipLen > 0
+    ? clamp(sigmoidScore(completion / 85))
     : 50;
-  const watchMinutes = input.avgViewDuration / 60;
   metrics.push({
-    key: "avg_watch_duration",
-    name: "Avg Watch Duration",
-    value: parseFloat(watchMinutes.toFixed(1)),
-    score: watchDurScore,
-    weight: 0.22,
-    unit: "min",
-    benchmark: parseFloat((watchDurBenchmark / 60).toFixed(1)),
-    benchmarkLabel: `${(watchDurBenchmark / 60).toFixed(1)} min target`,
-    percentile: watchDurScore >= 75 ? "Strong" : watchDurScore >= 50 ? "Average" : "Below average",
-    hasIssue: watchDurScore < 40,
-    issueLevel: watchDurScore < 25 ? "critical" : watchDurScore < 40 ? "warning" : null,
-    recommendation: watchDurScore < 40
-      ? "Viewers are watching less than 40% of your videos. Front-load value and tease what's coming to keep them watching."
+    key: "completion_rate",
+    name: "Completion Rate",
+    value: parseFloat(completion.toFixed(0)),
+    score: completionScore,
+    weight: 0.25,
+    unit: "% of clip",
+    benchmark: 85,
+    benchmarkLabel: "85%+ watched (rewatch = 100%+)",
+    percentile: completion >= 100 ? "Top 10% (loops)" : completion >= 85 ? "Strong" : completion >= 65 ? "Average" : "Below average",
+    hasIssue: completionScore < 40,
+    issueLevel: completionScore < 25 ? "critical" : completionScore < 40 ? "warning" : null,
+    recommendation: completionScore < 40
+      ? "People aren't finishing your Shorts. Keep them tight (15-35s converts best), front-load the hook, and make the last frame flow back into the first so it loops."
       : null,
     trend: null,
   });
 
-  // 3. Video length optimization (weight 20%)
-  // Sweet spots by YouTube's own creator data:
-  // 8-15 min = best for ads + retention balance
-  // <3 min = Shorts territory (different algorithm)
-  // >30 min = only works for established channels
-  const durationMins = input.avgVideoDuration / 60;
-  let lengthScore: number;
-  let lengthNote: string;
-  if (durationMins < 1) {
-    lengthScore = 20; lengthNote = "under 1 min";
-  } else if (durationMins < 3) {
-    lengthScore = 45; lengthNote = "1-3 min (consider Shorts strategy)";
-  } else if (durationMins < 6) {
-    lengthScore = 65; lengthNote = "3-6 min";
-  } else if (durationMins < 10) {
-    lengthScore = 88; lengthNote = "6-10 min (optimal)";
-  } else if (durationMins < 20) {
-    lengthScore = 95; lengthNote = "10-20 min (optimal)";
-  } else if (durationMins < 35) {
-    lengthScore = 75; lengthNote = "20-35 min";
-  } else {
-    lengthScore = 55; lengthNote = "35+ min (high drop-off risk)";
-  }
-  metrics.push({
-    key: "video_length",
-    name: "Video Length Optimization",
-    value: parseFloat(durationMins.toFixed(1)),
-    score: lengthScore,
-    weight: 0.15,
-    unit: "min avg",
-    benchmark: 12,
-    benchmarkLabel: "8-20 min sweet spot",
-    percentile: lengthScore >= 85 ? "Optimal range" : "Suboptimal",
-    hasIssue: lengthScore < 55,
-    issueLevel: lengthScore < 40 ? "warning" : null,
-    recommendation: lengthScore < 55
-      ? `Your average video length (${durationMins.toFixed(1)} min) is ${lengthNote}. Videos between 8-20 minutes earn more ad revenue and perform better in recommendations.`
-      : null,
-    trend: null,
-  });
-
-  // 4. Audience loyalty — share of views from subscribed viewers (weight 15%)
+  // 3. Audience loyalty — share of views from subscribed viewers (weight 15%)
   // A healthy mix: enough subscriber loyalty (a returning base) without being
   // 100% subscriber-dependent (which means no new-audience reach). Sweet spot
   // is moderate — both extremes are penalised slightly.
@@ -1055,8 +1028,7 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
     share_rate: "Engagement",
     saves_rate: "Engagement",
     avg_view_percentage: "Retention",
-    avg_watch_duration: "Retention",
-    video_length: "Retention",
+    completion_rate: "Retention",
     audience_loyalty: "Retention",
     upload_frequency: "Consistency",
     upload_recency: "Consistency",
@@ -1120,7 +1092,7 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
   if (retention.score < 55) {
     insights.push("Retention is below average — this directly limits how YouTube distributes your videos.");
   } else if (engagement.score < 50) {
-    insights.push("CTR and engagement are limiting your reach in Browse and Suggested.");
+    insights.push("Low engagement (likes, comments, shares) is limiting how far the Shorts feed pushes your videos.");
   } else if (upload.score < 50) {
     insights.push("Upload consistency is your top growth lever — consistent publishers grow 2-3× faster.");
   } else {
@@ -1195,7 +1167,6 @@ export function calculateScoreFromAnalytics(
     avgViewDuration: analytics.avgViewDuration,
     avgVideoDuration: avgVideoDur,
     avgViewPercentage: analytics.avgViewPercentage,
-    avgCtr: analytics.ctr,
 
     // Upload
     uploadsLast7Days: videoData?.uploadsLast7Days ?? Math.round(uploadsLast30 / 4),
@@ -1220,10 +1191,6 @@ export function calculateScoreFromAnalytics(
     subsMomentum: analytics.subsMomentum,
     viewsPerUniqueViewer: analytics.viewsPerUniqueViewer,
 
-    // Trust signals
-    impressions: analytics.impressions,
-    swipeRatio: analytics.swipeRatio,
-
     // New real signals
     savesRate: analytics.savesRate,
     browsePct: analytics.browsePct,
@@ -1231,8 +1198,55 @@ export function calculateScoreFromAnalytics(
     searchPct: analytics.searchPct,
     externalPct: analytics.externalPct,
     subscriberViewPct: analytics.subscriberViewPct,
-    niche: (channel as { niche?: string }).niche,
+
+    // Data-availability flags → feed the confidence rating & avoid scoring gaps.
+    hasDislikeData: analytics.hasDislikeData,
+    hasSavesData: analytics.savesRate > 0,
+
+    // Niche: use an explicit tag if the caller set one, else infer from text.
+    niche: (channel as { niche?: string }).niche
+      ?? inferNiche(`${channel.name} ${(channel as { description?: string }).description ?? ""}`),
   };
 
   return calculateOverallScore(input);
+}
+
+/**
+ * Lightweight niche inference from a channel's name + description. This is a
+ * best-effort keyword match so size/niche benchmarks stop defaulting to 1.0 for
+ * every channel. Returns undefined when nothing matches (engine falls back to
+ * the neutral 1.0 multiplier, same as before).
+ */
+const NICHE_KEYWORDS: Record<string, string[]> = {
+  gaming: ["gaming", "gamer", "gameplay", "minecraft", "fortnite", "roblox", "valorant", "fps", "speedrun"],
+  comedy: ["comedy", "funny", "skit", "prank", "humor", "meme lord"],
+  memes: ["meme", "memes", "shitpost", "brainrot"],
+  music: ["music", "song", "beats", "remix", "producer", "cover", "lyrics"],
+  education: ["education", "learn", "explained", "study", "tutorial", "science", "history", "geography"],
+  finance: ["finance", "money", "invest", "stocks", "crypto", "trading", "wealth", "business"],
+  news: ["news", "breaking", "politics", "update", "report"],
+  tech: ["tech", "technology", "gadget", "coding", "programming", "software", "ai", "review"],
+  fitness: ["fitness", "gym", "workout", "bodybuilding", "muscle", "health", "calisthenics"],
+  beauty: ["beauty", "makeup", "skincare", "cosmetic", "grwm"],
+  vlog: ["vlog", "daily", "day in the life", "lifestyle vlog"],
+  sports: ["sports", "football", "soccer", "basketball", "nba", "nfl", "highlights", "goals"],
+  food: ["food", "recipe", "cooking", "kitchen", "chef", "mukbang", "eat"],
+  motivation: ["motivation", "motivational", "mindset", "success", "discipline", "hustle"],
+  facts: ["facts", "did you know", "interesting", "trivia"],
+  story: ["story", "storytime", "stories", "narration"],
+  animation: ["animation", "animated", "cartoon", "anime"],
+  commentary: ["commentary", "react", "reaction", "review"],
+  asmr: ["asmr", "satisfying", "relax", "sleep"],
+  art: ["art", "drawing", "painting", "artist", "sketch"],
+};
+
+function inferNiche(text: string): string | undefined {
+  const t = text.toLowerCase();
+  let best: string | undefined;
+  let bestHits = 0;
+  for (const [niche, words] of Object.entries(NICHE_KEYWORDS)) {
+    const hits = words.reduce((n, w) => (t.includes(w) ? n + 1 : n), 0);
+    if (hits > bestHits) { bestHits = hits; best = niche; }
+  }
+  return best;
 }

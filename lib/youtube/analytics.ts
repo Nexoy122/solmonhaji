@@ -10,10 +10,7 @@ export interface YouTubeAnalyticsData {
   shareRate: number;
   commentRate: number;
   likeToDislikeRatio: number;    // 0-100 (likes / (likes+dislikes) * 100)
-  // CTR (best-effort; 0 if API can't provide)
-  ctr: number;
-  swipeRatio: number;
-  impressions: number;
+  hasDislikeData: boolean;       // did the API return any like/dislike counts?
   // Subscribers
   subscribersGained: number;
   subscribersLost: number;
@@ -181,8 +178,12 @@ export async function fetchYouTubeAnalytics(
   const dislikeRate = views > 0 ? (dislikes / views) * 100 : 0;
   const shareRate = views > 0 ? (shares / views) * 100 : 0;
   const commentRate = views > 0 ? (comments / views) * 100 : 0;
+  // Sentiment (like-to-dislike). When there's NO like/dislike data at all, don't
+  // fabricate a perfect 100% — flag it so the engine scores sentiment as neutral
+  // (unknown) instead of inflating the score.
+  const hasDislikeData = likes + dislikes > 0;
   const likeToDislikeRatio =
-    likes + dislikes > 0 ? (likes / (likes + dislikes)) * 100 : 100;
+    hasDislikeData ? (likes / (likes + dislikes)) * 100 : 0;
 
   const netSubscribers = subscribersGained - subscribersLost;
   const subsPerThousandViews = views > 0 ? (netSubscribers / views) * 1000 : 0;
@@ -250,11 +251,9 @@ export async function fetchYouTubeAnalytics(
   const subscriberViewPct = totViews > 0 ? (subViews / totViews) * 100 : 0;
   const subscriberWatchPct = totWatch > 0 ? (subWatch / totWatch) * 100 : 0;
 
-  // CTR / impressions are NOT available via the public Analytics API.
-  // Leave at 0 so the engine de-weights them instead of erroring.
-  const ctr = 0;
-  const impressions = 0;
-  const swipeRatio = 0;
+  // NOTE: CTR / impressions / swipe rate are intentionally omitted. The Shorts
+  // feed has no thumbnail-CTR equivalent and the Analytics API doesn't expose
+  // reliable Shorts impression data, so we don't fabricate them.
 
   return {
     views,
@@ -266,9 +265,7 @@ export async function fetchYouTubeAnalytics(
     shareRate,
     commentRate,
     likeToDislikeRatio,
-    ctr,
-    swipeRatio,
-    impressions,
+    hasDislikeData,
     subscribersGained,
     subscribersLost,
     netSubscribers,

@@ -202,7 +202,7 @@ export function TrustScore() {
 
   // ── Stat cards (top-right row) ──
   const trend = result ? result.velocity.metrics.find((m) => m.key === "views_momentum")?.value ?? null : null;
-  const swipe = result ? result.engagement.metrics.find((m) => m.key === "like_rate")?.value ?? null : null;
+  const avgViewPct = result ? result.retention.metrics.find((m) => m.key === "avg_view_percentage")?.value ?? null : null;
   const retention = result ? rs(result.retention.score) : null;
 
   return (
@@ -373,7 +373,7 @@ export function TrustScore() {
           {/* Stat cards row */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <StatCard label="Trend" value={trend === null ? null : `${trend > 0 ? "+" : ""}${rs(trend)}%`} foot="views momentum" up={trend !== null && trend >= 0} />
-            <StatCard label="Swipe rate" value={swipe === null ? null : `${swipe.toFixed(1)}%`} foot="like rate" />
+            <StatCard label="Avg view %" value={avgViewPct === null ? null : `${avgViewPct.toFixed(0)}%`} foot="watched per Short" />
             <StatCard label="Retention" value={retention === null ? null : `${retention}`} foot="normalized" />
             <StatCard label="Last run" value={result ? "just now" : null} foot={result ? `${days}-day window` : "never"} muted />
           </div>
