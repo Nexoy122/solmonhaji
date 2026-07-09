@@ -4,10 +4,10 @@ import { NextRequest } from "next/server";
 export const runtime = "edge";
 
 function scoreHex(s: number) {
-  if (s >= 75) return "#16a34a";
-  if (s >= 60) return "#0FA5E9";
-  if (s >= 45) return "#d97706";
-  return "#e11d48";
+  if (s >= 75) return "#34d399";
+  if (s >= 60) return "#01D4FF";
+  if (s >= 45) return "#e0b341";
+  return "#f87171";
 }
 
 // Public, shareable Trust Score card (PNG). No auth needed — only renders the
@@ -16,12 +16,11 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const score = Math.max(0, Math.min(100, parseInt(searchParams.get("score") ?? "0", 10) || 0));
   const name = (searchParams.get("name") ?? "Your channel").slice(0, 40);
-  const label = (searchParams.get("label") ?? "").slice(0, 24);
   const color = scoreHex(score);
 
   // Ring geometry
   const size = 300;
-  const stroke = 16;
+  const stroke = 12;
   const r = size / 2 - stroke;
   const circ = 2 * Math.PI * r;
   const dash = (score / 100) * circ;
@@ -33,52 +32,55 @@ export async function GET(req: NextRequest) {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "#07080d",
-          position: "relative",
+          background: "#050506",
           fontFamily: "sans-serif",
         }}
       >
-        {/* gradient glow */}
-        <div style={{ position: "absolute", bottom: -120, left: -80, width: 500, height: 400, background: "radial-gradient(circle, rgba(124,58,237,0.55), transparent 70%)", display: "flex" }} />
-        <div style={{ position: "absolute", bottom: -120, right: -80, width: 500, height: 400, background: "radial-gradient(circle, rgba(15,165,233,0.5), transparent 70%)", display: "flex" }} />
-
         {/* card */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            width: 600,
-            padding: "56px 40px",
-            borderRadius: 36,
-            background: "rgba(16,18,24,0.6)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            width: 720,
+            height: 900,
+            padding: "72px 48px",
+            borderRadius: 40,
+            background: "#0a0a0c",
+            border: "1px solid rgba(255,255,255,0.06)",
+            position: "relative",
+            overflow: "hidden",
           }}
         >
-          <div style={{ display: "flex", fontSize: 22, fontWeight: 700, letterSpacing: 4, color: "#9aa0ad" }}>TRUST SCORE</div>
-          <div style={{ display: "flex", fontSize: 40, fontWeight: 800, color: "#ffffff", marginTop: 10 }}>{name}</div>
+          {/* gradient glow — blue (left) → purple (right), pooled at the bottom */}
+          <div style={{ position: "absolute", bottom: -220, left: -140, width: 620, height: 620, background: "radial-gradient(circle, rgba(1,212,255,0.55), transparent 68%)", display: "flex" }} />
+          <div style={{ position: "absolute", bottom: -220, right: -140, width: 620, height: 620, background: "radial-gradient(circle, rgba(139,92,246,0.6), transparent 68%)", display: "flex" }} />
+
+          {/* header */}
+          <div style={{ display: "flex", fontSize: 26, fontWeight: 800, letterSpacing: 3, color: "#8b8f98" }}>TRUSTSCORE</div>
+          <div style={{ display: "flex", fontSize: 46, fontWeight: 800, color: "#e9eaec", marginTop: 14 }}>{name}</div>
 
           {/* ring */}
-          <div style={{ display: "flex", position: "relative", marginTop: 44, width: size, height: size }}>
+          <div style={{ display: "flex", position: "relative", marginTop: 96, width: size, height: size }}>
             <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-              <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={stroke} />
+              <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth={stroke} />
               <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={`${dash} ${circ}`} />
             </svg>
-            <div style={{ position: "absolute", top: 0, left: 0, width: size, height: size, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}>
-              <div style={{ display: "flex", justifyContent: "center", fontSize: 96, fontWeight: 800, color: "#ffffff", lineHeight: 1 }}>{score}</div>
-              {label ? <div style={{ display: "flex", justifyContent: "center", fontSize: 22, fontWeight: 600, color }}>{label}</div> : null}
+            <div style={{ position: "absolute", top: 0, left: 0, width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ display: "flex", fontSize: 128, fontWeight: 800, color: "#ffffff", lineHeight: 1 }}>{score}</div>
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 48, fontSize: 22, fontWeight: 600, color: "#cdd1d9" }}>
+          {/* footer */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: "auto", fontSize: 26, fontWeight: 700, color: "#d4d6da" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 9, background: "#01D4FF", color: "#050506", fontSize: 20, fontWeight: 800 }}>N</div>
             powered by NicheSpy
           </div>
         </div>
       </div>
     ),
-    { width: 800, height: 1000 }
+    { width: 1080, height: 1080 }
   );
 }

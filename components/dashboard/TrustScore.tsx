@@ -246,14 +246,19 @@ export function TrustScore() {
         <div className="space-y-5">
           {/* Channel card */}
           <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              {ch?.thumbnailUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={ch.thumbnailUrl} alt="" className="h-12 w-12 shrink-0 rounded-full" />
+              ) : ch ? (
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-[18px] font-bold text-on-primary">{ch.name.charAt(0)}</span>
+              ) : null}
               <div className="min-w-0">
                 <p className="truncate text-[16px] font-bold text-on-surface">{ch ? ch.name : "No channel selected"}</p>
                 <p className="mt-0.5 text-[13px] text-on-surface-variant">
                   {ch ? `${fmtNum(ch.subscriberCount)} subscribers · ${fmtNum(ch.videoCount)} videos` : "Connect a channel"}
                 </p>
               </div>
-              <ScoreRing score={result ? result.overall : null} size={108} />
             </div>
 
             {connected ? (
