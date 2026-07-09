@@ -9,7 +9,8 @@ import { refreshCountdownLabel } from "@/lib/refreshSchedule";
 
 type NavItem = { label: string; href: string; icon: string; soon?: boolean };
 
-// Grouped navigation — only tools we actually have. `icon` = key into NAV_ICONS.
+// Grouped navigation. `icon` = key into NAV_ICONS, or a raw Material Symbol name.
+// `soon: true` items are coming-soon (disabled, badged).
 const NAV_SECTIONS: { heading?: string; items: NavItem[] }[] = [
   {
     heading: "Research",
@@ -17,11 +18,20 @@ const NAV_SECTIONS: { heading?: string; items: NavItem[] }[] = [
       { label: "Discover", href: "/dashboard", icon: "discover" },
       { label: "Explore", href: "/dashboard/explore", icon: "explore" },
       { label: "Niche Researcher", href: "/dashboard/niche-researcher", icon: "niche" },
+      { label: "Study Channels", href: "#", icon: "travel_explore", soon: true },
+      { label: "My Channels", href: "#", icon: "subscriptions", soon: true },
     ],
   },
   {
     heading: "Create",
-    items: [{ label: "Script Generator", href: "/dashboard/script-generator", icon: "script" }],
+    items: [
+      { label: "Script Generator", href: "/dashboard/script-generator", icon: "script" },
+      { label: "Voiceovers", href: "#", icon: "record_voice_over", soon: true },
+      { label: "Editor", href: "#", icon: "movie_edit", soon: true },
+      { label: "Clipper", href: "#", icon: "content_cut", soon: true },
+      { label: "Captions Generator", href: "#", icon: "closed_caption", soon: true },
+      { label: "Image Generator", href: "#", icon: "image", soon: true },
+    ],
   },
   {
     heading: "Analyze",
@@ -29,6 +39,17 @@ const NAV_SECTIONS: { heading?: string; items: NavItem[] }[] = [
       { label: "Trust Score", href: "/dashboard/trust-score", icon: "trust" },
       { label: "Channel Audit", href: "/dashboard/channel-audit", icon: "audit" },
       { label: "Shorts Transcript", href: "/dashboard/shorts-transcript", icon: "transcript" },
+      { label: "Revenue Calculator", href: "#", icon: "payments", soon: true },
+      { label: "Pre/Post Check", href: "#", icon: "checklist", soon: true },
+    ],
+  },
+  {
+    heading: "Utilities",
+    items: [
+      { label: "Video Downloader", href: "#", icon: "download", soon: true },
+      { label: "Video Upscaler", href: "#", icon: "high_quality", soon: true },
+      { label: "Captions Remover", href: "#", icon: "subtitles_off", soon: true },
+      { label: "Background Remover", href: "#", icon: "background_replace", soon: true },
     ],
   },
 ];
@@ -128,9 +149,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   ) : (
                     <span className="absolute inset-0 scale-95 rounded-lg bg-[#363738] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100" />
                   )}
-                  {/* icon — white/muted (no cyan), vertically centered with text */}
+                  {/* icon — white/muted (no cyan), vertically centered with text.
+                      Named keys use NAV_ICONS; otherwise treat `icon` as a raw
+                      Material Symbol glyph name. */}
                   <span className={`relative flex shrink-0 items-center ${active ? "text-white" : "text-white/60 group-hover:text-white/90"}`}>
-                    {IconCmp ? <IconCmp /> : null}
+                    {IconCmp ? <IconCmp /> : <MSym name={item.icon} />}
                   </span>
                   <span className="relative flex-1 truncate whitespace-nowrap leading-none">{item.label}</span>
                   {item.soon && (
