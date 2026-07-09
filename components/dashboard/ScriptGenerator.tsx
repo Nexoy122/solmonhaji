@@ -42,7 +42,7 @@ const IMPROVE_OPTS: { id: string; label: string }[] = [
   { id: "longer", label: "Make longer" },
 ];
 
-const inputCls = "w-full border border-white/12 bg-[#1E1F21] px-4 py-3 text-[14px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-white/30";
+const inputCls = "w-full rounded-md border border-white/20 bg-[#1E1F21] px-4 py-3 text-[14px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-[#2e8eff]/70";
 
 export function ScriptGenerator() {
   const { user } = useAuth();
@@ -213,20 +213,20 @@ export function ScriptGenerator() {
     <div className="dash-fade-up w-full">
       <p className="mb-5 text-[14px] text-on-surface-variant">Turn any idea, script, or video into a scroll-stopping YouTube Shorts script — step by step.</p>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2">
         {/* ── Left: wizard ── */}
-        <div className="border border-white/10 bg-[#050506]">
+        <div className="flex min-h-[600px] flex-col rounded-xl border border-white/20 bg-[#0a0a0c] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_8px_30px_rgba(0,0,0,0.5)]">
           {/* Mode tabs */}
-          <div className="grid grid-cols-3 border-b border-white/[0.07]">
+          <div className="grid grid-cols-3 border-b border-white/15">
             {MODES.map((m) => (
               <button key={m.id} onClick={() => setMode(m.id)}
-                className={`flex flex-col items-center gap-1 px-2 py-3.5 text-center transition-all ${mode === m.id ? "bg-white/[0.05] text-white" : "text-on-surface-variant hover:bg-white/[0.02] hover:text-white"}`}>
-                <Icon d={m.icon} size={18} /><span className="text-[12.5px] font-semibold">{m.label}</span>
+                className={`flex flex-col items-center gap-1.5 px-2 py-4 text-center transition-all first:rounded-tl-xl last:rounded-tr-xl ${mode === m.id ? "bg-white/[0.06] text-white" : "text-on-surface-variant hover:bg-white/[0.02] hover:text-white"}`}>
+                <Icon d={m.icon} size={20} /><span className="text-[13px] font-semibold">{m.label}</span>
               </button>
             ))}
           </div>
 
-          <div className="p-5">
+          <div className="flex flex-1 flex-col p-6">
             {/* Step header + progress */}
             <div className="mb-1 flex items-center justify-between">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/70">
@@ -237,10 +237,10 @@ export function ScriptGenerator() {
               </div>
             </div>
 
-            {/* Active step (animated) */}
-            <div className="step-in" key={`${mode}-${step}`}>
-              <p className="text-[17px] font-bold text-on-surface">{cur.title}</p>
-              <p className="mb-4 mt-0.5 text-[12.5px] leading-relaxed text-on-surface-variant">{cur.hint}</p>
+            {/* Active step (animated) — grows to fill */}
+            <div className="step-in mt-4 flex-1" key={`${mode}-${step}`}>
+              <p className="text-[18px] font-bold text-on-surface">{cur.title}</p>
+              <p className="mb-4 mt-1 text-[13px] leading-relaxed text-on-surface-variant">{cur.hint}</p>
               {cur.content}
             </div>
 
@@ -250,8 +250,8 @@ export function ScriptGenerator() {
               </p>
             )}
 
-            {/* Nav */}
-            <div className="mt-5 flex items-center gap-3">
+            {/* Nav (pinned to bottom) */}
+            <div className="mt-6 flex items-center gap-3">
               {step > 0 && (
                 <button onClick={() => { setStep((s) => s - 1); setErr(""); }} className="gbtn flex items-center gap-1.5 px-4 py-3 text-[13.5px] font-semibold text-white/70">
                   <Icon d="M19 12H5M11 18l-6-6 6-6" size={15} /> Back
@@ -276,16 +276,16 @@ export function ScriptGenerator() {
         </div>
 
         {/* ── Right: output ── */}
-        <div className="flex flex-col border border-white/10 bg-[#050506]">
-          <div className="grid grid-cols-2 border-b border-white/[0.07]">
+        <div className="flex min-h-[600px] flex-col rounded-xl border border-white/20 bg-[#0a0a0c] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_8px_30px_rgba(0,0,0,0.5)]">
+          <div className="grid grid-cols-2 border-b border-white/15">
             {(["output", "history"] as const).map((t) => (
               <button key={t} onClick={() => setOutTab(t)}
-                className={`py-3.5 text-[13.5px] font-semibold capitalize transition-colors ${outTab === t ? "bg-white/[0.04] text-white" : "text-on-surface-variant hover:text-white"}`}>
+                className={`py-4 text-[13.5px] font-semibold capitalize transition-colors first:rounded-tl-xl last:rounded-tr-xl ${outTab === t ? "bg-white/[0.06] text-white" : "text-on-surface-variant hover:text-white"}`}>
                 {t}{t === "history" && history.length > 0 ? ` (${history.length})` : ""}
               </button>
             ))}
           </div>
-          <div className="min-h-[500px] flex-1 p-5">
+          <div className="flex flex-1 flex-col p-6">
             {outTab === "output" ? (
               busy ? <GeneratingLoader /> :
               script ? <ScriptOutput text={script} onImprove={improveInline} refining={refining} /> : (
