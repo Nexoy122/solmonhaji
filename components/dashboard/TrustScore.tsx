@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
-import { AiChatPanel } from "@/components/dashboard/AiChatPanel";
 import type { ScoreResult, CategoryScore } from "@/lib/scoring/engine";
 
 // ── Types ──
@@ -106,7 +105,6 @@ export function TrustScore() {
   const [warningTitle, setWarningTitle] = useState("");
   const [days, setDays] = useState<7 | 28 | 90>(90);
   const [openCat, setOpenCat] = useState<CategoryKey | null>(null);
-  const [aiOpen, setAiOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
 
   const authHeader = useCallback(async (): Promise<Record<string, string>> => {
@@ -208,19 +206,10 @@ export function TrustScore() {
   const retention = result ? rs(result.retention.score) : null;
 
   return (
-    <div className="dash-fade-up w-full">
+    <div className="dash-fade-up w-full overflow-x-hidden">
       {/* Header — page title lives in the fixed topbar */}
-      <div className="mb-5 flex items-center gap-3">
+      <div className="mb-5">
         <p className="text-[14px] text-on-surface-variant">Connect your channel for a full Trust Score across 5 growth signals.</p>
-        {result && (
-          <button
-            onClick={() => setAiOpen(true)}
-            className="btn-donate ml-auto inline-flex items-center gap-2 !py-2 text-[13px]"
-          >
-            <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2zM19 3v4M21 5h-4" size={16} />
-            Ask AI
-          </button>
-        )}
       </div>
 
       {error && (
@@ -438,15 +427,6 @@ export function TrustScore() {
           )}
         </div>
       </div>
-
-      {/* AI coach slide-over */}
-      <AiChatPanel
-        open={aiOpen}
-        onClose={() => setAiOpen(false)}
-        score={result}
-        channelName={ch?.name}
-        meta={{ windowDays: days, subscriberCount: ch?.subscriberCount, videoCount: ch?.videoCount }}
-      />
 
       {/* Share card modal */}
       {shareOpen && result && (
