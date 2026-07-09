@@ -151,6 +151,7 @@ export function TrustScore() {
   const [openCat, setOpenCat] = useState<CategoryKey | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [pendingRemove, setPendingRemove] = useState<ConnectedChannel | null>(null);
+  const [switcherOpen, setSwitcherOpen] = useState(false);
 
   // ── Manual inputs (data YouTube's API can't share) ──
   const [swipeRate, setSwipeRate] = useState("");
@@ -288,216 +289,101 @@ export function TrustScore() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[340px_1fr]">
-        {/* ───── LEFT COLUMN ───── */}
-        <div className="space-y-5">
-          {/* Channel card */}
-          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-            <div className="flex items-start gap-4">
-              {ch?.thumbnailUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={ch.thumbnailUrl} alt="" className="h-12 w-12 shrink-0 rounded-full" />
-              ) : ch ? (
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-[18px] font-bold text-on-primary">{ch.name.charAt(0)}</span>
-              ) : null}
-              <div className="min-w-0">
-                <p className="truncate text-[16px] font-bold text-on-surface">{ch ? ch.name : "No channel selected"}</p>
-                <p className="mt-0.5 text-[13px] text-on-surface-variant">
-                  {ch ? `${fmtNum(ch.subscriberCount)} subscribers · ${fmtNum(ch.videoCount)} videos` : "Connect a channel"}
-                </p>
-              </div>
-            </div>
-
-            {!connected && (
-              <button onClick={connect} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 !rounded-none">
-                <Icon d="M12 5v14M5 12h14" size={16} /> Connect
+      {/* ───── TOP BAR — channel picker + window + actions ───── */}
+      <div className="mb-6 flex flex-col gap-3 border-b border-white/[0.08] pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <ChannelSwitcher
+          channels={channels}
+          selected={ch}
+          open={switcherOpen}
+          setOpen={setSwitcherOpen}
+          onSelect={(id) => { if (id !== selectedId) { setSelectedId(id); setResult(null); setWarning(""); setError(""); } setSwitcherOpen(false); }}
+          onConnect={connect}
+          onRemove={(c) => setPendingRemove(c)}
+        />
+        {connected && (
+          <div className="flex items-center gap-2.5">
+            <Segmented value={String(days)} onChange={(v) => setDays(Number(v) as typeof days)} options={[{ v: "7", l: "7d" }, { v: "28", l: "28d" }, { v: "90", l: "90d" }]} />
+            {result && (
+              <button onClick={() => setShareOpen(true)} className="inline-flex items-center gap-1.5 rounded-none border border-white/15 px-3.5 py-2 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
+                <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" size={15} /> Share
               </button>
             )}
-            {connected && (
-              <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[12px] text-on-surface-variant">
-                <Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM9 12l2 2 4-4" size={14} />
-                Reads your private YouTube Analytics — read-only.
-              </p>
-            )}
+            <button onClick={analyze} disabled={analyzing} className="btn-donate inline-flex items-center justify-center gap-2 !rounded-none !py-2 !text-[13px] disabled:opacity-50">
+              <Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={15} /> {result ? "Re-analyze" : "Analyze"}
+            </button>
           </div>
+        )}
+      </div>
 
-          {/* Analysis settings — directly under the channel card */}
-          {connected && (
-            <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-              <h3 className="text-[15px] font-bold text-on-surface">Analysis settings</h3>
-              <p className="mt-1 text-[12px] text-on-surface-variant">Analyzes your whole channel (Shorts + long-form).</p>
-              <div className="mt-4">
-                <Eyebrow>Time window</Eyebrow>
-                <div className="mt-1.5">
-                  <Segmented value={String(days)} onChange={(v) => setDays(Number(v) as typeof days)} options={[{ v: "7", l: "7 days" }, { v: "28", l: "28 days" }, { v: "90", l: "90 days" }]} />
-                </div>
-              </div>
-            </div>
-          )}
+      {/* STATE 1 — analyzing */}
+      {analyzing && <ResultsSkeleton />}
 
-          {/* Channels list */}
-          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[15px] font-bold text-on-surface">Channels</h3>
-              <span className="text-[13px] text-on-surface-variant">{channels?.length ?? 0}</span>
-            </div>
-            <div className="mt-4">
-              {channels === null ? (
-                <p className="py-4 text-center text-[13px] text-on-surface-variant">Loading…</p>
-              ) : channels.length === 0 ? (
-                <p className="py-4 text-center text-[13px] text-on-surface-variant">No channels connected yet.</p>
-              ) : (
-                <div className="space-y-2">
-                  {channels.map((c) => {
-                    const isSel = c.youtubeId === selectedId;
-                    return (
-                    <div
-                      key={c.youtubeId}
-                      onClick={() => {
-                        if (c.youtubeId !== selectedId) {
-                          setSelectedId(c.youtubeId);
-                          setResult(null);
-                          setWarning("");
-                          setError("");
-                        }
-                      }}
-                      className={`flex cursor-pointer items-center gap-3 rounded-none border p-2.5 transition-all ${
-                        isSel
-                          ? "border-[#01D4FF]/60 bg-[#01D4FF]/10"
-                          : "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.08]"
-                      }`}
-                    >
-                      {c.thumbnailUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={c.thumbnailUrl} alt="" className="h-9 w-9 rounded-full" />
-                      ) : (
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-[13px] font-bold text-on-primary">{c.name.charAt(0)}</span>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13px] font-semibold text-on-surface">{c.name}</p>
-                        <p className="text-[11px] text-on-surface-variant">{fmtNum(c.subscriberCount)} subs</p>
-                      </div>
-                      {isSel && (
-                        <span className="shrink-0 text-primary" title="Selected">
-                          <Icon d="M20 6 9 17l-5-5" size={16} />
-                        </span>
-                      )}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setPendingRemove(c); }}
-                        title="Remove channel"
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-error/10 hover:text-error"
-                      >
-                        <Icon d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6" size={16} />
-                      </button>
-                    </div>
-                    );
-                  })}
-                  <button onClick={connect} className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-white/15 py-2.5 text-[13px] font-medium text-white/55 transition-colors hover:bg-white/[0.04] hover:text-white/80">
-                    <Icon d="M12 5v14M5 12h14" size={15} /> Add another channel
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+      {/* STATE 2 — no result yet */}
+      {!analyzing && !result && (
+        <div className="flex min-h-[440px] flex-col items-center justify-center rounded-none border border-white/10 bg-[#1B1D1F] p-10 text-center">
+          <span className="flex h-16 w-16 items-center justify-center rounded-none bg-white/[0.04] text-white/70">
+            <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={30} />
+          </span>
+          <h3 className="mt-5 text-[20px] font-bold text-on-surface">
+            {connected ? "Ready to check your Trust Score" : "Connect your channel to begin"}
+          </h3>
+          <p className="mt-2 max-w-[380px] text-[14px] leading-relaxed text-on-surface-variant">
+            {connected
+              ? "We'll read your private YouTube Analytics and score your channel across 5 growth signals."
+              : "Securely connect your YouTube channel — read-only access to your Analytics."}
+          </p>
+          <button onClick={connected ? analyze : connect} className="btn-donate mt-6 inline-flex items-center justify-center gap-2 !rounded-none">
+            {connected
+              ? <><Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={16} /> Analyze channel</>
+              : <><Icon d="M12 5v14M5 12h14" size={16} /> Connect channel</>}
+          </button>
         </div>
+      )}
 
-        {/* ───── RIGHT COLUMN ───── */}
-        <div className="space-y-5">
-          {/* STATE 1 — analyzing (skeleton that mirrors the results layout) */}
-          {analyzing && <ResultsSkeleton />}
-
-          {/* STATE 2 — no result yet (clean single prompt, not a wall of empty cards) */}
-          {!analyzing && !result && (
-            <div className="flex min-h-[460px] flex-col items-center justify-center rounded-none border border-white/10 bg-[#1B1D1F] p-10 text-center">
-              <span className="flex h-16 w-16 items-center justify-center rounded-none bg-white/[0.04] text-white/70">
-                <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={30} />
-              </span>
-              <h3 className="mt-5 text-[19px] font-bold text-on-surface">
-                {connected ? "Ready to check your Trust Score" : "Connect your channel to begin"}
-              </h3>
-              <p className="mt-2 max-w-[340px] text-[14px] leading-relaxed text-on-surface-variant">
-                {connected
-                  ? "We'll read your private YouTube Analytics and score your channel across 5 growth signals."
-                  : "Securely connect your YouTube channel — read-only access to your Analytics."}
-              </p>
-              <button
-                onClick={connected ? analyze : connect}
-                className="btn-donate mt-6 inline-flex items-center justify-center gap-2 !rounded-none"
-              >
-                {connected
-                  ? <><Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={16} /> Analyze channel</>
-                  : <><Icon d="M12 5v14M5 12h14" size={16} /> Connect channel</>}
-              </button>
+      {/* STATE 3 — results: full-width, score on top */}
+      {!analyzing && result && (
+        <div className="space-y-6">
+          {/* HERO — big centered score */}
+          <div className="relative overflow-hidden rounded-none border border-white/10 bg-[#1B1D1F] px-6 py-10">
+            {/* subtle score-colored glow behind the ring */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.12] blur-3xl" style={{ background: scoreHex(result.overall) }} />
+            <div className="relative flex flex-col items-center text-center">
+              <ScoreRing score={result.overall} size={168} />
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+                <span className="text-[28px] font-extrabold text-on-surface">{result.label}</span>
+                <span className="rounded-full px-3 py-1 text-[13px] font-bold" style={{ background: `${scoreHex(result.overall)}1a`, color: scoreHex(result.overall) }}>
+                  Grade {result.grade}
+                </span>
+                {confidence && <ConfidenceBadge level={confidence} />}
+              </div>
+              <p className="mt-3 max-w-[560px] text-[14px] leading-relaxed text-on-surface-variant">{result.trustMeaning}</p>
             </div>
-          )}
+          </div>
 
-          {/* STATE 3 — results */}
-          {!analyzing && result && (
-            <>
-              {/* Score hero — clean channel-card style with the score ring */}
-              <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-                {/* channel identity row */}
-                {ch && (
-                  <div className="mb-5 flex items-center gap-3 border-b border-white/[0.07] pb-5">
-                    {ch.thumbnailUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={ch.thumbnailUrl} alt="" className="h-10 w-10 rounded-full" />
-                    ) : (
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-[15px] font-bold text-on-primary">{ch.name.charAt(0)}</span>
-                    )}
-                    <div className="min-w-0">
-                      <p className="truncate text-[15px] font-bold text-on-surface">{ch.name}</p>
-                      <p className="text-[12px] text-on-surface-variant">{fmtNum(ch.subscriberCount)} subscribers · {fmtNum(ch.videoCount)} videos</p>
-                    </div>
-                  </div>
-                )}
-                <div className="flex flex-wrap items-center gap-6">
-                  <ScoreRing score={result.overall} size={120} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[24px] font-extrabold text-on-surface">{result.label}</span>
-                      <span className="rounded-full px-2.5 py-0.5 text-[12px] font-bold" style={{ background: `${scoreHex(result.overall)}1a`, color: scoreHex(result.overall) }}>
-                        Grade {result.grade}
-                      </span>
-                      {confidence && <ConfidenceBadge level={confidence} />}
-                    </div>
-                    <p className="mt-2 text-[13px] leading-relaxed text-on-surface-variant">{result.trustMeaning}</p>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <button onClick={analyze} className="inline-flex items-center gap-1.5 rounded-none border border-white/15 px-4 py-2 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
-                        <Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={15} /> Re-analyze
-                      </button>
-                      <button onClick={() => setShareOpen(true)} className="inline-flex items-center gap-1.5 rounded-none border border-white/15 px-4 py-2 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
-                        <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" size={15} /> Share
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <StatCard label="Trend" value={trend === null ? null : `${trend > 0 ? "+" : ""}${rs(trend)}%`} foot="views momentum" up={trend !== null && trend >= 0} />
+            <StatCard label="Avg view %" value={avgViewPct === null ? null : `${avgViewPct.toFixed(0)}%`} foot="watched per Short" />
+            <StatCard label="Retention" value={retention === null ? null : `${retention}`} foot="normalized" />
+            <StatCard label="Last run" value="just now" foot={`${days}-day window`} muted />
+          </div>
 
-              {/* Stat cards row */}
-              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <StatCard label="Trend" value={trend === null ? null : `${trend > 0 ? "+" : ""}${rs(trend)}%`} foot="views momentum" up={trend !== null && trend >= 0} />
-                <StatCard label="Avg view %" value={avgViewPct === null ? null : `${avgViewPct.toFixed(0)}%`} foot="watched per Short" />
-                <StatCard label="Retention" value={retention === null ? null : `${retention}`} foot="normalized" />
-                <StatCard label="Last run" value={result ? "just now" : null} foot={`${days}-day window`} muted />
-              </div>
-
-              {/* Focus this week */}
+          {/* Two-column results grid */}
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            {/* LEFT: focus + breakdown */}
+            <div className="space-y-6">
               <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
                 <Eyebrow>Focus this week</Eyebrow>
                 <FocusBlock result={result} />
               </div>
-
-              {/* Score breakdown */}
               <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
                 <h3 className="text-[16px] font-bold text-on-surface">Score breakdown</h3>
                 <Breakdown result={result} openCat={openCat} setOpenCat={setOpenCat} />
               </div>
+            </div>
 
-              {/* Full breakdown — every individual metric */}
-              <FullBreakdown result={result} />
-
-              {/* Recommendations */}
+            {/* RIGHT: recommendations + full metric breakdown */}
+            <div className="space-y-6">
               {result.recommendations?.length > 0 && (
                 <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
                   <h3 className="text-[16px] font-bold text-on-surface">Fine-tune accuracy</h3>
@@ -521,19 +407,20 @@ export function TrustScore() {
                   </div>
                 </div>
               )}
+              <FullBreakdown result={result} />
+            </div>
+          </div>
 
-              {/* Manual inputs — moved to the end: refine an existing score */}
-              <ManualInputs
-                swipeRate={swipeRate} setSwipeRate={setSwipeRate}
-                communityStrikes={communityStrikes} setCommunityStrikes={setCommunityStrikes}
-                copyrightStrikes={copyrightStrikes} setCopyrightStrikes={setCopyrightStrikes}
-                contentType={contentType} setContentType={setContentType}
-                onSave={analyze} busy={analyzing} disabled={!connected}
-              />
-            </>
-          )}
+          {/* Manual inputs — full width at the end */}
+          <ManualInputs
+            swipeRate={swipeRate} setSwipeRate={setSwipeRate}
+            communityStrikes={communityStrikes} setCommunityStrikes={setCommunityStrikes}
+            copyrightStrikes={copyrightStrikes} setCopyrightStrikes={setCopyrightStrikes}
+            contentType={contentType} setContentType={setContentType}
+            onSave={analyze} busy={analyzing} disabled={!connected}
+          />
         </div>
-      </div>
+      )}
 
       {/* Share card modal */}
       {shareOpen && result && (
@@ -639,6 +526,98 @@ function StatCard({ label, value, foot, up, muted }: { label: string; value: str
         {value ?? "—"}
       </p>
       <p className={`mt-1 text-[11px] font-medium ${muted ? "text-on-surface-variant" : up ? "text-[#34d399]" : "text-on-surface-variant"}`}>{foot}</p>
+    </div>
+  );
+}
+
+// Compact channel picker for the top bar — shows the active channel and opens a
+// dropdown to switch, remove, or add a channel.
+function ChannelSwitcher({
+  channels, selected, open, setOpen, onSelect, onConnect, onRemove,
+}: {
+  channels: ConnectedChannel[] | null;
+  selected: ConnectedChannel | null;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  onSelect: (id: string) => void;
+  onConnect: () => void;
+  onRemove: (c: ConnectedChannel) => void;
+}) {
+  const count = channels?.length ?? 0;
+
+  if (!channels || channels.length === 0) {
+    return (
+      <button onClick={onConnect} className="btn-donate inline-flex items-center gap-2 !rounded-none !py-2.5 !text-[14px]">
+        <Icon d="M12 5v14M5 12h14" size={16} /> Connect your channel
+      </button>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-3 rounded-none border border-white/10 bg-[#1B1D1F] px-3 py-2 transition-colors hover:border-white/25"
+      >
+        {selected?.thumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={selected.thumbnailUrl} alt="" className="h-9 w-9 rounded-full" />
+        ) : (
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-[14px] font-bold text-on-primary">{selected?.name.charAt(0) ?? "?"}</span>
+        )}
+        <div className="min-w-0 text-left">
+          <p className="truncate text-[14px] font-bold text-on-surface">{selected?.name ?? "Select channel"}</p>
+          <p className="text-[11px] text-on-surface-variant">{selected ? `${fmtNum(selected.subscriberCount)} subscribers · ${fmtNum(selected.videoCount)} videos` : ""}</p>
+        </div>
+        <span className={`ml-1 text-on-surface-variant transition-transform ${open ? "rotate-180" : ""}`}>
+          <Icon d="M6 9l6 6 6-6" size={18} />
+        </span>
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 top-[calc(100%+6px)] z-50 w-[320px] rounded-none border border-white/10 bg-[#131417] p-2 shadow-2xl">
+            <p className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Channels · {count}</p>
+            <div className="max-h-[300px] space-y-1 overflow-y-auto">
+              {channels.map((c) => {
+                const isSel = c.youtubeId === selected?.youtubeId;
+                return (
+                  <div
+                    key={c.youtubeId}
+                    onClick={() => onSelect(c.youtubeId)}
+                    className={`flex cursor-pointer items-center gap-3 rounded-none border p-2 transition-all ${
+                      isSel ? "border-[#01D4FF]/60 bg-[#01D4FF]/10" : "border-transparent hover:border-white/15 hover:bg-white/[0.06]"
+                    }`}
+                  >
+                    {c.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={c.thumbnailUrl} alt="" className="h-8 w-8 rounded-full" />
+                    ) : (
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-[12px] font-bold text-on-primary">{c.name.charAt(0)}</span>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-semibold text-on-surface">{c.name}</p>
+                      <p className="text-[11px] text-on-surface-variant">{fmtNum(c.subscriberCount)} subs</p>
+                    </div>
+                    {isSel && <span className="shrink-0 text-[#01D4FF]"><Icon d="M20 6 9 17l-5-5" size={15} /></span>}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onRemove(c); }}
+                      title="Remove channel"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-error/10 hover:text-error"
+                    >
+                      <Icon d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" size={15} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <button onClick={onConnect} className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-none border border-dashed border-white/15 py-2.5 text-[13px] font-medium text-white/55 transition-colors hover:bg-white/[0.04] hover:text-white/80">
+              <Icon d="M12 5v14M5 12h14" size={15} /> Add another channel
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
