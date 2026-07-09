@@ -149,13 +149,13 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-track { background: #000101; }
 .dashboard-dark ::-webkit-scrollbar-thumb,
 html:has(.dashboard-dark)::-webkit-scrollbar-thumb,
 html:has(.dashboard-dark) body::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.12); border-radius: 9999px;
+  background: #01D4FF; border-radius: 9999px;
   border: 2px solid transparent; background-clip: padding-box;
 }
 .dashboard-dark ::-webkit-scrollbar-thumb:hover,
 html:has(.dashboard-dark)::-webkit-scrollbar-thumb:hover,
-html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); background-clip: padding-box; }
-.dashboard-dark, html:has(.dashboard-dark) { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) #000101; }
+html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: #33ddff; background-clip: padding-box; }
+.dashboard-dark, html:has(.dashboard-dark) { scrollbar-width: thin; scrollbar-color: #01D4FF #000101; }
 /* Zoom the whole dashboard out for a denser, premium feel. */
 .dashboard-zoom { zoom: 0.92; }
 @supports not (zoom: 1) { .dashboard-zoom { transform: scale(0.92); transform-origin: top center; width: 108.7%; } }
@@ -537,19 +537,53 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: rgba
 .gbtn {
   position: relative;
   background: #1E1F21;
-  border: 1px solid rgba(255,255,255,0.14);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 0 14px rgba(255,255,255,0.05);
+  border: 1px solid rgba(1,212,255,0.45);
+  box-shadow: 0 0 0 1px rgba(1,212,255,0.08), 0 0 12px rgba(1,212,255,0.15);
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
 .gbtn:hover {
-  border-color: rgba(255,255,255,0.32);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 20px rgba(255,255,255,0.12);
+  border-color: rgba(1,212,255,0.8);
+  box-shadow: 0 0 0 1px rgba(1,212,255,0.2), 0 0 20px rgba(1,212,255,0.35);
 }
 .gbtn.is-active {
-  border-color: rgba(255,255,255,0.5);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.14), 0 0 26px rgba(255,255,255,0.18);
+  border-color: #01D4FF;
+  box-shadow: 0 0 0 1px rgba(1,212,255,0.3), 0 0 26px rgba(1,212,255,0.45);
   background: #26272a;
 }
+
+/* ---- Niche tab shine button (Uiverse by mrhyddenn), brand cyan ---- */
+.niche-shine {
+  position: relative;
+  border: 1px solid #01D4FF;
+  background: transparent;
+  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 0 0 0 transparent;
+  transition: all 0.2s ease-in;
+}
+.niche-shine:hover {
+  background: #01D4FF;
+  color: #001318;
+  box-shadow: 0 0 30px 5px rgba(1,212,255,0.55);
+  transition: all 0.2s ease-out;
+}
+.niche-shine:hover::before { animation: niche-sh 0.5s 0s linear; }
+.niche-shine::before {
+  content: ''; display: block; width: 0; height: 86%;
+  position: absolute; top: 7%; left: 0; opacity: 0;
+  background: #fff; box-shadow: 0 0 50px 30px #fff;
+  transform: skewX(-20deg);
+}
+.niche-shine.is-active {
+  background: #01D4FF; color: #001318;
+  box-shadow: 0 0 22px 2px rgba(1,212,255,0.45);
+}
+@keyframes niche-sh {
+  from { opacity: 0; left: 0%; }
+  50% { opacity: 1; }
+  to { opacity: 0; left: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .niche-shine::before { animation: none; } }
 @media (prefers-reduced-motion: reduce) {
   /* Keep a soft static glow but no rotation (angle held by JS). */
   .border-glow-card::before, .border-glow-card::after, .border-glow-card > .edge-light { transition: none; }

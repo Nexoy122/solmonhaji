@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import BorderGlow from "@/components/dashboard/BorderGlow";
-import { nicheColor } from "@/lib/nicheColors";
 
 interface NicheDef { id: string; label: string }
 interface ViralVideo { id: string; title: string; channelName: string; thumbnail: string; views: number; url: string; outlierX: number; publishedAt?: string }
@@ -103,22 +102,17 @@ export function NicheResearcher() {
       {/* Header — the page title lives in the fixed topbar (no duplicate H1). */}
       <p className="mb-4 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
 
-      {/* Niche tabs — each niche keeps its own color when active */}
+      {/* Niche tabs — Uiverse cyan shine buttons */}
       <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
-        {tabNiches.map((n) => {
-          const on = active === n.id;
-          const col = nicheColor(n.id);
-          return (
-            <button
-              key={n.id}
-              onClick={() => { setActive(n.id); setSelectedWeek(""); }}
-              className={`rounded-none border px-4 py-3 text-[13.5px] font-semibold transition-colors ${on ? "" : "border-white/12 bg-[#1E1F21] text-white/55 hover:border-white/25 hover:text-white/80"}`}
-              style={on ? { color: col.c, background: col.bg, borderColor: col.border } : undefined}
-            >
-              {n.label}
-            </button>
-          );
-        })}
+        {tabNiches.map((n) => (
+          <button
+            key={n.id}
+            onClick={() => { setActive(n.id); setSelectedWeek(""); }}
+            className={`niche-shine rounded-md px-4 py-3 text-[13px] font-semibold ${active === n.id ? "is-active" : ""}`}
+          >
+            {n.label}
+          </button>
+        ))}
       </div>
 
       {error && (
@@ -130,10 +124,10 @@ export function NicheResearcher() {
       {/* ── Nothing picked yet: dimmed skeleton preview behind a centered prompt. ── */}
       {!picked && (
         <div className="relative">
-          <div className="pointer-events-none select-none opacity-[0.5] blur-[1px]">
+          <div className="pointer-events-none select-none opacity-[0.9]">
             <NichePreview />
           </div>
-          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/70 to-[#000101] pt-[150px]">
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/50 to-[#000101]/90 pt-[150px]">
             <div className="text-center">
               <span className="nudge-up mx-auto mb-5 flex size-12 items-center justify-center rounded-full border border-white/10 bg-[#000101] text-white/70">
                 <Icon d="M12 19V5M5 12l7-7 7 7" size={24} />
@@ -338,7 +332,7 @@ function SkeletonLines({ dim }: { dim?: boolean }) {
 }
 
 const SkBar = ({ w = "100%", h = "h-3" }: { w?: string; h?: string }) => (
-  <div className={`${h} animate-pulse rounded bg-white/10`} style={{ width: w }} />
+  <div className={`${h} animate-pulse rounded bg-white/[0.22]`} style={{ width: w }} />
 );
 
 // Dimmed skeleton of the full page, shown behind the "Select a niche" prompt.
@@ -348,16 +342,16 @@ function NichePreview() {
       {/* AI Analysis */}
       <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
       {/* AI Analysis (full width) */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
+      <div className="rounded-xl border border-white/15 bg-white/[0.05] p-6">
         <SkBar w="30%" h="h-2.5" />
         <div className="mt-4 space-y-2.5"><SkBar w="94%" /><SkBar w="88%" /><SkBar w="91%" /><SkBar w="70%" /></div>
       </div>
       {/* Filter */}
-      <div className="mt-5 h-10 w-[240px] animate-pulse rounded-md border border-white/10 bg-white/[0.03]" />
+      <div className="mt-5 h-10 w-[240px] animate-pulse rounded-md border border-white/15 bg-white/[0.08]" />
       {/* Stats */}
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
+          <div key={i} className="rounded-lg border border-white/15 bg-white/[0.05] p-4">
             <SkBar w="55%" h="h-2.5" /><div className="mt-3"><SkBar w="45%" h="h-6" /></div><div className="mt-2"><SkBar w="70%" h="h-2.5" /></div>
           </div>
         ))}
@@ -372,12 +366,12 @@ function NichePreview() {
       <div className="mt-8"><SkBar w="200px" h="h-4" /></div>
       <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="rounded-lg border border-white/10 bg-white/[0.02] p-5">
+          <div key={i} className="rounded-lg border border-white/15 bg-white/[0.05] p-5">
             <SkBar w="45%" h="h-2.5" />
             <div className="mt-4 space-y-3">
               {[0, 1, 2, 3].map((j) => (
                 <div key={j} className="flex items-center gap-2.5">
-                  <div className="size-8 shrink-0 animate-pulse rounded-full bg-white/10" />
+                  <div className="size-8 shrink-0 animate-pulse rounded-full bg-white/[0.22]" />
                   <div className="flex-1 space-y-1.5"><SkBar w="70%" h="h-2.5" /><SkBar w="40%" h="h-2" /></div>
                 </div>
               ))}
@@ -389,10 +383,10 @@ function NichePreview() {
       <div className="mt-8"><SkBar w="220px" h="h-4" /></div>
       <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {[0, 1].map((i) => (
-          <div key={i} className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+          <div key={i} className="rounded-xl border border-white/15 bg-white/[0.05] p-5">
             <SkBar w="40%" h="h-3" />
             <div className="mt-3 grid grid-cols-3 gap-3">
-              {[0, 1, 2].map((j) => <div key={j} className="rounded-lg bg-white/[0.03] p-3"><SkBar w="60%" h="h-4" /><div className="mt-1.5"><SkBar w="80%" h="h-2" /></div></div>)}
+              {[0, 1, 2].map((j) => <div key={j} className="rounded-lg bg-white/[0.08] p-3"><SkBar w="60%" h="h-4" /><div className="mt-1.5"><SkBar w="80%" h="h-2" /></div></div>)}
             </div>
             <div className="mt-4 space-y-2"><SkBar w="90%" h="h-2.5" /><SkBar w="75%" h="h-2.5" /></div>
           </div>
@@ -407,8 +401,8 @@ function SkVideoGrid() {
   return (
     <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
       {Array.from({ length: 7 }).map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.02]">
-          <div className="aspect-[9/16] animate-pulse bg-white/[0.05]" />
+        <div key={i} className="overflow-hidden rounded-lg border border-white/15 bg-white/[0.05]">
+          <div className="aspect-[9/16] animate-pulse bg-white/[0.12]" />
           <div className="space-y-1.5 p-2"><SkBar h="h-2.5" /><SkBar w="60%" h="h-2" /></div>
         </div>
       ))}
