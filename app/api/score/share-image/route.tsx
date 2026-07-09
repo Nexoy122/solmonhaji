@@ -32,6 +32,10 @@ export async function GET(req: NextRequest) {
   const base = host ? `${proto}://${host}` : origin;
   const logoSrc = `${base}/logo-mark.png`;
 
+  // Load a genuinely heavy display font (Archivo Black) so every element renders
+  // truly bold — Satori's default sans-serif has no real 800/900 weight.
+  const fontData = await fetch(`${base}/font-black.ttf`).then((r) => r.arrayBuffer());
+
   // Canvas / ring geometry
   const W = 840;
   const H = 1050;
@@ -54,7 +58,7 @@ export async function GET(req: NextRequest) {
           background: "#0a0a0c",
           position: "relative",
           overflow: "hidden",
-          fontFamily: "sans-serif",
+          fontFamily: "Archivo Black, sans-serif",
         }}
       >
         {/* gradient glow — brand cyan (left) → violet (right), pooled at the bottom */}
@@ -103,6 +107,10 @@ export async function GET(req: NextRequest) {
         </div>
       </div>
     ),
-    { width: W, height: H }
+    {
+      width: W,
+      height: H,
+      fonts: [{ name: "Archivo Black", data: fontData, weight: 900, style: "normal" }],
+    }
   );
 }
