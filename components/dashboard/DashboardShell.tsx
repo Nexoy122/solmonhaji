@@ -145,9 +145,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               const inner = (
                 <>
                   {active ? (
-                    <span className="absolute inset-0 rounded-lg border border-[#01D4FF]/60 bg-[#363738]" />
+                    <span className="absolute inset-0 rounded-lg bg-[#363738]" />
                   ) : (
-                    <span className="absolute inset-0 scale-95 rounded-lg border border-[#01D4FF]/40 bg-[#363738] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100" />
+                    <span className="absolute inset-0 scale-95 rounded-lg bg-[#363738] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100" />
                   )}
                   {/* icon — white/muted (no cyan), vertically centered with text.
                       Named keys use NAV_ICONS; otherwise treat `icon` as a raw

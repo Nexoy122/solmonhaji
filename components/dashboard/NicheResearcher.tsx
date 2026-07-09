@@ -128,10 +128,13 @@ export function NicheResearcher() {
           <div className="pointer-events-none select-none opacity-[0.9]">
             <NichePreview />
           </div>
-          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/60 to-[#000101]/95 pt-[150px]">
-            <div className="text-center">
-              <span className="nudge-up mx-auto mb-3 block text-white/50"><Icon d="M12 19V5M5 12l7-7 7 7" size={26} /></span>
-              <p className="text-[16px] font-semibold text-on-surface">Select a niche</p>
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/60 to-[#000101]/95 pt-[120px]">
+            <div className="max-w-[440px] rounded-2xl border border-white/10 bg-[#0d0d10] px-10 py-9 text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+              <span className="nudge-up mx-auto mb-4 flex size-11 items-center justify-center rounded-full bg-[#2e8eff]/15 text-[#2e8eff]">
+                <Icon d="M12 19V5M5 12l7-7 7 7" size={22} />
+              </span>
+              <p className="text-[18px] font-bold text-on-surface">Pick a niche to begin</p>
+              <p className="mx-auto mt-2 max-w-[340px] text-[13px] leading-relaxed text-on-surface-variant">Tap any niche above and we&apos;ll pull live opportunity data, the most underserved sub-niches, and what&apos;s trending right now.</p>
             </div>
           </div>
         </div>
