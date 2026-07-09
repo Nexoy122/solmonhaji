@@ -339,6 +339,8 @@ function ChannelCard({ c }: { c: DiscoveryChannel }) {
 
 export function Discover() {
   const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const [search, setSearch] = useState("");   // what the user is typing
   const [query, setQuery] = useState("");     // debounced value sent to the API
   const [sort, setSort] = useState<Sort>("blowing_up");
@@ -453,7 +455,7 @@ export function Discover() {
       {/* Controls */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         {/* Search — soft white border glow (same as the AI Analysis box) */}
-        <BorderGlow borderRadius={10} glowRadius={20} glowColor="0 0 100" glowIntensity={0.5} className="w-full max-w-[440px]">
+        <BorderGlow borderRadius={10} glowRadius={20} glowColor="189 100 50" glowIntensity={0.6} className="w-full max-w-[440px]">
           <div className="relative flex items-center">
             <span className="pointer-events-none absolute left-3.5 text-white/40">
               <Icon d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3" size={16} />
@@ -515,47 +517,60 @@ export function Discover() {
         )}
       </div>
 
-      {/* Advanced filter panel (only when unlocked) */}
-      {showFilters && filtersUnlocked && (
-        <div className="mb-4 grid grid-cols-1 gap-4 rounded-none border border-white/12 bg-white/[0.02] p-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Niche */}
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Niche</label>
-            <div className="flex flex-wrap gap-1.5">
-              {[["all", "All"], ...NICHE_OPTS].map(([val, lbl]) => (
-                <button key={val} onClick={() => setFNiche(val)} className={`rounded-none border px-2.5 py-1 text-[12px] font-medium transition-colors ${fNiche === val ? "border-primary bg-primary/15 text-primary" : "border-white/12 text-on-surface-variant hover:bg-surface-container-high"}`}>{lbl}</button>
-              ))}
+      {/* Advanced filter MODAL (only when unlocked) */}
+      {showFilters && filtersUnlocked && mounted && createPortal(
+        <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setShowFilters(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[520px] overflow-hidden rounded-xl border border-white/15 bg-[#0a0a0c] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
+              <p className="text-[15px] font-bold text-on-surface">Advanced Filters</p>
+              <button onClick={() => setShowFilters(false)} className="flex size-8 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-white/[0.06] hover:text-white"><Icon d="M18 6 6 18M6 6l12 12" size={16} /></button>
+            </div>
+            <div className="space-y-5 p-5">
+              {/* Niche */}
+              <div>
+                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Niche</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[["all", "All"], ...NICHE_OPTS].map(([val, lbl]) => (
+                    <button key={val} onClick={() => setFNiche(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fNiche === val ? "border-[#01D4FF] bg-[#01D4FF]/15 text-[#01D4FF]" : "border-white/12 text-on-surface-variant hover:bg-white/[0.05]"}`}>{lbl}</button>
+                  ))}
+                </div>
+              </div>
+              {/* Min subscribers */}
+              <div>
+                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Min subscribers</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {SUB_OPTS.map(([val, lbl]) => (
+                    <button key={val} onClick={() => setFMinSubs(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fMinSubs === val ? "border-[#01D4FF] bg-[#01D4FF]/15 text-[#01D4FF]" : "border-white/12 text-on-surface-variant hover:bg-white/[0.05]"}`}>{lbl}</button>
+                  ))}
+                </div>
+              </div>
+              {/* Language */}
+              <div>
+                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Language</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[["", "Any"], ...LANG_OPTS].map(([val, lbl]) => (
+                    <button key={val || "any"} onClick={() => setFLang(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fLang === val ? "border-[#01D4FF] bg-[#01D4FF]/15 text-[#01D4FF]" : "border-white/12 text-on-surface-variant hover:bg-white/[0.05]"}`}>{lbl}</button>
+                  ))}
+                </div>
+              </div>
+              {/* Faceless */}
+              <div>
+                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Style</label>
+                <button onClick={() => setFFaceless((v) => !v)} className={`inline-flex items-center gap-2 rounded-md border px-3.5 py-2 text-[12.5px] font-medium transition-colors ${fFaceless ? "border-[#10b981]/60 bg-[#10b981]/15 text-[#34d399]" : "border-white/12 text-on-surface-variant hover:bg-white/[0.05]"}`}>
+                  <span className={`flex size-4 items-center justify-center rounded border ${fFaceless ? "border-[#10b981] bg-[#10b981] text-black" : "border-white/30"}`}>
+                    {fFaceless && <Icon d="M20 6 9 17l-5-5" size={11} />}
+                  </span>
+                  Faceless only
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-3 border-t border-white/[0.08] px-5 py-4">
+              <button onClick={() => { clearFilters(); }} className="text-[13px] font-medium text-on-surface-variant transition-colors hover:text-white">Reset</button>
+              <button onClick={() => setShowFilters(false)} className="btn-donate px-6 text-[13.5px]">Apply</button>
             </div>
           </div>
-          {/* Min subscribers */}
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Min subscribers</label>
-            <div className="flex flex-wrap gap-1.5">
-              {SUB_OPTS.map(([val, lbl]) => (
-                <button key={val} onClick={() => setFMinSubs(val)} className={`rounded-none border px-2.5 py-1 text-[12px] font-medium transition-colors ${fMinSubs === val ? "border-primary bg-primary/15 text-primary" : "border-white/12 text-on-surface-variant hover:bg-surface-container-high"}`}>{lbl}</button>
-              ))}
-            </div>
-          </div>
-          {/* Language */}
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Language</label>
-            <div className="flex flex-wrap gap-1.5">
-              {[["", "Any"], ...LANG_OPTS].map(([val, lbl]) => (
-                <button key={val || "any"} onClick={() => setFLang(val)} className={`rounded-none border px-2.5 py-1 text-[12px] font-medium transition-colors ${fLang === val ? "border-primary bg-primary/15 text-primary" : "border-white/12 text-on-surface-variant hover:bg-surface-container-high"}`}>{lbl}</button>
-              ))}
-            </div>
-          </div>
-          {/* Faceless */}
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Style</label>
-            <button onClick={() => setFFaceless((v) => !v)} className={`inline-flex items-center gap-2 rounded-none border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fFaceless ? "border-[#10b981]/60 bg-[#10b981]/15 text-[#34d399]" : "border-white/12 text-on-surface-variant hover:bg-surface-container-high"}`}>
-              <span className={`flex size-4 items-center justify-center rounded-none border ${fFaceless ? "border-[#10b981] bg-[#10b981] text-black" : "border-white/30"}`}>
-                {fFaceless && <Icon d="M20 6 9 17l-5-5" size={11} />}
-              </span>
-              Faceless only
-            </button>
-          </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Discover-more (only while searching) */}

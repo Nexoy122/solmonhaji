@@ -98,7 +98,7 @@ export function NicheResearcher() {
   const picked = Boolean(active);
 
   return (
-    <div className="dash-fade-up w-full">
+    <div className="dash-fade-up w-full overflow-x-hidden">
       {/* Header — the page title lives in the fixed topbar (no duplicate H1). */}
       <p className="mb-4 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
 
@@ -128,13 +128,10 @@ export function NicheResearcher() {
           <div className="pointer-events-none select-none opacity-[0.9]">
             <NichePreview />
           </div>
-          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/60 to-[#000101]/95 pt-[130px]">
-            <div className="rounded-2xl border border-[#01D4FF]/30 bg-[#0a0a0c]/95 px-10 py-8 text-center shadow-[0_0_40px_rgba(1,212,255,0.12)] backdrop-blur-sm">
-              <span className="nudge-up mx-auto mb-4 flex size-12 items-center justify-center rounded-full border border-[#01D4FF]/40 bg-[#01D4FF]/10 text-[#01D4FF]">
-                <Icon d="M12 19V5M5 12l7-7 7 7" size={24} />
-              </span>
-              <p className="text-[18px] font-bold text-on-surface">Select a niche</p>
-              <p className="mx-auto mt-1.5 max-w-[280px] text-[13px] leading-relaxed text-on-surface-variant">Pick one above to see what&apos;s working this week — virals, movers, and where the opportunity is.</p>
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/60 to-[#000101]/95 pt-[150px]">
+            <div className="text-center">
+              <span className="nudge-up mx-auto mb-3 block text-white/50"><Icon d="M12 19V5M5 12l7-7 7 7" size={26} /></span>
+              <p className="text-[16px] font-semibold text-on-surface">Select a niche</p>
             </div>
           </div>
         </div>
@@ -168,7 +165,7 @@ export function NicheResearcher() {
             <div className="relative mt-5">
               <button
                 onClick={() => setWeekMenuOpen((o) => !o)}
-                className="flex w-full items-center gap-2.5 rounded-md border border-[#01D4FF]/40 bg-white/[0.02] px-4 py-3 text-[13.5px] font-medium text-on-surface transition-colors hover:border-[#01D4FF]/70 hover:bg-white/[0.05]"
+                className="flex w-full items-center gap-2.5 rounded-md border border-white/15 bg-white/[0.02] px-4 py-3 text-[13.5px] font-medium text-on-surface transition-colors hover:border-white/30 hover:bg-white/[0.05]"
               >
                 <Icon d="M12 8v4l3 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} />
                 <span className="flex-1 text-left">{selectedWeek ? `Week of ${weekLabel(selectedWeek)}` : "Latest week"}</span>
@@ -445,9 +442,9 @@ function SubNicheCard({ s }: { s: SubNiche }) {
 
       {/* Actionable idea — the key takeaway */}
       {s.contentAngle && (
-        <div className="mt-2.5 flex gap-2 rounded-md border border-[#01D4FF]/25 bg-[#01D4FF]/[0.06] p-2.5">
-          <span className="mt-0.5 shrink-0 text-[#01D4FF]"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={13} /></span>
-          <p className="text-[12px] leading-snug text-on-surface"><span className="font-semibold text-[#01D4FF]">Make this: </span>{s.contentAngle}</p>
+        <div className="mt-2.5 flex gap-2 rounded-md border border-white/12 bg-white/[0.04] p-2.5">
+          <span className="mt-0.5 shrink-0 text-white/60"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={13} /></span>
+          <p className="text-[12px] leading-snug text-on-surface"><span className="font-semibold text-white/85">Make this: </span>{s.contentAngle}</p>
         </div>
       )}
 
