@@ -59,6 +59,19 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">{children}</p>;
 }
 
+// Brand "Analyzing" letter loader (shared Uiverse style, from globals.css).
+function AnalyzingLoader() {
+  return (
+    <div className="flex min-h-[460px] flex-col items-center justify-center gap-6">
+      <div className="loader-wrapper">
+        {"Analyzing".split("").map((ch, i) => <span key={i} className="loader-letter">{ch}</span>)}
+        <div className="gloader" />
+      </div>
+      <p className="text-[13px] font-medium text-on-surface-variant">Reading your private YouTube Analytics…</p>
+    </div>
+  );
+}
+
 // ── Score ring ──
 function ScoreRing({ score, size = 132 }: { score: number | null; size?: number }) {
   const r = size / 2 - 9;
@@ -246,7 +259,7 @@ export function TrustScore() {
         {/* ───── LEFT COLUMN ───── */}
         <div className="space-y-5">
           {/* Channel card */}
-          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+          <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
             <div className="flex items-start gap-4">
               {ch?.thumbnailUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -284,7 +297,7 @@ export function TrustScore() {
 
           {/* Analysis settings — directly under the channel card */}
           {connected && (
-            <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+            <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
               <h3 className="text-[15px] font-bold text-on-surface">Analysis settings</h3>
               <p className="mt-1 text-[12px] text-on-surface-variant">Analyzes your whole channel (Shorts + long-form).</p>
               <div className="mt-4">
@@ -297,7 +310,7 @@ export function TrustScore() {
           )}
 
           {/* Channels list */}
-          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+          <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
             <div className="flex items-center justify-between">
               <h3 className="text-[15px] font-bold text-on-surface">Channels</h3>
               <span className="text-[13px] text-on-surface-variant">{channels?.length ?? 0}</span>
@@ -364,93 +377,123 @@ export function TrustScore() {
 
         {/* ───── RIGHT COLUMN ───── */}
         <div className="space-y-5">
-          {/* Score hero (with confidence badge + share) */}
-          {result && (
-            <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-              <div className="flex flex-wrap items-center gap-6">
-                <ScoreRing score={result.overall} size={120} />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[22px] font-bold text-on-surface">{result.label}</span>
-                    <span className="rounded-full px-2.5 py-0.5 text-[12px] font-semibold" style={{ background: `${scoreHex(result.overall)}1a`, color: scoreHex(result.overall) }}>
-                      Grade {result.grade}
-                    </span>
-                    {confidence && <ConfidenceBadge level={confidence} />}
-                  </div>
-                  <p className="mt-2 text-[13px] leading-relaxed text-on-surface-variant">{result.trustMeaning}</p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <button onClick={() => setShareOpen(true)} className="gbtn inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[13px] font-semibold text-white/85">
-                      <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" size={15} /> Share
-                    </button>
-                  </div>
-                </div>
-              </div>
+          {/* STATE 1 — analyzing */}
+          {analyzing && (
+            <div className="rounded-2xl border border-white/10 bg-[#1B1D1F]">
+              <AnalyzingLoader />
             </div>
           )}
 
-          {/* Stat cards row */}
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="Trend" value={trend === null ? null : `${trend > 0 ? "+" : ""}${rs(trend)}%`} foot="views momentum" up={trend !== null && trend >= 0} />
-            <StatCard label="Avg view %" value={avgViewPct === null ? null : `${avgViewPct.toFixed(0)}%`} foot="watched per Short" />
-            <StatCard label="Retention" value={retention === null ? null : `${retention}`} foot="normalized" />
-            <StatCard label="Last run" value={result ? "just now" : null} foot={result ? `${days}-day window` : "never"} muted />
-          </div>
-
-          {/* Manual inputs — data YouTube doesn't share via the API */}
-          <ManualInputs
-            swipeRate={swipeRate} setSwipeRate={setSwipeRate}
-            communityStrikes={communityStrikes} setCommunityStrikes={setCommunityStrikes}
-            copyrightStrikes={copyrightStrikes} setCopyrightStrikes={setCopyrightStrikes}
-            contentType={contentType} setContentType={setContentType}
-            onSave={analyze} busy={analyzing} disabled={!connected}
-          />
-
-          {/* Focus this week */}
-          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-            <Eyebrow>Focus this week</Eyebrow>
-            {result ? (
-              <FocusBlock result={result} />
-            ) : (
-              <p className="py-8 text-center text-[14px] text-on-surface-variant">Run analysis to get your focus area</p>
-            )}
-          </div>
-
-          {/* Score breakdown */}
-          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-            <h3 className="text-[16px] font-bold text-on-surface">Score breakdown</h3>
-            {result ? (
-              <Breakdown result={result} openCat={openCat} setOpenCat={setOpenCat} />
-            ) : (
-              <p className="py-8 text-center text-[14px] text-on-surface-variant">Run analysis to see your breakdown</p>
-            )}
-          </div>
-
-          {/* Full breakdown — every individual metric */}
-          {result && <FullBreakdown result={result} />}
-
-          {/* Recommendations */}
-          {result && result.recommendations?.length > 0 && (
-            <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-              <h3 className="text-[16px] font-bold text-on-surface">Fine-tune accuracy</h3>
-              <p className="mt-1 text-[13px] text-on-surface-variant">What to improve to raise your Trust Score, ranked by impact.</p>
-              <div className="mt-4 space-y-3">
-                {result.recommendations.slice(0, 5).map((rec, i) => {
-                  const color = rec.level === "critical" ? "#f87171" : rec.level === "warning" ? "#e0b341" : "#01D4FF";
-                  return (
-                    <div key={i} className="flex gap-3 rounded-none border border-white/10 bg-white/[0.03] p-4">
-                      <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="text-[14px] font-semibold text-on-surface">{rec.title}</p>
-                          {rec.impact > 0 && <span className="rounded-full bg-primary-container px-2 py-0.5 text-[11px] font-semibold text-on-primary-container">+{rec.impact} pts</span>}
-                        </div>
-                        <p className="mt-1 text-[13px] leading-relaxed text-on-surface-variant">{rec.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+          {/* STATE 2 — no result yet (clean single prompt, not a wall of empty cards) */}
+          {!analyzing && !result && (
+            <div className="flex min-h-[460px] flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#1B1D1F] p-10 text-center">
+              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.04] text-white/70">
+                <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={30} />
+              </span>
+              <h3 className="mt-5 text-[19px] font-bold text-on-surface">
+                {connected ? "Ready to check your Trust Score" : "Connect your channel to begin"}
+              </h3>
+              <p className="mt-2 max-w-[340px] text-[14px] leading-relaxed text-on-surface-variant">
+                {connected
+                  ? "We'll read your private YouTube Analytics and score your channel across 5 growth signals."
+                  : "Securely connect your YouTube channel — read-only access to your Analytics."}
+              </p>
+              <button
+                onClick={connected ? analyze : connect}
+                className="btn-donate mt-6 inline-flex items-center justify-center gap-2"
+              >
+                {connected
+                  ? <><Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={16} /> Analyze channel</>
+                  : <><Icon d="M12 5v14M5 12h14" size={16} /> Connect channel</>}
+              </button>
             </div>
+          )}
+
+          {/* STATE 3 — results */}
+          {!analyzing && result && (
+            <>
+              {/* Score hero (confidence + share) */}
+              <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+                <div className="flex flex-wrap items-center gap-6">
+                  <ScoreRing score={result.overall} size={120} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[24px] font-extrabold text-on-surface">{result.label}</span>
+                      <span className="rounded-full px-2.5 py-0.5 text-[12px] font-bold" style={{ background: `${scoreHex(result.overall)}1a`, color: scoreHex(result.overall) }}>
+                        Grade {result.grade}
+                      </span>
+                      {confidence && <ConfidenceBadge level={confidence} />}
+                    </div>
+                    <p className="mt-2 text-[13px] leading-relaxed text-on-surface-variant">{result.trustMeaning}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button onClick={analyze} className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-4 py-2 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
+                        <Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={15} /> Re-analyze
+                      </button>
+                      <button onClick={() => setShareOpen(true)} className="gbtn inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[13px] font-bold text-white/85">
+                        <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" size={15} /> Share
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stat cards row */}
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <StatCard label="Trend" value={trend === null ? null : `${trend > 0 ? "+" : ""}${rs(trend)}%`} foot="views momentum" up={trend !== null && trend >= 0} />
+                <StatCard label="Avg view %" value={avgViewPct === null ? null : `${avgViewPct.toFixed(0)}%`} foot="watched per Short" />
+                <StatCard label="Retention" value={retention === null ? null : `${retention}`} foot="normalized" />
+                <StatCard label="Last run" value={result ? "just now" : null} foot={`${days}-day window`} muted />
+              </div>
+
+              {/* Focus this week */}
+              <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+                <Eyebrow>Focus this week</Eyebrow>
+                <FocusBlock result={result} />
+              </div>
+
+              {/* Score breakdown */}
+              <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+                <h3 className="text-[16px] font-bold text-on-surface">Score breakdown</h3>
+                <Breakdown result={result} openCat={openCat} setOpenCat={setOpenCat} />
+              </div>
+
+              {/* Full breakdown — every individual metric */}
+              <FullBreakdown result={result} />
+
+              {/* Recommendations */}
+              {result.recommendations?.length > 0 && (
+                <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+                  <h3 className="text-[16px] font-bold text-on-surface">Fine-tune accuracy</h3>
+                  <p className="mt-1 text-[13px] text-on-surface-variant">What to improve to raise your Trust Score, ranked by impact.</p>
+                  <div className="mt-4 space-y-3">
+                    {result.recommendations.slice(0, 5).map((rec, i) => {
+                      const color = rec.level === "critical" ? "#f87171" : rec.level === "warning" ? "#e0b341" : "#01D4FF";
+                      return (
+                        <div key={i} className="flex gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                          <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="text-[14px] font-bold text-on-surface">{rec.title}</p>
+                              {rec.impact > 0 && <span className="rounded-full bg-primary-container px-2 py-0.5 text-[11px] font-semibold text-on-primary-container">+{rec.impact} pts</span>}
+                            </div>
+                            <p className="mt-1 text-[13px] leading-relaxed text-on-surface-variant">{rec.description}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Manual inputs — moved to the end: refine an existing score */}
+              <ManualInputs
+                swipeRate={swipeRate} setSwipeRate={setSwipeRate}
+                communityStrikes={communityStrikes} setCommunityStrikes={setCommunityStrikes}
+                copyrightStrikes={copyrightStrikes} setCopyrightStrikes={setCopyrightStrikes}
+                contentType={contentType} setContentType={setContentType}
+                onSave={analyze} busy={analyzing} disabled={!connected}
+              />
+            </>
           )}
         </div>
       </div>
@@ -484,7 +527,7 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
   const cats: CategoryKey[] = ["engagement", "retention", "upload", "authority", "velocity"];
   const all = cats.flatMap((k) => (result[k] as CategoryScore).metrics ?? []);
   return (
-    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+    <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
       <h3 className="text-[16px] font-bold text-on-surface">Full breakdown</h3>
       <p className="mt-1 text-[12px] text-on-surface-variant">Every signal we measured, scored 0–100.</p>
       <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
@@ -502,7 +545,7 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
 // ── Sub-components ──
 function StatCard({ label, value, foot, up, muted }: { label: string; value: string | null; foot: string; up?: boolean; muted?: boolean }) {
   return (
-    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-4">
+    <div className="rounded-xl border border-white/10 bg-[#1B1D1F] p-4">
       <Eyebrow>{label}</Eyebrow>
       <p className={`mt-3 text-[22px] font-bold tracking-tight tabular-nums ${value === null ? "text-on-surface-variant/40" : "text-on-surface"}`}>
         {value ?? "—"}
@@ -530,7 +573,7 @@ function ManualInputs({
   const fieldCls = "w-full rounded-md border border-white/10 bg-[#0f1113] px-3.5 py-2.5 text-[14px] text-on-surface outline-none transition-colors focus:border-white/25";
   const strikeOpts = [0, 1, 2, 3];
   return (
-    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+    <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
       <p className="text-[13px] text-on-surface-variant">
         <span className="font-semibold text-[#e0b341]">Add data YouTube doesn&apos;t share via API</span> for a more accurate score.
       </p>
