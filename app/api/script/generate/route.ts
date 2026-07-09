@@ -33,11 +33,13 @@ export async function POST(req: NextRequest) {
 
   try {
     let script = "";
+    let warning: string | undefined;
     if (mode === "idea") {
       const idea = str(body.idea);
       if (idea.length < 5) return NextResponse.json({ error: "Describe your idea (at least 5 characters)." }, { status: 400 });
       if (idea.length > 10000) return NextResponse.json({ error: "Idea is too long." }, { status: 400 });
-      script = await generateFromIdeaWithReference({ idea, transcript, youtubeUrl, withTimestamps });
+      const r = await generateFromIdeaWithReference({ idea, transcript, youtubeUrl, withTimestamps });
+      script = r.script; warning = r.warning;
     } else if (mode === "improve") {
       const src = str(body.script);
       if (src.length < 20) return NextResponse.json({ error: "Paste a script to improve (at least 20 characters)." }, { status: 400 });
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest) {
       if (topic.length > 200) return NextResponse.json({ error: "Topic is too long." }, { status: 400 });
       script = await generateScript(topic);
     }
-    return NextResponse.json({ success: true, script });
+    return NextResponse.json({ success: true, script, warning });
   } catch (err) {
     console.error("[script/generate] error:", err);
     return NextResponse.json({ error: (err as Error).message || "Couldn't generate the script." }, { status: 500 });

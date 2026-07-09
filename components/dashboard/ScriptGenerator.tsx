@@ -79,6 +79,7 @@ export function ScriptGenerator() {
 
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [notice, setNotice] = useState("");
   const [script, setScript] = useState("");
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [outTab, setOutTab] = useState<"output" | "history">("output");
@@ -172,17 +173,17 @@ export function ScriptGenerator() {
   const cur = steps[step];
   const isLast = step === total - 1;
 
-  const readJson = async (res: Response): Promise<{ script?: string; error?: string }> => {
+  const readJson = async (res: Response): Promise<{ script?: string; error?: string; warning?: string }> => {
     const raw = await res.text();
     try { return raw ? JSON.parse(raw) : {}; }
     catch { return { error: res.status === 504 ? "The video took too long to process. Try a shorter clip." : `Server error (${res.status}). Please try again.` }; }
   };
 
   const generate = async () => {
-    setErr(""); setScript("");
+    setErr(""); setScript(""); setNotice("");
     setBusy(true); setOutTab("output");
     try {
-      let data: { script?: string; error?: string };
+      let data: { script?: string; error?: string; warning?: string };
       if (mode === "video") {
         const fd = new FormData();
         if (file) fd.append("video", file);
@@ -201,6 +202,7 @@ export function ScriptGenerator() {
       }
       const out = data.script ?? "";
       setScript(out);
+      if (data.warning) setNotice(data.warning);
       const title = mode === "idea" ? idea.trim().slice(0, 60) : mode === "improve" ? "Improved script" : (file?.name ?? "From video");
       setHistory((h) => [{ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, title, script: out, at: Date.now() }, ...h].slice(0, 20));
     } catch (e) { setErr((e as Error).message); }
@@ -325,7 +327,16 @@ export function ScriptGenerator() {
           <div className="flex flex-1 flex-col p-6">
             {outTab === "output" ? (
               busy ? <GeneratingLoader /> :
-              script ? <ScriptOutput text={script} onImprove={improveInline} refining={refining} /> : (
+              script ? (
+                <>
+                  {notice && (
+                    <div className="mb-3 flex items-start gap-2 rounded-md border border-[#e0b341]/30 bg-[#e0b341]/[0.08] px-3 py-2 text-[12px] text-[#e0b341]">
+                      <Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8v4M12 16h.01" size={14} /> {notice}
+                    </div>
+                  )}
+                  <ScriptOutput text={script} onImprove={improveInline} refining={refining} />
+                </>
+              ) : (
                 <div className="flex h-full min-h-[460px] flex-col items-center justify-center text-center">
                   <span className="mb-4 flex size-14 items-center justify-center rounded-xl border border-white/10 text-white/40">
                     <Icon d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" size={24} />
