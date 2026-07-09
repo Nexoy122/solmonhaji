@@ -34,10 +34,10 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 const rs = (n: number) => Math.round(n);
 function scoreHex(s: number) {
-  if (s >= 75) return "#16a34a";
-  if (s >= 60) return "#0FA5E9";
-  if (s >= 45) return "#d97706";
-  return "#e11d48";
+  if (s >= 75) return "#34d399"; // soft green
+  if (s >= 60) return "#01D4FF"; // brand cyan
+  if (s >= 45) return "#e0b341"; // soft amber
+  return "#f87171";              // soft red
 }
 function fmtNum(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -67,7 +67,7 @@ function ScoreRing({ score, size = 132 }: { score: number | null; size?: number 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--color-surface-container-high)" strokeWidth="7" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="7" />
         {score !== null && (
           <circle
             cx={size / 2} cy={size / 2} r={r} fill="none"
@@ -82,7 +82,7 @@ function ScoreRing({ score, size = 132 }: { score: number | null; size?: number 
           <span className="text-[13px] text-on-surface-variant">—</span>
         ) : (
           <>
-            <span className="font-mono text-[34px] font-bold leading-none tracking-tight text-on-surface">{rs(score)}</span>
+            <span className="text-[34px] font-bold leading-none tracking-tight tabular-nums text-on-surface">{rs(score)}</span>
             <span className="text-[11px] text-on-surface-variant">/ 100</span>
           </>
         )}
@@ -361,7 +361,7 @@ export function TrustScore() {
                   </div>
                   <p className="mt-2 text-[13px] leading-relaxed text-on-surface-variant">{result.trustMeaning}</p>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <button onClick={() => setShareOpen(true)} className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-on-primary transition-opacity hover:opacity-90">
+                    <button onClick={() => setShareOpen(true)} className="gbtn inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[13px] font-semibold text-white/85">
                       <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" size={15} /> Share
                     </button>
                   </div>
@@ -408,7 +408,7 @@ export function TrustScore() {
               <p className="mt-1 text-[13px] text-on-surface-variant">What to improve to raise your Trust Score, ranked by impact.</p>
               <div className="mt-4 space-y-3">
                 {result.recommendations.slice(0, 5).map((rec, i) => {
-                  const color = rec.level === "critical" ? "#e11d48" : rec.level === "warning" ? "#d97706" : "#0FA5E9";
+                  const color = rec.level === "critical" ? "#f87171" : rec.level === "warning" ? "#e0b341" : "#01D4FF";
                   return (
                     <div key={i} className="flex gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-4">
                       <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
@@ -439,9 +439,9 @@ export function TrustScore() {
 // Confidence badge (data completeness)
 function ConfidenceBadge({ level }: { level: "high" | "medium" | "low" }) {
   const map = {
-    high: { c: "#16a34a", t: "High confidence" },
-    medium: { c: "#d97706", t: "Medium confidence" },
-    low: { c: "#6b7280", t: "Low confidence" },
+    high: { c: "#34d399", t: "High confidence" },
+    medium: { c: "#e0b341", t: "Medium confidence" },
+    low: { c: "#9ca3af", t: "Low confidence" },
   } as const;
   const { c, t } = map[level];
   return (
@@ -464,7 +464,7 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
         {all.map((m) => (
           <div key={m.key} className="flex items-center justify-between rounded-lg bg-white/[0.03] px-4 py-3">
             <span className="text-[13px] text-on-surface-variant">{m.name}</span>
-            <span className="font-mono text-[15px] font-bold tabular-nums" style={{ color: scoreHex(m.score) }}>{rs(m.score)}</span>
+            <span className="text-[15px] font-bold tabular-nums" style={{ color: scoreHex(m.score) }}>{rs(m.score)}</span>
           </div>
         ))}
       </div>
@@ -477,10 +477,10 @@ function StatCard({ label, value, foot, up, muted }: { label: string; value: str
   return (
     <div className="rounded-lg border border-white/10 bg-[#0a0a0c] p-4">
       <Eyebrow>{label}</Eyebrow>
-      <p className={`mt-3 font-mono text-[22px] font-bold tracking-tight ${value === null ? "text-on-surface-variant/40" : "text-on-surface"}`}>
+      <p className={`mt-3 text-[22px] font-bold tracking-tight tabular-nums ${value === null ? "text-on-surface-variant/40" : "text-on-surface"}`}>
         {value ?? "—"}
       </p>
-      <p className={`mt-1 text-[11px] font-medium ${muted ? "text-on-surface-variant" : up ? "text-[#16a34a]" : "text-on-surface-variant"}`}>{foot}</p>
+      <p className={`mt-1 text-[11px] font-medium ${muted ? "text-on-surface-variant" : up ? "text-[#34d399]" : "text-on-surface-variant"}`}>{foot}</p>
     </div>
   );
 }
@@ -589,7 +589,7 @@ function Breakdown({ result, openCat, setOpenCat }: { result: ScoreResult; openC
                 <div className="hidden h-2 w-28 overflow-hidden rounded-full bg-surface-container-high sm:block">
                   <div className="h-full rounded-full transition-all duration-700" style={{ width: `${rs(cat.score)}%`, background: scoreHex(cat.score) }} />
                 </div>
-                <span className="font-mono text-[18px] font-bold tracking-tight" style={{ color: scoreHex(cat.score) }}>{rs(cat.score)}</span>
+                <span className="text-[18px] font-bold tracking-tight tabular-nums" style={{ color: scoreHex(cat.score) }}>{rs(cat.score)}</span>
                 <span className="text-on-surface-variant"><Icon d={open ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6"} size={15} /></span>
               </div>
             </button>
@@ -602,7 +602,7 @@ function Breakdown({ result, openCat, setOpenCat }: { result: ScoreResult; openC
                       <div key={m.key} className="text-[13px]">
                         <div className="flex items-center justify-between">
                           <span className="text-on-surface-variant">{m.name}</span>
-                          <span className="font-mono font-semibold" style={{ color: scoreHex(m.score) }}>{rs(m.score)}</span>
+                          <span className="font-semibold tabular-nums" style={{ color: scoreHex(m.score) }}>{rs(m.score)}</span>
                         </div>
                         {m.recommendation && <p className="mt-0.5 text-[12px] leading-snug text-on-surface-variant/80">{m.recommendation}</p>}
                       </div>
