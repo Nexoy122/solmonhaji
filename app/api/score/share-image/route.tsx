@@ -1,7 +1,12 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
+import { readFile } from "fs/promises";
+import path from "path";
 
-export const runtime = "edge";
+// Node runtime (not edge) so we can read the font + logo straight from disk —
+// no same-origin HTTP fetch that can silently fail behind nginx and drop us
+// back to a thin fallback font.
+export const runtime = "nodejs";
 
 function scoreHex(s: number) {
   if (s >= 75) return "#34d399";
@@ -21,20 +26,19 @@ function scoreLabel(s: number) {
 // Public, shareable Trust Score card (PNG). The canvas IS the card — no
 // surrounding background — so it drops cleanly into any post/story.
 export async function GET(req: NextRequest) {
-  const { searchParams, origin } = req.nextUrl;
+  const { searchParams } = req.nextUrl;
   const score = Math.max(0, Math.min(100, parseInt(searchParams.get("score") ?? "0", 10) || 0));
   const name = (searchParams.get("name") ?? "Your channel").slice(0, 40);
   const color = scoreHex(score);
   const label = scoreLabel(score);
-  // Prefer the public host (behind nginx) so the logo loads from the same origin.
-  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
-  const proto = req.headers.get("x-forwarded-proto") ?? "https";
-  const base = host ? `${proto}://${host}` : origin;
-  const logoSrc = `${base}/logo-mark.png`;
 
-  // Load a genuinely heavy display font (Archivo Black) so every element renders
-  // truly bold — Satori's default sans-serif has no real 800/900 weight.
-  const fontData = await fetch(`${base}/font-black.ttf`).then((r) => r.arrayBuffer());
+  // Read the heavy display font (Anton) + logo from /public on disk. Anton is an
+  // ultra-bold condensed face, so every element renders thick regardless of the
+  // fontWeight Satori would otherwise ignore.
+  const pub = path.join(process.cwd(), "public");
+  const fontData = await readFile(path.join(pub, "font-black.ttf"));
+  const logoBuf = await readFile(path.join(pub, "logo-mark.png"));
+  const logoSrc = `data:image/png;base64,${logoBuf.toString("base64")}`;
 
   // Canvas / ring geometry
   const W = 840;
@@ -58,7 +62,7 @@ export async function GET(req: NextRequest) {
           background: "#0a0a0c",
           position: "relative",
           overflow: "hidden",
-          fontFamily: "Archivo Black, sans-serif",
+          fontFamily: "Anton, sans-serif",
         }}
       >
         {/* gradient glow — brand cyan (left) → violet (right), pooled at the bottom */}
@@ -110,7 +114,7 @@ export async function GET(req: NextRequest) {
     {
       width: W,
       height: H,
-      fonts: [{ name: "Archivo Black", data: fontData, weight: 900, style: "normal" }],
+      fonts: [{ name: "Anton", data: fontData, weight: 400, style: "normal" }],
     }
   );
 }
