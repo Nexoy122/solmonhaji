@@ -59,15 +59,45 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">{children}</p>;
 }
 
-// Brand "Analyzing" letter loader (shared Uiverse style, from globals.css).
-function AnalyzingLoader() {
+// Skeleton shown while analyzing — mirrors the results layout so the page
+// doesn't jump, with the brand letter-loader front and centre.
+function Sk({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse bg-white/[0.06] ${className}`} />;
+}
+function ResultsSkeleton() {
   return (
-    <div className="flex min-h-[460px] flex-col items-center justify-center gap-6">
-      <div className="loader-wrapper">
-        {"Analyzing".split("").map((ch, i) => <span key={i} className="loader-letter">{ch}</span>)}
-        <div className="gloader" />
+    <div className="space-y-5">
+      {/* hero with the brand loader */}
+      <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+        <div className="flex flex-col items-center gap-5 py-4">
+          <div className="loader-wrapper">
+            {"Analyzing".split("").map((ch, i) => <span key={i} className="loader-letter">{ch}</span>)}
+            <div className="gloader" />
+          </div>
+          <p className="text-[13px] font-medium text-on-surface-variant">Reading your private YouTube Analytics…</p>
+        </div>
       </div>
-      <p className="text-[13px] font-medium text-on-surface-variant">Reading your private YouTube Analytics…</p>
+      {/* stat cards */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="rounded-none border border-white/10 bg-[#1B1D1F] p-4">
+            <Sk className="h-2.5 w-16" />
+            <Sk className="mt-4 h-6 w-12" />
+            <Sk className="mt-2 h-2 w-20" />
+          </div>
+        ))}
+      </div>
+      {/* section blocks */}
+      {[0, 1].map((i) => (
+        <div key={i} className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+          <Sk className="h-3 w-32" />
+          <div className="mt-5 space-y-3">
+            <Sk className="h-10 w-full" />
+            <Sk className="h-10 w-full" />
+            <Sk className="h-10 w-3/4" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -262,7 +292,7 @@ export function TrustScore() {
         {/* ───── LEFT COLUMN ───── */}
         <div className="space-y-5">
           {/* Channel card */}
-          <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
             <div className="flex items-start gap-4">
               {ch?.thumbnailUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -279,7 +309,7 @@ export function TrustScore() {
             </div>
 
             {!connected && (
-              <button onClick={connect} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2">
+              <button onClick={connect} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 !rounded-none">
                 <Icon d="M12 5v14M5 12h14" size={16} /> Connect
               </button>
             )}
@@ -293,7 +323,7 @@ export function TrustScore() {
 
           {/* Analysis settings — directly under the channel card */}
           {connected && (
-            <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+            <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
               <h3 className="text-[15px] font-bold text-on-surface">Analysis settings</h3>
               <p className="mt-1 text-[12px] text-on-surface-variant">Analyzes your whole channel (Shorts + long-form).</p>
               <div className="mt-4">
@@ -306,7 +336,7 @@ export function TrustScore() {
           )}
 
           {/* Channels list */}
-          <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
             <div className="flex items-center justify-between">
               <h3 className="text-[15px] font-bold text-on-surface">Channels</h3>
               <span className="text-[13px] text-on-surface-variant">{channels?.length ?? 0}</span>
@@ -331,7 +361,7 @@ export function TrustScore() {
                           setError("");
                         }
                       }}
-                      className={`flex cursor-pointer items-center gap-3 rounded-xl border p-2.5 transition-all ${
+                      className={`flex cursor-pointer items-center gap-3 rounded-none border p-2.5 transition-all ${
                         isSel
                           ? "border-[#01D4FF]/60 bg-[#01D4FF]/10"
                           : "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.08]"
@@ -373,17 +403,13 @@ export function TrustScore() {
 
         {/* ───── RIGHT COLUMN ───── */}
         <div className="space-y-5">
-          {/* STATE 1 — analyzing */}
-          {analyzing && (
-            <div className="rounded-2xl border border-white/10 bg-[#1B1D1F]">
-              <AnalyzingLoader />
-            </div>
-          )}
+          {/* STATE 1 — analyzing (skeleton that mirrors the results layout) */}
+          {analyzing && <ResultsSkeleton />}
 
           {/* STATE 2 — no result yet (clean single prompt, not a wall of empty cards) */}
           {!analyzing && !result && (
-            <div className="flex min-h-[460px] flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#1B1D1F] p-10 text-center">
-              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.04] text-white/70">
+            <div className="flex min-h-[460px] flex-col items-center justify-center rounded-none border border-white/10 bg-[#1B1D1F] p-10 text-center">
+              <span className="flex h-16 w-16 items-center justify-center rounded-none bg-white/[0.04] text-white/70">
                 <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={30} />
               </span>
               <h3 className="mt-5 text-[19px] font-bold text-on-surface">
@@ -396,7 +422,7 @@ export function TrustScore() {
               </p>
               <button
                 onClick={connected ? analyze : connect}
-                className="btn-donate mt-6 inline-flex items-center justify-center gap-2"
+                className="btn-donate mt-6 inline-flex items-center justify-center gap-2 !rounded-none"
               >
                 {connected
                   ? <><Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={16} /> Analyze channel</>
@@ -408,8 +434,23 @@ export function TrustScore() {
           {/* STATE 3 — results */}
           {!analyzing && result && (
             <>
-              {/* Score hero (confidence + share) */}
-              <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+              {/* Score hero — clean channel-card style with the score ring */}
+              <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+                {/* channel identity row */}
+                {ch && (
+                  <div className="mb-5 flex items-center gap-3 border-b border-white/[0.07] pb-5">
+                    {ch.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={ch.thumbnailUrl} alt="" className="h-10 w-10 rounded-full" />
+                    ) : (
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-[15px] font-bold text-on-primary">{ch.name.charAt(0)}</span>
+                    )}
+                    <div className="min-w-0">
+                      <p className="truncate text-[15px] font-bold text-on-surface">{ch.name}</p>
+                      <p className="text-[12px] text-on-surface-variant">{fmtNum(ch.subscriberCount)} subscribers · {fmtNum(ch.videoCount)} videos</p>
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-wrap items-center gap-6">
                   <ScoreRing score={result.overall} size={120} />
                   <div className="min-w-0 flex-1">
@@ -422,10 +463,10 @@ export function TrustScore() {
                     </div>
                     <p className="mt-2 text-[13px] leading-relaxed text-on-surface-variant">{result.trustMeaning}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <button onClick={analyze} className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-4 py-2 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
+                      <button onClick={analyze} className="inline-flex items-center gap-1.5 rounded-none border border-white/15 px-4 py-2 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
                         <Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={15} /> Re-analyze
                       </button>
-                      <button onClick={() => setShareOpen(true)} className="gbtn inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[13px] font-bold text-white/85">
+                      <button onClick={() => setShareOpen(true)} className="inline-flex items-center gap-1.5 rounded-none border border-white/15 px-4 py-2 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
                         <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" size={15} /> Share
                       </button>
                     </div>
@@ -442,13 +483,13 @@ export function TrustScore() {
               </div>
 
               {/* Focus this week */}
-              <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+              <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
                 <Eyebrow>Focus this week</Eyebrow>
                 <FocusBlock result={result} />
               </div>
 
               {/* Score breakdown */}
-              <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+              <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
                 <h3 className="text-[16px] font-bold text-on-surface">Score breakdown</h3>
                 <Breakdown result={result} openCat={openCat} setOpenCat={setOpenCat} />
               </div>
@@ -458,14 +499,14 @@ export function TrustScore() {
 
               {/* Recommendations */}
               {result.recommendations?.length > 0 && (
-                <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+                <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
                   <h3 className="text-[16px] font-bold text-on-surface">Fine-tune accuracy</h3>
                   <p className="mt-1 text-[13px] text-on-surface-variant">What to improve to raise your Trust Score, ranked by impact.</p>
                   <div className="mt-4 space-y-3">
                     {result.recommendations.slice(0, 5).map((rec, i) => {
                       const color = rec.level === "critical" ? "#f87171" : rec.level === "warning" ? "#e0b341" : "#01D4FF";
                       return (
-                        <div key={i} className="flex gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                        <div key={i} className="flex gap-3 rounded-none border border-white/10 bg-white/[0.03] p-4">
                           <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
@@ -540,10 +581,10 @@ function ConfirmModal({
           </div>
         </div>
         <div className="mt-5 flex justify-end gap-2.5">
-          <button onClick={onCancel} className="rounded-lg border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white/85 transition-colors hover:bg-white/10">
+          <button onClick={onCancel} className="rounded-none border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white/85 transition-colors hover:bg-white/10">
             Cancel
           </button>
-          <button onClick={onConfirm} className="rounded-lg bg-error px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-error/85">
+          <button onClick={onConfirm} className="rounded-none bg-error px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-error/85">
             {confirmLabel}
           </button>
         </div>
@@ -574,7 +615,7 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
   const cats: CategoryKey[] = ["engagement", "retention", "upload", "authority", "velocity"];
   const all = cats.flatMap((k) => (result[k] as CategoryScore).metrics ?? []);
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
       <h3 className="text-[16px] font-bold text-on-surface">Full breakdown</h3>
       <p className="mt-1 text-[12px] text-on-surface-variant">Every signal we measured, scored 0–100.</p>
       <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
@@ -592,7 +633,7 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
 // ── Sub-components ──
 function StatCard({ label, value, foot, up, muted }: { label: string; value: string | null; foot: string; up?: boolean; muted?: boolean }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-[#1B1D1F] p-4">
+    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-4">
       <Eyebrow>{label}</Eyebrow>
       <p className={`mt-3 text-[22px] font-bold tracking-tight tabular-nums ${value === null ? "text-on-surface-variant/40" : "text-on-surface"}`}>
         {value ?? "—"}
@@ -617,10 +658,10 @@ function ManualInputs({
   contentType: string; setContentType: (v: string) => void;
   onSave: () => void; busy: boolean; disabled: boolean;
 }) {
-  const fieldCls = "w-full rounded-md border border-white/10 bg-[#0f1113] px-3.5 py-2.5 text-[14px] text-on-surface outline-none transition-colors focus:border-white/25";
+  const fieldCls = "w-full rounded-none border border-white/10 bg-[#0f1113] px-3.5 py-2.5 text-[14px] text-on-surface outline-none transition-colors focus:border-white/25";
   const strikeOpts = [0, 1, 2, 3];
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#1B1D1F] p-6">
+    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
       <p className="text-[13px] text-on-surface-variant">
         <span className="font-semibold text-[#e0b341]">Add data YouTube doesn&apos;t share via API</span> for a more accurate score.
       </p>
@@ -669,7 +710,7 @@ function ManualInputs({
       <button
         onClick={onSave}
         disabled={busy || disabled}
-        className="mt-5 w-full rounded-md bg-[#3f6212] py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#4d7c0f] disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 !rounded-none !text-[14px] !font-bold disabled:opacity-50"
       >
         {busy ? "Recalculating…" : "Save & recalculate"}
       </button>
@@ -748,10 +789,10 @@ function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channe
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={url} alt="Trust Score card" className="mt-4 w-full rounded-xl border border-white/10" />
         <div className="mt-4 flex gap-2">
-          <button onClick={download} className="btn-donate flex-1 inline-flex items-center justify-center gap-2 !text-[14px] !font-bold">
+          <button onClick={download} className="btn-donate flex-1 inline-flex items-center justify-center gap-2 !rounded-none !text-[14px] !font-bold">
             <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M8 12l4 4 4-4M12 2v14" size={16} /> Download
           </button>
-          <button onClick={copyImage} className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-white/10">
+          <button onClick={copyImage} className="inline-flex flex-1 items-center justify-center gap-2 rounded-none border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-white/10">
             <Icon d={copied ? "M20 6 9 17l-5-5" : "M9 9V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-4M4 9h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"} size={16} />
             {copied ? "Copied!" : "Copy image"}
           </button>
