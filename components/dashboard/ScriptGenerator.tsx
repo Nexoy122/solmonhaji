@@ -74,7 +74,6 @@ export function ScriptGenerator() {
   const [idea, setIdea] = useState("");
   const [scriptIn, setScriptIn] = useState("");
   const [improveOpts, setImproveOpts] = useState<string[]>(["better_hook"]);
-  const [videoUrl, setVideoUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -163,14 +162,8 @@ export function ScriptGenerator() {
         content: <div className="space-y-4">{refStep}<div className="border-t border-white/[0.06] pt-4">{optionsStep}</div></div> },
     ] :
     [
-      { title: "Your video", hint: "Upload a video (≤60s works best) or paste a YouTube Short URL. Our AI watches & analyzes it — no captions or voiceover needed.", canNext: Boolean(videoUrl.trim() || file),
-        content: (
-          <div>
-            {uploadBox}
-            <div className="my-3"><OrDivider /></div>
-            <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="Paste a YouTube Short URL…" className={inputCls} />
-          </div>
-        ) },
+      { title: "Your video", hint: "Upload a video (≤60s works best). Our AI watches & analyzes it — no captions or voiceover needed.", canNext: Boolean(file),
+        content: <div>{uploadBox}</div> },
       { title: "Reference style", hint: "Optional — give a video or transcript to copy its style.", canNext: true, optional: true, content: refStep },
       { title: "Options", hint: "Choose how the final script is formatted.", canNext: true, content: optionsStep },
     ];
@@ -192,7 +185,6 @@ export function ScriptGenerator() {
       let data: { script?: string; error?: string };
       if (mode === "video") {
         const fd = new FormData();
-        if (videoUrl.trim()) fd.append("youtubeUrl", videoUrl.trim());
         if (file) fd.append("video", file);
         if (refTranscript.trim()) fd.append("transcript", refTranscript.trim());
         if (withTimestamps) fd.append("withTimestamps", "1");
@@ -209,7 +201,7 @@ export function ScriptGenerator() {
       }
       const out = data.script ?? "";
       setScript(out);
-      const title = mode === "idea" ? idea.trim().slice(0, 60) : mode === "improve" ? "Improved script" : (videoUrl.trim() ? "From video URL" : file?.name ?? "From video");
+      const title = mode === "idea" ? idea.trim().slice(0, 60) : mode === "improve" ? "Improved script" : (file?.name ?? "From video");
       setHistory((h) => [{ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, title, script: out, at: Date.now() }, ...h].slice(0, 20));
     } catch (e) { setErr((e as Error).message); }
     setBusy(false);
@@ -314,7 +306,7 @@ export function ScriptGenerator() {
             </div>
             {!cur.canNext && step === 0 && (
               <p className="mt-2 text-center text-[12px] text-on-surface-variant">
-                {mode === "idea" ? "Describe your idea (5+ characters)." : mode === "improve" ? "Paste a script (20+ characters)." : "Add a video or URL to continue."}
+                {mode === "idea" ? "Describe your idea (5+ characters)." : mode === "improve" ? "Paste a script (20+ characters)." : "Upload a video to continue."}
               </p>
             )}
           </div>

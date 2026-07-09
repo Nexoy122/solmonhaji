@@ -156,6 +156,17 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb {
 html:has(.dashboard-dark)::-webkit-scrollbar-thumb:hover,
 html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: #33ddff; background-clip: padding-box; }
 .dashboard-dark, html:has(.dashboard-dark) { scrollbar-width: thin; scrollbar-color: #01D4FF #000101; }
+
+/* Brand-cyan borders on standard <button>s that carry a border utility (nav,
+   tabs, dropdowns, chips). Video cards are <a>/<div>, not <button>, so they're
+   untouched. Opt out with .no-cyan if ever needed. */
+.dashboard-dark button[class*="border-white"]:not(.no-cyan) {
+  border-color: rgba(1,212,255,0.4) !important;
+}
+.dashboard-dark button[class*="border-white"]:not(.no-cyan):hover {
+  border-color: rgba(1,212,255,0.75) !important;
+}
+
 /* Zoom the whole dashboard out for a denser, premium feel. */
 .dashboard-zoom { zoom: 0.92; }
 @supports not (zoom: 1) { .dashboard-zoom { transform: scale(0.92); transform-origin: top center; width: 108.7%; } }

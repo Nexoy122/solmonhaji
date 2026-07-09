@@ -128,13 +128,13 @@ export function NicheResearcher() {
           <div className="pointer-events-none select-none opacity-[0.9]">
             <NichePreview />
           </div>
-          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/50 to-[#000101]/90 pt-[150px]">
-            <div className="text-center">
-              <span className="nudge-up mx-auto mb-5 flex size-12 items-center justify-center rounded-full border border-white/10 bg-[#000101] text-white/70">
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/60 to-[#000101]/95 pt-[130px]">
+            <div className="rounded-2xl border border-[#01D4FF]/30 bg-[#0a0a0c]/95 px-10 py-8 text-center shadow-[0_0_40px_rgba(1,212,255,0.12)] backdrop-blur-sm">
+              <span className="nudge-up mx-auto mb-4 flex size-12 items-center justify-center rounded-full border border-[#01D4FF]/40 bg-[#01D4FF]/10 text-[#01D4FF]">
                 <Icon d="M12 19V5M5 12l7-7 7 7" size={24} />
               </span>
-              <p className="text-[18px] font-semibold text-on-surface">Select a niche</p>
-              <p className="mt-1.5 text-[13.5px] text-on-surface-variant">Pick one above to see what&apos;s working this week.</p>
+              <p className="text-[18px] font-bold text-on-surface">Select a niche</p>
+              <p className="mx-auto mt-1.5 max-w-[280px] text-[13px] leading-relaxed text-on-surface-variant">Pick one above to see what&apos;s working this week — virals, movers, and where the opportunity is.</p>
             </div>
           </div>
         </div>
@@ -163,19 +163,19 @@ export function NicheResearcher() {
             </div>
           </BorderGlow>
 
-          {/* Week history dropdown */}
+          {/* Week history dropdown — full width */}
           {weeks.length > 0 && (
             <div className="relative mt-5">
               <button
                 onClick={() => setWeekMenuOpen((o) => !o)}
-                className="flex w-[240px] items-center gap-2.5 rounded-none border border-white/10 bg-white/[0.02] px-4 py-2.5 text-[13.5px] font-medium text-on-surface transition-colors hover:bg-white/[0.05]"
+                className="flex w-full items-center gap-2.5 rounded-md border border-[#01D4FF]/40 bg-white/[0.02] px-4 py-3 text-[13.5px] font-medium text-on-surface transition-colors hover:border-[#01D4FF]/70 hover:bg-white/[0.05]"
               >
                 <Icon d="M12 8v4l3 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} />
                 <span className="flex-1 text-left">{selectedWeek ? `Week of ${weekLabel(selectedWeek)}` : "Latest week"}</span>
                 <Icon d="m6 9 6 6 6-6" size={15} />
               </button>
               {weekMenuOpen && (
-                <div className="absolute z-20 mt-1.5 w-[240px] overflow-hidden rounded-none border border-white/10 bg-[#0c0c0f]">
+                <div className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-md border border-white/10 bg-[#0c0c0f]">
                   <button
                     onClick={() => { setSelectedWeek(""); setWeekMenuOpen(false); }}
                     className={`block w-full px-4 py-2.5 text-left text-[14px] transition-colors hover:bg-white/[0.05] ${!selectedWeek ? "font-semibold text-primary" : "text-on-surface"}`}
@@ -262,7 +262,7 @@ export function NicheResearcher() {
                     subtitle="See every sub-niche, its viral rate, weekly movement, and the channels driving it."
                   />
                   <p className="mb-3 -mt-1 text-[12.5px] text-on-surface-variant"><span className="text-[#34d399]">Green is underserved</span>, <span className="text-[#f87171]">red is saturated</span>.</p>
-                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {recap.subNiches.map((s) => <SubNicheCard key={s.name} s={s} />)}
                   </div>
                 </div>
@@ -424,82 +424,53 @@ const OPP_STYLE: Record<string, { label: string; c: string; bg: string; border: 
 function SubNicheCard({ s }: { s: SubNiche }) {
   const opp = OPP_STYLE[s.opportunity] ?? OPP_STYLE.rising;
   return (
-    <div className="overflow-hidden rounded-xl border bg-[#050506]" style={{ borderColor: opp.border }}>
-      {/* Header band with a clear opportunity signal */}
-      <div className="flex items-center gap-2.5 border-b px-5 py-3.5" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-        <span className="flex size-2.5 shrink-0 rounded-full" style={{ background: opp.c, boxShadow: `0 0 8px ${opp.c}` }} />
-        <span className="text-[15px] font-bold text-on-surface">{s.name}</span>
-        <span className="rounded-full px-2.5 py-0.5 text-[11px] font-bold" style={{ background: opp.bg, color: opp.c }}>{opp.label}</span>
-        {s.movement !== 0 && (
-          <span className={`flex items-center gap-0.5 text-[11px] font-semibold ${s.movement > 0 ? "text-[#34d399]" : "text-[#f87171]"}`}>
-            <Icon d={s.movement > 0 ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6"} size={12} /> {Math.abs(s.movement)}%
-          </span>
-        )}
-        <span className="ml-auto text-[12px] font-semibold text-on-surface-variant">{s.viralRate}% of viral</span>
+    <div className="rounded-lg border bg-[#050506] p-3.5" style={{ borderColor: opp.border }}>
+      {/* Header row */}
+      <div className="flex items-center gap-2">
+        <span className="flex size-2 shrink-0 rounded-full" style={{ background: opp.c, boxShadow: `0 0 6px ${opp.c}` }} />
+        <span className="truncate text-[14px] font-bold text-on-surface">{s.name}</span>
+        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: opp.bg, color: opp.c }}>{opp.label}</span>
+        <span className="ml-auto shrink-0 text-[11px] font-semibold text-on-surface-variant">{s.viralRate}%</span>
       </div>
 
-      <div className="p-5">
-        {/* Plain-language stats */}
-        <div className="grid grid-cols-3 gap-3">
-          <Stat label="Viral videos" value={`${s.viralCount}`} />
-          <Stat label="Avg views" value={fmt(s.avgViews)} />
-          <Stat label="Biggest hit" value={`${s.topOutlierX.toFixed(0)}× avg`} />
+      {/* Compact inline stats */}
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11.5px] text-on-surface-variant">
+        <span><span className="font-semibold text-on-surface">{s.viralCount}</span> viral</span>
+        <span><span className="font-semibold text-on-surface">{fmt(s.avgViews)}</span> avg views</span>
+        <span><span className="font-semibold text-on-surface">{s.topOutlierX.toFixed(0)}×</span> top hit</span>
+        {s.movement !== 0 && (
+          <span className={`font-semibold ${s.movement > 0 ? "text-[#34d399]" : "text-[#f87171]"}`}>{s.movement > 0 ? "▲" : "▼"} {Math.abs(s.movement)}%</span>
+        )}
+      </div>
+
+      {/* Actionable idea — the key takeaway */}
+      {s.contentAngle && (
+        <div className="mt-2.5 flex gap-2 rounded-md border border-[#01D4FF]/25 bg-[#01D4FF]/[0.06] p-2.5">
+          <span className="mt-0.5 shrink-0 text-[#01D4FF]"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={13} /></span>
+          <p className="text-[12px] leading-snug text-on-surface"><span className="font-semibold text-[#01D4FF]">Make this: </span>{s.contentAngle}</p>
         </div>
+      )}
 
-        {/* Why it's winning */}
-        {s.aiInsight && (
-          <p className="mt-4 text-[13px] leading-relaxed text-on-surface-variant">
-            <span className="font-semibold text-on-surface">Why it&apos;s working — </span>{s.aiInsight}
-          </p>
-        )}
-
-        {/* Actionable idea (the paid value) */}
-        {s.contentAngle && (
-          <div className="mt-3 flex gap-2.5 rounded-lg border border-primary/25 bg-primary/[0.06] p-3.5">
-            <span className="mt-0.5 shrink-0 text-primary"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={15} /></span>
-            <p className="text-[13px] leading-relaxed text-on-surface"><span className="font-semibold text-primary">Make this: </span>{s.contentAngle}</p>
-          </div>
-        )}
-
-        {/* Winning title patterns as chips */}
-        {s.titlePatterns.length > 0 && (
-          <div className="mt-3.5 flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-medium text-on-surface-variant">Title patterns:</span>
-            {s.titlePatterns.map((p) => (
-              <span key={p} className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11px] font-semibold text-on-surface">{p}</span>
-            ))}
-          </div>
-        )}
-
-        {/* Example videos + driven-by */}
-        {s.examples.length > 0 && (
-          <div className="mt-4">
-            {s.topChannels.length > 0 && (
-              <p className="mb-2 text-[11px] text-on-surface-variant">Led by <span className="font-semibold text-on-surface">{s.topChannels.join(", ")}</span></p>
-            )}
-            <div className="flex gap-2">
-              {s.examples.map((e) => (
-                <a key={e.url} href={e.url} target="_blank" rel="noopener noreferrer" className="group relative block h-24 w-[54px] shrink-0 overflow-hidden rounded-lg bg-white/[0.04]">
-                  {e.thumbnail && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={e.thumbnail} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
-                  )}
-                  <span className="absolute bottom-0.5 left-0.5 rounded bg-black/75 px-1 text-[8px] font-bold text-white">{fmt(e.views)}</span>
-                </a>
+      {/* Examples + patterns — compact footer */}
+      {(s.examples.length > 0 || s.titlePatterns.length > 0) && (
+        <div className="mt-2.5 flex items-end gap-2">
+          {s.examples.slice(0, 3).map((e) => (
+            <a key={e.url} href={e.url} target="_blank" rel="noopener noreferrer" className="group relative block h-16 w-9 shrink-0 overflow-hidden rounded bg-white/[0.04]">
+              {e.thumbnail && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={e.thumbnail} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+              )}
+            </a>
+          ))}
+          {s.titlePatterns.length > 0 && (
+            <div className="flex flex-1 flex-wrap gap-1">
+              {s.titlePatterns.slice(0, 3).map((p) => (
+                <span key={p} className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-on-surface-variant">{p}</span>
               ))}
             </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-white/[0.03] px-3 py-2.5">
-      <p className="text-[16px] font-bold text-on-surface">{value}</p>
-      <p className="mt-0.5 text-[10.5px] text-on-surface-variant">{label}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
