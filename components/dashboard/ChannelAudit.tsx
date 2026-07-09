@@ -99,7 +99,7 @@ export function ChannelAudit() {
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
   const [connected, setConnected] = useState<boolean | null>(null);
-  const [connectedName, setConnectedName] = useState("");
+  const [channels, setChannels] = useState<{ youtubeId: string; name: string; thumbnailUrl: string | null; subscriberCount: number }[]>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const authHeader = useCallback(async (): Promise<Record<string, string>> => {
@@ -113,7 +113,7 @@ export function ChannelAudit() {
       const res = await fetch("/api/youtube/status", { headers: await authHeader() });
       const data = await res.json();
       setConnected(!!data.connected);
-      setConnectedName(data.channels?.[0]?.name ?? "");
+      setChannels(data.channels ?? []);
     } catch {
       setConnected(false);
     }
@@ -235,17 +235,43 @@ export function ChannelAudit() {
                 <p className="text-[12px] text-on-surface-variant">Adds real private analytics</p>
               </div>
             </div>
-            <p className="mt-4 flex-1 text-[13px] leading-relaxed text-on-surface-variant">
+            <p className="mt-4 text-[13px] leading-relaxed text-on-surface-variant">
               {connected
-                ? `Connected: ${connectedName || "your channel"}. Combines the video review with your real retention, traffic sources & subscriber conversion.`
+                ? "Combines the video review with your real retention, traffic sources & subscriber conversion."
                 : "Connect your YouTube for a deep audit with your real retention, traffic & conversion data layered on top of the video review."}
             </p>
+
+            {/* Connected channels list */}
+            {connected && channels.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <Eyebrow>Connected {channels.length > 1 ? "channels" : "channel"}</Eyebrow>
+                {channels.map((c) => (
+                  <div key={c.youtubeId} className="flex items-center gap-2.5 rounded-none border border-white/10 bg-white/[0.03] p-2.5">
+                    {c.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={c.thumbnailUrl} alt="" className="h-8 w-8 rounded-full" />
+                    ) : (
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-[12px] font-bold text-on-primary">{c.name.charAt(0)}</span>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-semibold text-on-surface">{c.name}</p>
+                      <p className="text-[11px] text-on-surface-variant">{fmtNum(c.subscriberCount)} subs</p>
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#34d399]">
+                      <Icon d="M20 6 9 17l-5-5" size={13} /> Connected
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-5 flex-1" />
             {connected ? (
-              <button onClick={runConnectedAudit} disabled={running} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 !rounded-none disabled:opacity-50">
+              <button onClick={runConnectedAudit} disabled={running} className="btn-donate inline-flex w-full items-center justify-center gap-2 !rounded-none disabled:opacity-50">
                 <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={16} /> Run deep audit
               </button>
             ) : (
-              <button onClick={connectChannel} className="btn-donate mt-5 inline-flex w-full items-center justify-center gap-2 !rounded-none">
+              <button onClick={connectChannel} className="btn-donate inline-flex w-full items-center justify-center gap-2 !rounded-none">
                 <Icon d="M12 5v14M5 12h14" size={16} /> Connect YouTube
               </button>
             )}
