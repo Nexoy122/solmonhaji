@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import type { ScoreResult, CategoryScore } from "@/lib/scoring/engine";
@@ -586,10 +587,21 @@ function ManualInputs({
   );
 }
 
-// Shareable Trust Score image modal.
+// Shareable Trust Score image modal. Portaled to <body> so it centers in the
+// real viewport (the dashboard <main> uses a zoom transform, which otherwise
+// anchors `position:fixed` to the wrong box and pushes the modal off-screen).
 function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channelName: string; onClose: () => void }) {
-  const url = `/api/score/share-image?score=${rs(score.overall)}&name=${encodeURIComponent(channelName)}&label=${encodeURIComponent(score.label)}`;
+  const url = `/api/score/share-image?score=${rs(score.overall)}&name=${encodeURIComponent(channelName)}`;
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Lock body scroll while the modal is open.
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
 
   const download = async () => {
     try {
@@ -611,31 +623,37 @@ function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channe
     } catch { /* ignore */ }
   };
 
-  return (
-    <>
-      <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose} />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-        <div className="w-full max-w-[420px] rounded-none border border-white/10 bg-[#1B1D1F] p-6" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center justify-between">
-            <h3 className="text-[17px] font-bold text-on-surface">Share your Trust Score</h3>
-            <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high">
-              <Icon d="M18 6 6 18M6 6l12 12" size={18} />
-            </button>
-          </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={url} alt="Trust Score card" className="mt-4 w-full rounded-lg border border-white/10" />
-          <div className="mt-4 flex gap-2">
-            <button onClick={download} className="btn-donate flex-1 inline-flex items-center justify-center gap-2 !text-[14px]">
-              <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M8 12l4 4 4-4M12 2v14" size={16} /> Download
-            </button>
-            <button onClick={copyLink} className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-outline-variant px-4 py-2.5 text-[14px] font-semibold text-on-surface transition-colors hover:bg-surface-container-high">
-              <Icon d={copied ? "M20 6 9 17l-5-5" : "M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"} size={16} />
-              {copied ? "Copied!" : "Copy link"}
-            </button>
-          </div>
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="my-auto w-full max-w-[420px] rounded-2xl border border-white/10 bg-[#131417] p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-[18px] font-extrabold text-white">Share your Trust Score</h3>
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white">
+            <Icon d="M18 6 6 18M6 6l12 12" size={18} />
+          </button>
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt="Trust Score card" className="mt-4 w-full rounded-xl border border-white/10" />
+        <div className="mt-4 flex gap-2">
+          <button onClick={download} className="btn-donate flex-1 inline-flex items-center justify-center gap-2 !text-[14px] !font-bold">
+            <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M8 12l4 4 4-4M12 2v14" size={16} /> Download
+          </button>
+          <button onClick={copyLink} className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-white/10">
+            <Icon d={copied ? "M20 6 9 17l-5-5" : "M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"} size={16} />
+            {copied ? "Copied!" : "Copy link"}
+          </button>
         </div>
       </div>
-    </>
+    </div>,
+    document.body
   );
 }
 

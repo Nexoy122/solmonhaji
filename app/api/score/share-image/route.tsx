@@ -13,10 +13,15 @@ function scoreHex(s: number) {
 // Public, shareable Trust Score card (PNG). No auth needed — only renders the
 // numbers passed in the query string (no private data).
 export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl;
+  const { searchParams, origin } = req.nextUrl;
   const score = Math.max(0, Math.min(100, parseInt(searchParams.get("score") ?? "0", 10) || 0));
   const name = (searchParams.get("name") ?? "Your channel").slice(0, 40);
   const color = scoreHex(score);
+  // Prefer the public host (behind nginx) so the logo loads from the same origin.
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  const proto = req.headers.get("x-forwarded-proto") ?? "https";
+  const base = host ? `${proto}://${host}` : origin;
+  const logoSrc = `${base}/logo-mark.png`;
 
   // Ring geometry
   const size = 300;
@@ -59,8 +64,8 @@ export async function GET(req: NextRequest) {
           <div style={{ position: "absolute", bottom: -220, right: -140, width: 620, height: 620, background: "radial-gradient(circle, rgba(139,92,246,0.6), transparent 68%)", display: "flex" }} />
 
           {/* header */}
-          <div style={{ display: "flex", fontSize: 26, fontWeight: 800, letterSpacing: 3, color: "#8b8f98" }}>TRUSTSCORE</div>
-          <div style={{ display: "flex", fontSize: 46, fontWeight: 800, color: "#e9eaec", marginTop: 14 }}>{name}</div>
+          <div style={{ display: "flex", fontSize: 28, fontWeight: 900, letterSpacing: 4, color: "#9aa0ad" }}>TRUSTSCORE</div>
+          <div style={{ display: "flex", fontSize: 52, fontWeight: 900, color: "#ffffff", marginTop: 14 }}>{name}</div>
 
           {/* ring */}
           <div style={{ display: "flex", position: "relative", marginTop: 96, width: size, height: size }}>
@@ -69,13 +74,14 @@ export async function GET(req: NextRequest) {
               <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={`${dash} ${circ}`} />
             </svg>
             <div style={{ position: "absolute", top: 0, left: 0, width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ display: "flex", fontSize: 128, fontWeight: 800, color: "#ffffff", lineHeight: 1 }}>{score}</div>
+              <div style={{ display: "flex", fontSize: 132, fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{score}</div>
             </div>
           </div>
 
           {/* footer */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: "auto", fontSize: 26, fontWeight: 700, color: "#d4d6da" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 9, background: "#01D4FF", color: "#050506", fontSize: 20, fontWeight: 800 }}>N</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: "auto", fontSize: 27, fontWeight: 800, color: "#e2e4e8" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={logoSrc} width={38} height={38} style={{ borderRadius: 9 }} alt="" />
             powered by NicheSpy
           </div>
         </div>
