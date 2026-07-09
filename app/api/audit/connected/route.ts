@@ -19,10 +19,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Channel Audit isn't configured yet." }, { status: 503 });
   }
 
-  // Resolve the user's connected channel + token.
+  // Resolve which connected channel to audit — a specific one if requested,
+  // else the oldest-synced (default).
+  const body = await req.json().catch(() => ({}));
+  const channelId: string | undefined = typeof body.channelId === "string" ? body.channelId : undefined;
+
   const col = adminDb().collection("users").doc(uid).collection("youtube_channels");
-  const snap = await col.orderBy("lastSyncAt", "asc").limit(1).get();
-  const chan = snap.docs[0]?.data();
+  let chan: FirebaseFirestore.DocumentData | undefined;
+  if (channelId) {
+    chan = (await col.doc(channelId).get()).data();
+  } else {
+    const snap = await col.orderBy("lastSyncAt", "asc").limit(1).get();
+    chan = snap.docs[0]?.data();
+  }
   if (!chan?.ytAccessToken) {
     return NextResponse.json({ error: "Connect your YouTube channel first." }, { status: 400 });
   }

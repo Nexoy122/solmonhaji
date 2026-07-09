@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import BorderGlow from "@/components/dashboard/BorderGlow";
 
 interface Category { name: string; score: number; note: string }
 interface AuditResult {
@@ -100,6 +101,7 @@ export function ChannelAudit() {
   const [warning, setWarning] = useState("");
   const [connected, setConnected] = useState<boolean | null>(null);
   const [channels, setChannels] = useState<{ youtubeId: string; name: string; thumbnailUrl: string | null; subscriberCount: number }[]>([]);
+  const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const authHeader = useCallback(async (): Promise<Record<string, string>> => {
@@ -113,7 +115,9 @@ export function ChannelAudit() {
       const res = await fetch("/api/youtube/status", { headers: await authHeader() });
       const data = await res.json();
       setConnected(!!data.connected);
-      setChannels(data.channels ?? []);
+      const list = data.channels ?? [];
+      setChannels(list);
+      setSelectedChannelId((prev) => prev && list.some((c: { youtubeId: string }) => c.youtubeId === prev) ? prev : list[0]?.youtubeId ?? null);
     } catch {
       setConnected(false);
     }
@@ -142,7 +146,7 @@ export function ChannelAudit() {
       const res = await fetch("/api/audit/connected", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(await authHeader()) },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ channelId: selectedChannelId ?? undefined }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Couldn't start the deep audit."); setRunning(false); return; }
@@ -241,27 +245,36 @@ export function ChannelAudit() {
                 : "Connect your YouTube for a deep audit with your real retention, traffic & conversion data layered on top of the video review."}
             </p>
 
-            {/* Connected channels list */}
+            {/* Connected channels — selectable */}
             {connected && channels.length > 0 && (
               <div className="mt-4 space-y-2">
-                <Eyebrow>Connected {channels.length > 1 ? "channels" : "channel"}</Eyebrow>
-                {channels.map((c) => (
-                  <div key={c.youtubeId} className="flex items-center gap-2.5 rounded-none border border-white/10 bg-white/[0.03] p-2.5">
-                    {c.thumbnailUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={c.thumbnailUrl} alt="" className="h-8 w-8 rounded-full" />
-                    ) : (
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-[12px] font-bold text-on-primary">{c.name.charAt(0)}</span>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-semibold text-on-surface">{c.name}</p>
-                      <p className="text-[11px] text-on-surface-variant">{fmtNum(c.subscriberCount)} subs</p>
-                    </div>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#34d399]">
-                      <Icon d="M20 6 9 17l-5-5" size={13} /> Connected
-                    </span>
-                  </div>
-                ))}
+                <Eyebrow>Select a channel to audit</Eyebrow>
+                {channels.map((c) => {
+                  const isSel = c.youtubeId === selectedChannelId;
+                  return (
+                    <button
+                      key={c.youtubeId}
+                      onClick={() => setSelectedChannelId(c.youtubeId)}
+                      className={`flex w-full items-center gap-2.5 rounded-none border p-2.5 text-left transition-all ${
+                        isSel ? "border-[#01D4FF]/60 bg-[#01D4FF]/10" : "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.08]"
+                      }`}
+                    >
+                      {c.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={c.thumbnailUrl} alt="" className="h-8 w-8 rounded-full" />
+                      ) : (
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-[12px] font-bold text-on-primary">{c.name.charAt(0)}</span>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] font-semibold text-on-surface">{c.name}</p>
+                        <p className="text-[11px] text-on-surface-variant">{fmtNum(c.subscriberCount)} subs</p>
+                      </div>
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${isSel ? "border-[#01D4FF] bg-[#01D4FF] text-[#001014]" : "border-white/25"}`}>
+                        {isSel && <Icon d="M20 6 9 17l-5-5" size={12} />}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -403,16 +416,18 @@ function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset:
         )}
       </div>
 
-      {/* Coach review */}
+      {/* Coach review — wrapped in the animated AI border glow */}
       {r.coachReview && (
-        <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
-          <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#01D4FF]">
-            <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={17} /> What NicheSpy AI thinks
-          </h3>
-          <div className="mt-4 space-y-3 text-[14px] leading-relaxed text-on-surface">
-            {r.coachReview.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+        <BorderGlow borderRadius={0} backgroundColor="#1B1D1F" glowColor="0 0 100" glowIntensity={0.5} mesh>
+          <div className="p-6">
+            <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#01D4FF]">
+              <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={17} /> What NicheSpy AI thinks
+            </h3>
+            <div className="mt-4 space-y-3 text-[14px] leading-relaxed text-on-surface">
+              {r.coachReview.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+            </div>
           </div>
-        </div>
+        </BorderGlow>
       )}
     </div>
   );
