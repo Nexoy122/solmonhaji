@@ -147,12 +147,12 @@ export async function fetchYouTubeAnalytics(
   const subscribersGained = firstValue(core, "subscribersGained");
   const subscribersLost = firstValue(core, "subscribersLost");
 
-  // ── 2. Unique viewers / loyalty (separate call — not on every channel) ─────
-  // "uniques" is a valid metric but unavailable for some channels; degrade gracefully.
-  const uniquesReport = await fetchReport(
-    accessToken, channelId, fmtDate(start90), fmtDate(now), "uniques", { contentType }
-  );
-  const uniqueViewers = firstValue(uniquesReport, "uniques");
+  // ── 2. Unique viewers ──────────────────────────────────────────────────────
+  // NOTE: the YouTube Analytics API does NOT expose a channel-level "uniques"
+  // metric (it rejects the query: "Unknown identifier (uniques)"). We don't have
+  // a reliable unique-viewer count, so treat it as unavailable (0) rather than
+  // firing a request that always errors.
+  const uniqueViewers = 0;
 
   // ── 3. Momentum: recent 28d vs the prior 28d ───────────────────────────────
   const recent = await fetchReport(
