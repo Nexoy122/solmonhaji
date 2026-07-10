@@ -37,7 +37,7 @@ const NAV_SECTIONS: { heading?: string; items: NavItem[] }[] = [
     heading: "Analyze",
     items: [
       { label: "Trust Score", href: "/dashboard/trust-score", icon: "trust" },
-      { label: "Channel Audit", href: "/dashboard/channel-audit", icon: "audit" },
+      { label: "Channel Audit", href: "#", icon: "audit", soon: true },
       { label: "Shorts Transcript", href: "/dashboard/shorts-transcript", icon: "transcript" },
       { label: "Revenue Calculator", href: "#", icon: "payments", soon: true },
       { label: "Pre/Post Check", href: "#", icon: "checklist", soon: true },
