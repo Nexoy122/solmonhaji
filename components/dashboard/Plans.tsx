@@ -4,6 +4,8 @@ import { useState } from "react";
 import BorderGlow from "@/components/dashboard/BorderGlow";
 import { useAuth } from "@/components/AuthProvider";
 
+const DISCOUNT_RATE = 0.5; // 50% off
+
 type Feature = { label: string; included: boolean };
 type FeatureGroup = { heading: string; items: Feature[] };
 
@@ -23,90 +25,86 @@ const PLANS: Plan[] = [
   {
     id: "starter",
     name: "Starter",
-    tagline: "Find what's working, then write your scripts.",
+    tagline: "For a solo creator just getting started.",
     icon: "auto_awesome",
-    price: 17,
-    credits: 1000,
+    price: 9,
+    credits: 500,
     groups: [
       {
-        heading: "Research",
+        heading: "Includes",
         items: [
-          { label: "Explore 1,000+ channels across niches", included: true },
-          { label: "Niche Research with a fresh weekly breakdown", included: true },
-          { label: "Discovery search and the Revenue Calculator", included: true },
-          { label: "5 study channels and 300 saved videos", included: true },
-        ],
-      },
-      {
-        heading: "Create",
-        items: [
-          { label: "Script Writer trained on real viral scripts", included: true },
-          { label: "AI Voiceovers in dozens of voices", included: true },
-          { label: "Deep Analysis, Channel Audit and Pre/Post Check", included: true },
-        ],
-      },
-      {
-        heading: "Video tools",
-        items: [
-          { label: "Upscale your clips to crisp 1080p", included: true },
-          { label: "Watermark and caption remover", included: true },
+          { label: "Access to every tool on NicheSpy", included: true },
+          { label: "1 connected channel", included: true },
+          { label: "Unlimited Discover & Explore browsing", included: true },
+          { label: "10 Trust Score analyses / month", included: true },
+          { label: "7-day history", included: true },
         ],
       },
     ],
-    included: ["300 video downloads / month", "Index up to 10 channels / month", "Standard support"],
+    included: ["500 credits / month (~150 scripts, or ~100 niche researches)", "Community support (Discord)"],
   },
   {
     id: "creator",
     name: "Creator",
-    tagline: "Research, write, edit and caption — all in one place.",
+    tagline: "For an active faceless creator running 1–3 channels.",
     icon: "workspace_premium",
-    price: 37,
+    price: 19,
     popular: true,
-    credits: 1000,
+    credits: 1500,
     groups: [
-      { heading: "Everything in Starter, plus", items: [] },
       {
-        heading: "Make your videos here",
+        heading: "Everything in Starter, plus",
         items: [
-          { label: "The in-app Editor, with built-in video editor", included: true },
-          { label: "Auto-Captions you can style and export", included: true },
-          { label: "Edit and caption your Shorts without another app", included: true },
-        ],
-      },
-      {
-        heading: "Go deeper",
-        items: [
-          { label: "Advanced filters and performance sorting", included: true },
-          { label: "The full sub-niche breakdown", included: true },
-          { label: "The entire Explore library, no limits", included: true },
-          { label: "15 study channels and unlimited saved videos", included: true },
+          { label: "3 connected channels", included: true },
+          { label: "40 Trust Score analyses / month", included: true },
+          { label: "30-day history", included: true },
+          { label: "Priority email support", included: true },
         ],
       },
     ],
-    included: ["700 video downloads / month", "Index up to 30 channels / month", "Priority support"],
+    included: ["1,500 credits / month (~450 scripts, or ~300 niche researches)", "Priority email support"],
   },
   {
     id: "plus",
     name: "Plus",
-    tagline: "For creators running more than one channel.",
+    tagline: "For agencies and power users managing many channels.",
     icon: "bolt",
-    price: 77,
-    credits: 1000,
+    price: 39,
+    credits: 4000,
     groups: [
-      { heading: "Everything in Creator, plus", items: [] },
       {
-        heading: "Built for scale",
+        heading: "Everything in Creator, plus",
         items: [
-          { label: "50 study channels and 10 channel groups", included: true },
-          { label: "Clone your own voice", included: true },
-          { label: "MCP for Claude & ChatGPT included", included: true },
-          { label: "The highest limits on everything", included: true },
+          { label: "10 connected channels", included: true },
+          { label: "Unlimited Trust Score analyses", included: true },
+          { label: "Unlimited history", included: true },
+          { label: "Priority support + earliest access to new tools", included: true },
         ],
       },
     ],
-    included: ["Unlimited video downloads / month", "Index up to 70 channels / month", "Priority support"],
+    included: ["4,000 credits / month (~1,200 scripts, or ~800 niche researches)", "Priority + early access"],
   },
 ];
+
+const CREDIT_COSTS: { action: string; credits: string; note: string }[] = [
+  { action: "Browse Discover / Explore", credits: "0", note: "Cached, near-zero cost" },
+  { action: "Generate / improve a script", credits: "2", note: "" },
+  { action: "Niche research (per niche)", credits: "3", note: "" },
+  { action: "Shorts transcript", credits: "3", note: "" },
+  { action: "Trust Score analysis", credits: "5", note: "" },
+  { action: "Video-from-upload script", credits: "8", note: "" },
+  { action: "Channel Audit (deep video ML)", credits: "40", note: "Our most expensive action" },
+];
+
+function getPriceInfo(plan: Plan, yearly: boolean) {
+  if (yearly) {
+    const original = plan.price * 12;
+    const discounted = Math.round(original * (1 - DISCOUNT_RATE));
+    return { discounted, original: Math.round(original), period: "year" as const };
+  }
+  const discounted = Math.round(plan.price * (1 - DISCOUNT_RATE));
+  return { discounted, original: Math.round(plan.price), period: "month" as const };
+}
 
 function Icon({ d, size = 18 }: { d: string; size?: number }) {
   return (
@@ -137,7 +135,9 @@ function CreditPill({ credits }: { credits: number }) {
   );
 }
 
-function PlanCard({ plan, onUpgrade, loading }: { plan: Plan; onUpgrade: (planId: string) => void; loading: boolean }) {
+function PlanCard({ plan, onUpgrade, loading, yearly }: { plan: Plan; onUpgrade: (planId: string) => void; loading: boolean; yearly: boolean }) {
+  const { discounted, original, period } = getPriceInfo(plan, yearly);
+
   const cardInner = (
     <div className="flex h-full flex-col p-6">
       <div className="flex items-center gap-3">
@@ -154,10 +154,18 @@ function PlanCard({ plan, onUpgrade, loading }: { plan: Plan; onUpgrade: (planId
       </div>
       <p className="mt-3 text-[13px] leading-snug text-on-surface-variant">{plan.tagline}</p>
 
-      <div className="mt-5 flex items-baseline gap-1.5">
-        <span className="text-[13px] font-semibold text-on-surface-variant">$</span>
-        <span className="text-[38px] font-extrabold leading-none tracking-tight text-on-surface">{plan.price}</span>
-        <span className="text-[13px] text-on-surface-variant">/month</span>
+      <div className="mt-5">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-[13px] font-semibold text-on-surface-variant">$</span>
+          <span className="text-[38px] font-extrabold leading-none tracking-tight text-on-surface">{discounted}</span>
+          <span className="text-[13px] text-on-surface-variant">/{period}</span>
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-[13px] font-medium text-on-surface-variant/60 line-through">${original}/{period}</span>
+          <span className="rounded-full bg-[#01D4FF] px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-[#001318] shadow-[0_0_0_1px_rgba(1,212,255,0.4)]">
+            50% off
+          </span>
+        </div>
       </div>
 
       <div className="mt-5">
@@ -289,13 +297,18 @@ export function Plans() {
   return (
     <div className="mx-auto max-w-6xl">
       <div className="text-center">
+        <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-[#01D4FF] px-4 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-[#001318]">
+          <Icon d="M13 2L3 14h7l-1 8 10-12h-7z" size={14} />
+          50% off every plan — limited time
+        </div>
+
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#01D4FF]">Pricing</p>
         <h1 className="mt-2 font-heading text-[28px] font-bold tracking-[-0.01em] text-on-surface md:text-[34px]">
           Simple, credit-based pricing
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-[14.5px] leading-relaxed text-on-surface-variant">
-          Every plan includes monthly AI credits to run the tools — research, scripts, voiceovers and more.
-          Upgrade, downgrade, or cancel whenever you want.
+          Every plan gets every tool. Plans differ by monthly credits, connected channels,
+          history, and support — not by what you can open. Upgrade, downgrade, or cancel anytime.
         </p>
         <button
           onClick={handleManageBilling}
@@ -322,22 +335,41 @@ export function Plans() {
             }`}
           >
             Yearly
-            <span className="rounded-full bg-[#01D4FF]/15 px-1.5 py-0.5 text-[10px] font-bold text-[#01D4FF]">
-              Save 20%
-            </span>
           </button>
         </div>
-        {yearly && (
-          <p className="mt-2 text-[12px] text-on-surface-variant/70">
-            Yearly billing isn&apos;t wired up yet — prices below still show monthly.
-          </p>
-        )}
       </div>
 
       <div className="mt-10 grid grid-cols-1 items-stretch gap-6 md:grid-cols-3">
         {PLANS.map((plan) => (
-          <PlanCard key={plan.id} plan={plan} onUpgrade={handleUpgrade} loading={loadingPlan === plan.id} />
+          <PlanCard key={plan.id} plan={plan} onUpgrade={handleUpgrade} loading={loadingPlan === plan.id} yearly={yearly} />
         ))}
+      </div>
+
+      <div className="mt-16">
+        <h2 className="text-center font-heading text-[22px] font-bold text-on-surface">How credits work</h2>
+        <p className="mx-auto mt-2 max-w-xl text-center text-[13.5px] leading-relaxed text-on-surface-variant">
+          Browsing Discover and Explore is always free. Credits are only spent on AI actions —
+          cheap actions cost few credits, and Channel Audit (our heaviest action) costs more.
+        </p>
+
+        <div className="mx-auto mt-6 max-w-2xl overflow-hidden rounded-[16px] border border-white/10 bg-white/[0.02]">
+          {CREDIT_COSTS.map((row, i) => (
+            <div
+              key={row.action}
+              className={`flex items-center justify-between gap-4 px-5 py-3.5 ${
+                i !== CREDIT_COSTS.length - 1 ? "border-b border-white/[0.06]" : ""
+              }`}
+            >
+              <div>
+                <p className="text-[13.5px] font-medium text-on-surface">{row.action}</p>
+                {row.note && <p className="mt-0.5 text-[12px] text-on-surface-variant/70">{row.note}</p>}
+              </div>
+              <span className="shrink-0 rounded-full bg-[#01D4FF]/15 px-3 py-1 text-[12.5px] font-bold text-[#01D4FF]">
+                {row.credits} {row.credits === "1" ? "credit" : "credits"}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <p className="mt-8 text-center text-[12.5px] text-on-surface-variant/70">
