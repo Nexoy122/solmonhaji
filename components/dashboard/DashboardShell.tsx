@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -149,7 +149,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   ) : (
                     <span className="absolute inset-0 scale-95 rounded-lg bg-[#363738] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100" />
                   )}
-                  {/* icon — white/muted (no cyan), vertically centered with text.
+                  {/* icon â€” white/muted (no cyan), vertically centered with text.
                       Named keys use NAV_ICONS; otherwise treat `icon` as a raw
                       Material Symbol glyph name. */}
                   <span className={`relative flex shrink-0 items-center ${active ? "text-white" : "text-white/60 group-hover:text-white/90"}`}>
@@ -238,7 +238,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Refresh countdown — sharp black pill, gray border, no hover */}
+            {/* Refresh countdown â€” sharp black pill, gray border, no hover */}
             {countdown && (
               <span className="hidden items-center gap-2 rounded-none border border-white/15 bg-black px-3.5 py-2 text-[13px] font-medium text-white/60 sm:inline-flex">
                 <span className="text-white/40"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} /></span>
@@ -246,7 +246,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </span>
             )}
 
-            {/* User menu — avatar only, cyan border-glow */}
+            {/* User menu â€” avatar only, cyan border-glow */}
             <div className="relative" ref={menuRef}>
               <button onClick={() => setMenuOpen((o) => !o)} aria-label="Account menu" className="flex size-10 items-center justify-center overflow-hidden rounded-full border border-white/15 p-0 transition-colors hover:border-white/30">
                 {avatar ? (
@@ -281,7 +281,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Only this scrolls — the header above stays put. */}
+        {/* Only this scrolls â€” the header above stays put. */}
         <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 text-white md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
