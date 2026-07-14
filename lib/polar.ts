@@ -21,10 +21,11 @@ export const PLAN_PRODUCT_IDS: Record<PlanId, string | undefined> = {
   plus: process.env.POLAR_PRODUCT_PLUS,
 };
 
+// Monthly credits granted per plan (must match the Plans.tsx UI + pricing doc).
 export const PLAN_CREDITS: Record<PlanId, number> = {
-  starter: 1000,
-  creator: 1000,
-  plus: 1000,
+  starter: 500,
+  creator: 1500,
+  plus: 4000,
 };
 
 export function planIdForProduct(productId: string): PlanId | null {
