@@ -201,8 +201,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
         <NavLinks />
 
-        {/* Bottom: settings + logout */}
+        {/* Bottom: upgrade + settings + logout */}
         <div className="shrink-0 border-t border-white/[0.06] p-3">
+          <Link href="/dashboard/plans" onClick={() => setSidebarOpen(false)} className="mb-1 flex items-center gap-3 rounded-lg border border-[#01D4FF]/30 bg-[#01D4FF]/10 px-3 py-2.5 text-[14px] font-semibold text-[#01D4FF] transition-colors hover:bg-[#01D4FF]/20">
+            <span className="flex items-center"><MSym name="bolt" size={20} /></span>
+            Upgrade plan
+          </Link>
           <Link href="/dashboard/settings" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-white/60 transition-colors hover:bg-[#363738] hover:text-white/90">
             <span className="flex items-center text-white/50"><MSym name="settings" size={20} /></span>
             Settings
@@ -265,6 +269,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     <div className="truncate text-[14px] font-semibold text-white">{displayName}</div>
                     <div className="truncate text-[12px] text-white/45">{user.email}</div>
                   </div>
+                  <Link href="/dashboard/plans" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-[14px] text-[#01D4FF] transition-colors hover:bg-[#01D4FF]/10">
+                    <MSym name="bolt" size={18} /> Upgrade plan
+                  </Link>
                   <Link href="/dashboard/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-[14px] text-white/70 transition-colors hover:bg-[#363738] hover:text-white">
                     <MSym name="settings" size={18} /> Settings
                   </Link>
