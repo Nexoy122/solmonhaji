@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "@/components/AuthProvider";
-import { canUse } from "@/lib/plan";
+import { useCredits } from "@/components/dashboard/CreditsContext";
 import { nicheColor } from "@/lib/nicheColors";
 import BorderGlow from "@/components/dashboard/BorderGlow";
 
@@ -339,6 +339,7 @@ function ChannelCard({ c }: { c: DiscoveryChannel }) {
 
 export function Discover() {
   const { user } = useAuth();
+  const { isPaid } = useCredits();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   const [search, setSearch] = useState("");   // what the user is typing
@@ -362,7 +363,7 @@ export function Discover() {
   const [fMinSubs, setFMinSubs] = useState(0);        // minimum subscribers
   const [fFaceless, setFFaceless] = useState(false);  // faceless only
   const [fLang, setFLang] = useState("");             // ISO language code or ""
-  const filtersUnlocked = canUse(undefined, "advanced_filters");
+  const filtersUnlocked = isPaid; // Advanced filters = any paid plan.
   const activeFilterCount = (fNiche !== "all" ? 1 : 0) + (fMinSubs > 0 ? 1 : 0) + (fFaceless ? 1 : 0) + (fLang ? 1 : 0);
   const clearFilters = () => { setFNiche("all"); setFMinSubs(0); setFFaceless(false); setFLang(""); };
 
@@ -503,6 +504,9 @@ export function Discover() {
           {/* Filter (funnel) icon */}
           <Icon d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" size={13} />
           Advanced Filters
+          {!filtersUnlocked && (
+            <span className="ml-0.5 inline-flex items-center gap-1 border-2 border-black bg-[#F0C020] px-1.5 py-[1px] text-[10px] font-black uppercase leading-none tracking-wide text-black"><Icon d="M4 11h16v10H4zM8 11V7a4 4 0 0 1 8 0v4" size={9} /> Pro</span>
+          )}
           {filtersUnlocked && activeFilterCount > 0 && (
             <span className="ml-0.5 inline-flex size-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">{activeFilterCount}</span>
           )}

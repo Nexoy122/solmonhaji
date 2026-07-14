@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import { useCredits, CreditIcon } from "@/components/dashboard/CreditsContext";
 import { NAV_ICONS, MSym } from "@/components/dashboard/NavIcons";
 import { refreshCountdownLabel } from "@/lib/refreshSchedule";
 
@@ -144,27 +145,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [updatesOpen, setUpdatesOpen] = useState(false);
   const [updatesModalOpen, setUpdatesModalOpen] = useState(false);
   const [unseen, setUnseen] = useState(false);
-  const [credits, setCredits] = useState<number | null>(null);
-
-  // Load the credit balance (and refresh it when the tab regains focus / after
-  // a tool run signals via the "credits:changed" event).
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const token = await user?.getIdToken();
-        if (!token) return;
-        const res = await fetch("/api/credits", { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
-        if (!cancelled && typeof data.balance === "number" && data.balance >= 0) setCredits(data.balance);
-      } catch { /* ignore */ }
-    };
-    load();
-    const onChange = () => load();
-    window.addEventListener("credits:changed", onChange);
-    window.addEventListener("focus", onChange);
-    return () => { cancelled = true; window.removeEventListener("credits:changed", onChange); window.removeEventListener("focus", onChange); };
-  }, [user]);
+  const { balance: credits } = useCredits();
   const menuRef = useRef<HTMLDivElement>(null);
   const updatesRef = useRef<HTMLDivElement>(null);
 
@@ -341,10 +322,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <Link
                 href="/dashboard/plans"
                 title="Credits — click to get more"
-                className="inline-flex items-center gap-1.5 border-2 border-black bg-[#F0C020] px-3 py-1.5 shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                className="inline-flex items-center gap-1.5 border-2 border-black bg-white px-3 py-1.5 shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#121212" aria-hidden><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" /></svg>
+                <CreditIcon size={17} />
                 <span className="text-[13px] font-black uppercase tracking-wide text-black tabular-nums">{credits.toLocaleString()}</span>
+                <span className="ml-0.5 hidden text-[10px] font-black uppercase tracking-widest text-black/40 sm:inline">credits</span>
               </Link>
             )}
 

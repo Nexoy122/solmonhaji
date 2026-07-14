@@ -60,3 +60,33 @@ export async function readBalance(uid: string) {
     return { balance: -1, plan: "free" };
   }
 }
+
+const PAID_PLANS = new Set(["starter", "creator", "plus"]);
+
+// Read a user's plan (from the credits ledger — the same source the client
+// derives isPaid from). Falls back to "free" on any error.
+export async function readPlan(uid: string): Promise<string> {
+  if (!creditsConfigured()) return "free";
+  try {
+    const { plan } = await getBalance(uid);
+    return plan || "free";
+  } catch (e) {
+    console.error("[credits] readPlan failed:", (e as Error).message);
+    return "free";
+  }
+}
+
+// True when the user is on any paid plan. When credits aren't configured
+// (dev without Postgres), fails OPEN → treats everyone as paid so the app works.
+export async function isPaidUser(uid: string): Promise<boolean> {
+  if (!creditsConfigured()) return true;
+  return PAID_PLANS.has(await readPlan(uid));
+}
+
+// A ready-to-return 403 for a paid-only feature.
+export function paidFeatureResponse(feature = "This feature") {
+  return NextResponse.json(
+    { error: `${feature} is available on paid plans.`, code: "UPGRADE_REQUIRED" },
+    { status: 403 }
+  );
+}

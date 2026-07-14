@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { nicheColor } from "@/lib/nicheColors";
 import BorderGlow from "@/components/dashboard/BorderGlow";
+import { useCredits, LockIcon, FREE_EXPLORE_LIMIT } from "@/components/dashboard/CreditsContext";
 
 // Consistent per-niche colored badge, used across the app.
 function NicheBadge({ niche, label, className = "" }: { niche: string; label: string; className?: string }) {
@@ -255,6 +257,7 @@ function ChannelCard({ c, onView }: { c: Channel; onView: () => void }) {
 
 export function ExploreChannels({ search = "", onSearch = () => {} }: { search?: string; onSearch?: (v: string) => void }) {
   const { user } = useAuth();
+  const { isPaid } = useCredits();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [niches, setNiches] = useState<NicheDef[]>([]);
   const [loading, setLoading] = useState(true);
@@ -304,21 +307,34 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
       sort === "views" ? b.viewCount - a.viewCount :
       sort === "shorts" ? (b.totalVideos ?? b.shortsCount) - (a.totalVideos ?? a.shortsCount) :
       b.avgShortsViews - a.avgShortsViews);
-  const shown = filtered.slice(0, visible);
+  const cap = isPaid ? visible : FREE_EXPLORE_LIMIT;
+  const shown = filtered.slice(0, cap);
   useEffect(() => { setVisible(24); }, [sort, niche, fSubs, fAvg, fShorts, search]);
 
   const railPanel = (
     <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-black bg-white p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
       <div className="mb-5 flex items-center justify-between">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-black/60">Filters</p>
-        {anyFilter && <button onClick={() => { setNiche("all"); setFSubs(0); setFAvg(0); setFShorts(0); }} className="text-[12.5px] font-semibold text-primary hover:underline">Clear</button>}
+        <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-black/60">
+          Filters {!isPaid && <span className="inline-flex items-center gap-1 border-2 border-black bg-[#F0C020] px-1.5 py-[1px] text-[10px] font-black uppercase leading-none tracking-wide text-black"><LockIcon size={10} /> Pro</span>}
+        </p>
+        {isPaid && anyFilter && <button onClick={() => { setNiche("all"); setFSubs(0); setFAvg(0); setFShorts(0); }} className="text-[12.5px] font-semibold text-primary hover:underline">Clear</button>}
       </div>
-      <div className="flex flex-col gap-5">
-        <Dropdown title="Sort by" options={SORT_OPTS.map((s) => s[1])} value={SORT_OPTS.findIndex((s) => s[0] === sort)} onChange={(i) => setSort(SORT_OPTS[i][0])} />
-        <Dropdown title="Niche" options={nicheOpts.map((o) => o.label)} value={nicheOpts.findIndex((o) => o.id === niche)} onChange={(i) => setNiche(nicheOpts[i].id)} />
-        <Dropdown title="Subscribers" options={SUB_OPTS.map((o) => o.label)} value={fSubs} onChange={setFSubs} />
-        <Dropdown title="Avg Views" options={AVG_OPTS.map((o) => o.label)} value={fAvg} onChange={setFAvg} />
-        <Dropdown title="Number of Shorts" options={SHORTS_OPTS.map((o) => o.label)} value={fShorts} onChange={setFShorts} />
+      <div className="relative">
+        <div className={`flex flex-col gap-5 ${!isPaid ? "pointer-events-none select-none opacity-40 blur-[1.5px]" : ""}`}>
+          <Dropdown title="Sort by" options={SORT_OPTS.map((s) => s[1])} value={SORT_OPTS.findIndex((s) => s[0] === sort)} onChange={(i) => setSort(SORT_OPTS[i][0])} />
+          <Dropdown title="Niche" options={nicheOpts.map((o) => o.label)} value={nicheOpts.findIndex((o) => o.id === niche)} onChange={(i) => setNiche(nicheOpts[i].id)} />
+          <Dropdown title="Subscribers" options={SUB_OPTS.map((o) => o.label)} value={fSubs} onChange={setFSubs} />
+          <Dropdown title="Avg Views" options={AVG_OPTS.map((o) => o.label)} value={fAvg} onChange={setFAvg} />
+          <Dropdown title="Number of Shorts" options={SHORTS_OPTS.map((o) => o.label)} value={fShorts} onChange={setFShorts} />
+        </div>
+        {!isPaid && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-3 text-center">
+            <span className="flex h-11 w-11 items-center justify-center border-2 border-black bg-[#F0C020] text-black shadow-[3px_3px_0px_0px_#121212]"><LockIcon size={20} /></span>
+            <p className="text-[13px] font-black uppercase leading-tight tracking-tight text-black">Filters are a Pro feature</p>
+            <p className="text-[12px] font-medium leading-snug text-black/70">Sort and filter channels on any paid plan.</p>
+            <Link href="/dashboard/plans" className="inline-flex items-center gap-2 border-2 border-black bg-[#D02020] px-4 py-2 text-[12px] font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">Upgrade plan</Link>
+          </div>
+        )}
       </div>
     </aside>
   );
@@ -382,13 +398,20 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
           <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((c) => <ChannelCard key={c.channelId} c={c} onView={() => setModal(c)} />)}
           </div>
-          {visible < filtered.length && (
+          {!isPaid && filtered.length > FREE_EXPLORE_LIMIT ? (
+            <div className="mt-8 flex flex-col items-center gap-3 border-2 border-black bg-white px-6 py-8 text-center shadow-[5px_5px_0px_0px_#121212]">
+              <span className="flex h-10 w-10 items-center justify-center border-2 border-black bg-[#F0C020] text-black"><LockIcon size={18} /></span>
+              <p className="text-[15px] font-black uppercase tracking-tight text-black">{fmt(filtered.length - FREE_EXPLORE_LIMIT)} more channels locked</p>
+              <p className="max-w-[380px] text-[13px] font-medium text-black/70">Free accounts preview the first {FREE_EXPLORE_LIMIT} channels. Upgrade to any paid plan to browse them all.</p>
+              <Link href="/dashboard/plans" className="mt-1 inline-flex items-center gap-2 border-2 border-black bg-[#D02020] px-4 py-2 text-[13px] font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">Upgrade plan</Link>
+            </div>
+          ) : isPaid && visible < filtered.length ? (
             <div className="mt-8 flex justify-center">
               <button onClick={() => setVisible((n) => n + 24)} className="border border-black bg-white px-5 py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-white">
                 Load more ({fmt(filtered.length - visible)} left)
               </button>
             </div>
-          )}
+          ) : null}
         </>
       )}
     </>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { useAuth } from "@/components/AuthProvider";
+import { useCredits, CREDIT_COST, CreditIcon, ProBadge, UpgradeNudge } from "@/components/dashboard/CreditsContext";
 
 function Icon({ d, size = 18 }: { d: string; size?: number }) {
   return (
@@ -57,6 +58,8 @@ const HELP_TIPS = [
 
 export function ScriptGenerator() {
   const { user } = useAuth();
+  const { handleInsufficient, refresh: refreshCredits, isPaid } = useCredits();
+  const [videoLocked, setVideoLocked] = useState(false);
   const authHeader = useCallback(async (): Promise<Record<string, string>> => {
     const t = await user?.getIdToken();
     return t ? { Authorization: `Bearer ${t}` } : {};
@@ -191,17 +194,25 @@ export function ScriptGenerator() {
         if (withTimestamps) fd.append("withTimestamps", "1");
         const res = await fetch("/api/script/generate-from-video", { method: "POST", headers: { ...(await authHeader()) }, body: fd });
         data = await readJson(res);
-        if (!res.ok) throw new Error(data.error || "Couldn't generate the script.");
+        if (!res.ok) {
+          if (handleInsufficient(res, data as { code?: string; needed?: number })) { setBusy(false); return; }
+          if (res.status === 403 || (data as { code?: string }).code === "UPGRADE_REQUIRED") { setVideoLocked(true); setBusy(false); return; }
+          throw new Error(data.error || "Couldn't generate the script.");
+        }
       } else {
         const payload: Record<string, unknown> = { mode, withTimestamps, transcript: refTranscript.trim() || null, youtubeUrl: refUrl.trim() || null };
         if (mode === "idea") payload.idea = idea.trim();
         else { payload.script = scriptIn.trim(); payload.options = improveOpts; }
         const res = await fetch("/api/script/generate", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify(payload) });
         data = await readJson(res);
-        if (!res.ok) throw new Error(data.error || "Couldn't generate the script.");
+        if (!res.ok) {
+          if (handleInsufficient(res, data as { code?: string; needed?: number })) { setBusy(false); return; }
+          throw new Error(data.error || "Couldn't generate the script.");
+        }
       }
       const out = data.script ?? "";
       setScript(out);
+      refreshCredits();
       if (data.warning) setNotice(data.warning);
       const title = mode === "idea" ? idea.trim().slice(0, 60) : mode === "improve" ? "Improved script" : (file?.name ?? "From video");
       setHistory((h) => [{ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, title, script: out, at: Date.now() }, ...h].slice(0, 20));
@@ -232,6 +243,19 @@ export function ScriptGenerator() {
     <div className="dash-fade-up w-full">
       <p className="mb-4 text-[14px] text-on-surface-variant">Write scroll-stopping YouTube Shorts scripts — from an idea, a script, or a video.</p>
 
+      {/* From-Video paywall modal (free users) */}
+      {videoLocked && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4" onClick={() => setVideoLocked(false)}>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <UpgradeNudge
+              title="From Video is a Pro feature"
+              body="Turn any YouTube video into a fresh Shorts script. Upgrade to any paid plan to unlock it."
+            />
+          </div>
+        </div>
+      )}
+
       {/* How to get the best script — collapsible help */}
       <div className="mb-5 overflow-hidden rounded-xl border border-black bg-[#ffffff]">
         <button onClick={() => setHelpOpen((o) => !o)} className="flex w-full items-center gap-2.5 px-5 py-3.5 text-left transition-colors hover:bg-white">
@@ -257,12 +281,16 @@ export function ScriptGenerator() {
         <div className="flex min-h-[600px] flex-col rounded-xl border border-black bg-[#ffffff] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_8px_30px_rgba(0,0,0,0.5)]">
           {/* Mode tabs */}
           <div className="grid grid-cols-3 border-b border-black">
-            {MODES.map((m) => (
-              <button key={m.id} onClick={() => setMode(m.id)}
-                className={`flex flex-col items-center gap-1.5 px-2 py-4 text-center transition-all first:rounded-tl-xl last:rounded-tr-xl ${mode === m.id ? "bg-white text-black" : "text-on-surface-variant hover:bg-white hover:text-black"}`}>
-                <Icon d={m.icon} size={20} /><span className="text-[13px] font-semibold">{m.label}</span>
-              </button>
-            ))}
+            {MODES.map((m) => {
+              const locked = m.id === "video" && !isPaid;
+              return (
+                <button key={m.id} onClick={() => locked ? setVideoLocked(true) : setMode(m.id)}
+                  className={`relative flex flex-col items-center gap-1.5 px-2 py-4 text-center transition-all first:rounded-tl-xl last:rounded-tr-xl ${mode === m.id ? "bg-white text-black" : "text-on-surface-variant hover:bg-white hover:text-black"}`}>
+                  {locked && <span className="absolute right-1.5 top-1.5"><ProBadge /></span>}
+                  <Icon d={m.icon} size={20} /><span className="text-[13px] font-semibold">{m.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex flex-1 flex-col p-6">
@@ -298,7 +326,7 @@ export function ScriptGenerator() {
               )}
               {isLast ? (
                 <button onClick={generate} disabled={!steps[0].canNext || busy} className="btn-donate flex flex-1 items-center justify-center gap-2 text-[14px]">
-                  {busy ? "Generating…" : <>Generate script <Icon d="M13 2L3 14h7l-1 8 10-12h-7z" size={16} /></>}
+                  {busy ? "Generating…" : <>Generate script <span className="mx-0.5 inline-flex items-center gap-1 rounded-full bg-black/10 px-2 py-0.5 text-[12px] font-bold"><CreditIcon size={13} /> {mode === "video" ? CREDIT_COST.scriptFromVideo : CREDIT_COST.script}</span></>}
                 </button>
               ) : (
                 <button onClick={() => { setStep((s) => s + 1); setErr(""); }} disabled={!cur.canNext} className="btn-donate flex flex-1 items-center justify-center gap-2 text-[14px] disabled:cursor-not-allowed disabled:opacity-40">

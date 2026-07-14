@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import { useCredits, CREDIT_COST, CreditIcon } from "@/components/dashboard/CreditsContext";
 
 function Icon({ d, size = 18 }: { d: string; size?: number }) {
   return (
@@ -14,6 +15,7 @@ function Icon({ d, size = 18 }: { d: string; size?: number }) {
 
 export function ShortsTranscript() {
   const { user } = useAuth();
+  const { handleInsufficient, refresh: refreshCredits } = useCredits();
   const params = useSearchParams();
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
@@ -48,11 +50,13 @@ export function ShortsTranscript() {
       if (data.unsupported === "not_short") {
         setWarning(data.error);
       } else if (!res.ok) {
+        if (handleInsufficient(res, data)) { setBusy(false); return; }
         setError(data.error || "Couldn't get the transcript.");
       } else {
         setTranscript(data.transcript);
         setTitle(data.title || "");
         setThumbnail(data.thumbnail || null);
+        refreshCredits();
       }
     } catch {
       setError("Network error. Please try again.");
@@ -103,7 +107,7 @@ export function ShortsTranscript() {
           {busy ? (
             <><span className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-white" /> Getting transcript…</>
           ) : (
-            <><Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={16} /> Get transcript</>
+            <><Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={16} /> Get transcript <span className="inline-flex items-center gap-1 rounded-full bg-black/10 px-1.5 py-0.5 text-[11px] font-bold"><CreditIcon size={12} /> {CREDIT_COST.transcript}</span></>
           )}
         </button>
         {busy && <p className="mt-2 text-center text-[12px] text-on-surface-variant">If the Short has no captions we transcribe the audio — that can take 10–30s.</p>}

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import { useCredits, CREDIT_COST, CreditIcon, UpgradeNudge, TRUST_CHANNEL_LIMIT } from "@/components/dashboard/CreditsContext";
 import type { ScoreResult, CategoryScore } from "@/lib/scoring/engine";
 
 // ── Types ──
@@ -137,6 +138,8 @@ function ScoreRing({ score, size = 132 }: { score: number | null; size?: number 
 
 export function TrustScore() {
   const { user } = useAuth();
+  const { handleInsufficient, refresh: refreshCredits, plan } = useCredits();
+  const [channelLocked, setChannelLocked] = useState(false);
   const params = useSearchParams();
 
   const [channels, setChannels] = useState<ConnectedChannel[] | null>(null);
@@ -190,9 +193,13 @@ export function TrustScore() {
 
   const connect = async () => {
     setError("");
+    // Free users can connect only 1 channel; paid plans get more.
+    const limit = TRUST_CHANNEL_LIMIT[plan] ?? 1;
+    if ((channels?.length ?? 0) >= limit) { setChannelLocked(true); return; }
     try {
       const res = await fetch("/api/youtube/connect", { headers: await authHeader() });
       const data = await res.json();
+      if (res.status === 403 || data.code === "UPGRADE_REQUIRED") { setChannelLocked(true); return; }
       if (data.url) window.location.href = data.url;
       else setError(data.error || "Couldn't start the connection.");
     } catch {
@@ -246,10 +253,12 @@ export function TrustScore() {
         setWarning(data.error);
         setWarningTitle("No videos yet");
       } else if (!res.ok) {
+        if (handleInsufficient(res, data)) { setAnalyzing(false); return; }
         setError(data.error || "Analysis failed. Please try again.");
       } else {
         setResult(data.score);
         setConfidence(data.confidence ?? null);
+        refreshCredits();
       }
     } catch {
       setError("Network error. Please try again.");
@@ -267,6 +276,18 @@ export function TrustScore() {
 
   return (
     <div className="dash-fade-up w-full overflow-x-hidden">
+      {/* Channel-limit paywall modal */}
+      {channelLocked && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4" onClick={() => setChannelLocked(false)}>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <UpgradeNudge
+              title="Channel limit reached"
+              body="Free accounts can connect 1 channel. Upgrade to a paid plan to score more channels."
+            />
+          </div>
+        </div>
+      )}
       {/* Header — page title lives in the fixed topbar */}
       <div className="mb-5">
         <p className="text-[14px] text-on-surface-variant">Connect your channel for a full Trust Score across 5 growth signals.</p>
@@ -310,6 +331,7 @@ export function TrustScore() {
             )}
             <button onClick={analyze} disabled={analyzing} className="btn-donate inline-flex items-center justify-center gap-2 !rounded-none !py-2 !text-[13px] disabled:opacity-50">
               <Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={15} /> {result ? "Re-analyze" : "Analyze"}
+              <span className="inline-flex items-center gap-1 rounded-full bg-black/10 px-1.5 py-0.5 text-[11px] font-bold"><CreditIcon size={12} /> {CREDIT_COST.trustScore}</span>
             </button>
           </div>
         )}
@@ -334,7 +356,7 @@ export function TrustScore() {
           </p>
           <button onClick={connected ? analyze : connect} className="btn-donate mt-6 inline-flex items-center justify-center gap-2 !rounded-none">
             {connected
-              ? <><Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={16} /> Analyze channel</>
+              ? <><Icon d="M3 17l6-6 4 4 8-8M21 7v5h-5" size={16} /> Analyze channel <span className="inline-flex items-center gap-1 rounded-full bg-black/10 px-1.5 py-0.5 text-[11px] font-bold"><CreditIcon size={12} /> {CREDIT_COST.trustScore}</span></>
               : <><Icon d="M12 5v14M5 12h14" size={16} /> Connect channel</>}
           </button>
         </div>

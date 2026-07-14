@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyRequest } from "@/lib/firebaseAdmin";
+import { verifyRequest, adminDb } from "@/lib/firebaseAdmin";
+import { readPlan } from "@/lib/requireCredits";
 
 export const runtime = "nodejs";
+
+// Per-plan connected-channel limits (free = 1). Paid plans effectively unlimited.
+const CHANNEL_LIMIT: Record<string, number> = { free: 1, starter: 999, creator: 999, plus: 999 };
 
 const YOUTUBE_SCOPES = [
   "https://www.googleapis.com/auth/youtube.readonly",
@@ -19,6 +23,22 @@ export async function GET(req: NextRequest) {
 
   if (!process.env.GOOGLE_OAUTH_CLIENT_ID) {
     return NextResponse.json({ error: "YouTube connect is not configured." }, { status: 503 });
+  }
+
+  // Enforce the per-plan connected-channel limit (free = 1).
+  try {
+    const plan = await readPlan(uid);
+    const limit = CHANNEL_LIMIT[plan] ?? 1;
+    const snap = await adminDb().collection("users").doc(uid).collection("youtube_channels").get();
+    if (snap.size >= limit) {
+      return NextResponse.json(
+        { error: `Your plan allows ${limit} connected channel${limit === 1 ? "" : "s"}. Upgrade to connect more.`, code: "UPGRADE_REQUIRED" },
+        { status: 403 }
+      );
+    }
+  } catch (err) {
+    console.error("[youtube/connect] channel-limit check failed:", err);
+    // Fail open — don't block connecting over a Firestore hiccup.
   }
 
   const redirectUri = `${APP_URL}/api/youtube/callback`;

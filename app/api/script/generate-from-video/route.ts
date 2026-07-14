@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequest } from "@/lib/firebaseAdmin";
 import { generateFromVideo } from "@/lib/scriptGen";
+import { chargeCredits, isPaidUser, paidFeatureResponse } from "@/lib/requireCredits";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // ffmpeg extraction + transcription + analysis
@@ -44,6 +45,13 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
+
+  // "From Video" is a paid-only feature.
+  if (!(await isPaidUser(uid))) return paidFeatureResponse("Script from video");
+
+  // Charge credits (scriptFromVideo) before the expensive extraction/transcription.
+  const charge = await chargeCredits(uid, "scriptFromVideo");
+  if (!charge.ok) return charge.response;
 
   try {
     const script = await generateFromVideo({ videoBuffer, videoMime, youtubeUrl, transcript, withTimestamps });

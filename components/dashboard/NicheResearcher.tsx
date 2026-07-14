@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import BorderGlow from "@/components/dashboard/BorderGlow";
+import { useCredits, LockIcon } from "@/components/dashboard/CreditsContext";
 
 interface NicheDef { id: string; label: string }
 interface ViralVideo { id: string; title: string; channelName: string; thumbnail: string; views: number; url: string; outlierX: number; publishedAt?: string }
@@ -53,6 +55,7 @@ function timeAgo(iso?: string): string {
 
 export function NicheResearcher() {
   const { user } = useAuth();
+  const { isPaid } = useCredits();
   const [niches, setNiches] = useState<NicheDef[]>([]);
   const [active, setActive] = useState<string>("");   // "" = nothing picked yet
   const [recap, setRecap] = useState<Recap | null>(null);
@@ -262,9 +265,24 @@ export function NicheResearcher() {
                     subtitle="See every sub-niche, its viral rate, weekly movement, and the channels driving it."
                   />
                   <p className="mb-3 -mt-1 text-[12.5px] text-on-surface-variant"><span className="text-[#34d399]">Green is underserved</span>, <span className="text-[#f87171]">red is saturated</span>.</p>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                    {recap.subNiches.map((s) => <SubNicheCard key={s.name} s={s} />)}
-                  </div>
+                  {isPaid ? (
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                      {recap.subNiches.map((s) => <SubNicheCard key={s.name} s={s} />)}
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      {/* Blurred teaser of the first few cards */}
+                      <div className="pointer-events-none grid select-none grid-cols-1 gap-3 blur-[3px] sm:grid-cols-2 xl:grid-cols-3" aria-hidden>
+                        {recap.subNiches.slice(0, 3).map((s) => <SubNicheCard key={s.name} s={s} />)}
+                      </div>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/40 px-4 text-center backdrop-blur-[1px]">
+                        <span className="flex h-11 w-11 items-center justify-center border-2 border-black bg-[#F0C020] text-black shadow-[3px_3px_0px_0px_#121212]"><LockIcon size={20} /></span>
+                        <p className="text-[15px] font-black uppercase tracking-tight text-black">Sub-niche breakdown is a Pro feature</p>
+                        <p className="max-w-[420px] text-[13px] font-medium text-black/70">Unlock all {recap.subNiches.length} sub-niches — viral rate, weekly movement, and the channels driving each one — on any paid plan.</p>
+                        <Link href="/dashboard/plans" className="mt-1 inline-flex items-center gap-2 border-2 border-black bg-[#D02020] px-4 py-2 text-[13px] font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">Upgrade plan</Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </>

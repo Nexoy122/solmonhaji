@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { ExploreChannels } from "@/components/dashboard/ExploreChannels";
+import { useCredits, LockIcon, FREE_EXPLORE_LIMIT } from "@/components/dashboard/CreditsContext";
 
 interface NicheDef { id: string; label: string }
 interface ExploreVideo {
@@ -322,6 +323,7 @@ function VideoCard({ v }: { v: ExploreVideo }) {
 
 export function Explore() {
   const { user } = useAuth();
+  const { isPaid } = useCredits();
   const [niches, setNiches] = useState<NicheDef[]>([]);
   const [active, setActive] = useState<string>("all");
   const [videos, setVideos] = useState<ExploreVideo[]>([]);
@@ -399,18 +401,30 @@ export function Explore() {
   const railPanel = (
     <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-black bg-white p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
       <div className="mb-5 flex items-center justify-between">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-black/60">Filters</p>
-        {(anyFilter || sort !== "views" || active !== "all") && (
+        <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-black/60">
+          Filters {!isPaid && <span className="inline-flex items-center gap-1 border-2 border-black bg-[#F0C020] px-1.5 py-[1px] text-[10px] font-black uppercase leading-none tracking-wide text-black"><LockIcon size={10} /> Pro</span>}
+        </p>
+        {isPaid && (anyFilter || sort !== "views" || active !== "all") && (
           <button onClick={() => { clearFilters(); setSort("views"); setActive("all"); }} className="text-[12.5px] font-semibold text-primary hover:underline">Clear</button>
         )}
       </div>
-      <div className="flex flex-col gap-5">
-        <SelectDropdown title="Sort by" icon="M3 6h18M7 12h10M11 18h2" value={SORT_OPTS.findIndex((s) => s[0] === sort)} options={SORT_OPTS.map((s) => s[1])} onChange={(i) => setSort(SORT_OPTS[i][0])} />
-        <SelectDropdown title="Niche" icon="M4 6h16M6 12h12M9 18h6" value={options.findIndex((o) => o.id === active)} options={options.map((o) => o.label)} onChange={(i) => setActive(options[i].id)} />
-        <FilterDropdown title="Views" icon="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" options={VIEW_FILTERS} value={fViews} onChange={setFViews} />
-        <FilterDropdown title="Subscribers" icon="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" options={SUB_FILTERS} value={fSubs} onChange={setFSubs} />
-        <FilterDropdown title="Posted Time" icon="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" options={TIME_FILTERS} value={fTime} onChange={setFTime} />
-        <DurationRange min={durMin} max={durMax} onChange={(lo, hi) => { setDurMin(lo); setDurMax(hi); }} />
+      <div className="relative">
+        <div className={`flex flex-col gap-5 ${!isPaid ? "pointer-events-none select-none opacity-40 blur-[1.5px]" : ""}`}>
+          <SelectDropdown title="Sort by" icon="M3 6h18M7 12h10M11 18h2" value={SORT_OPTS.findIndex((s) => s[0] === sort)} options={SORT_OPTS.map((s) => s[1])} onChange={(i) => setSort(SORT_OPTS[i][0])} />
+          <SelectDropdown title="Niche" icon="M4 6h16M6 12h12M9 18h6" value={options.findIndex((o) => o.id === active)} options={options.map((o) => o.label)} onChange={(i) => setActive(options[i].id)} />
+          <FilterDropdown title="Views" icon="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" options={VIEW_FILTERS} value={fViews} onChange={setFViews} />
+          <FilterDropdown title="Subscribers" icon="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" options={SUB_FILTERS} value={fSubs} onChange={setFSubs} />
+          <FilterDropdown title="Posted Time" icon="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" options={TIME_FILTERS} value={fTime} onChange={setFTime} />
+          <DurationRange min={durMin} max={durMax} onChange={(lo, hi) => { setDurMin(lo); setDurMax(hi); }} />
+        </div>
+        {!isPaid && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-3 text-center">
+            <span className="flex h-11 w-11 items-center justify-center border-2 border-black bg-[#F0C020] text-black shadow-[3px_3px_0px_0px_#121212]"><LockIcon size={20} /></span>
+            <p className="text-[13px] font-black uppercase leading-tight tracking-tight text-black">Filters are a Pro feature</p>
+            <p className="text-[12px] font-medium leading-snug text-black/70">Filter by niche, views, subscribers, time & duration on any paid plan.</p>
+            <Link href="/dashboard/plans" className="inline-flex items-center gap-2 border-2 border-black bg-[#D02020] px-4 py-2 text-[12px] font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">Upgrade plan</Link>
+          </div>
+        )}
       </div>
     </aside>
   );
@@ -496,15 +510,23 @@ export function Explore() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {videos.map((v) => <VideoCard key={v.id} v={v} />)}
+            {(isPaid ? videos : videos.slice(0, FREE_EXPLORE_LIMIT)).map((v) => <VideoCard key={v.id} v={v} />)}
           </div>
-          {videos.length < total && (
+          {/* Free tier: capped at the first FREE_EXPLORE_LIMIT videos → upgrade CTA. */}
+          {!isPaid && total > FREE_EXPLORE_LIMIT ? (
+            <div className="mt-8 flex flex-col items-center gap-3 rounded-none border-2 border-black bg-white px-6 py-8 text-center shadow-[5px_5px_0px_0px_#121212]">
+              <span className="flex h-10 w-10 items-center justify-center border-2 border-black bg-[#F0C020] text-black"><LockIcon size={18} /></span>
+              <p className="text-[15px] font-black uppercase tracking-tight text-black">{fmt(total - FREE_EXPLORE_LIMIT)} more videos locked</p>
+              <p className="max-w-[380px] text-[13px] font-medium text-black/70">Free accounts preview the first {FREE_EXPLORE_LIMIT} videos. Upgrade to any paid plan to browse them all.</p>
+              <Link href="/dashboard/plans" className="mt-1 inline-flex items-center gap-2 border-2 border-black bg-[#D02020] px-4 py-2 text-[13px] font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">Upgrade plan</Link>
+            </div>
+          ) : isPaid && videos.length < total ? (
             <div className="mt-8 flex justify-center">
               <button onClick={loadMore} disabled={loadingMore} className="rounded-none border border-black bg-white px-5 py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-white disabled:opacity-60">
                 {loadingMore ? "Loading…" : `Load more (${fmt(total - videos.length)} left)`}
               </button>
             </div>
-          )}
+          ) : null}
         </>
       )}
       </>
