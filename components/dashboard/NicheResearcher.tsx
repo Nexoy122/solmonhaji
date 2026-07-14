@@ -128,9 +128,9 @@ export function NicheResearcher() {
           <div className="pointer-events-none select-none opacity-[0.9]">
             <NichePreview />
           </div>
-          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#000101]/60 to-[#000101]/95 pt-[120px]">
-            <div className="max-w-[440px] rounded-2xl border border-white/10 bg-[#0d0d10] px-10 py-9 text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
-              <span className="nudge-up mx-auto mb-4 flex size-11 items-center justify-center rounded-full bg-[#2e8eff]/15 text-[#2e8eff]">
+          <div className="absolute inset-0 flex items-start justify-center bg-gradient-to-b from-transparent via-[#F0F0F0]/60 to-[#F0F0F0]/95 pt-[120px]">
+            <div className="max-w-[440px] rounded-2xl border border-black bg-white px-10 py-9 text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+              <span className="nudge-up mx-auto mb-4 flex size-11 items-center justify-center rounded-full bg-[#D02020]/15 text-[#D02020]">
                 <Icon d="M12 19V5M5 12l7-7 7 7" size={22} />
               </span>
               <p className="text-[18px] font-bold text-on-surface">Pick a niche to begin</p>
@@ -150,9 +150,9 @@ export function NicheResearcher() {
         <>
           {/* AI ANALYSIS panel — premium animated border glow */}
           <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
-          <BorderGlow borderRadius={16} backgroundColor="#000101" glowColor="0 0 100" glowIntensity={0.5} className="mb-1">
+          <BorderGlow borderRadius={16} backgroundColor="#F0F0F0" glowColor="0 0 100" glowIntensity={0.5} className="mb-1">
             <div className="p-6">
-              <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-white/45">
+              <p className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-black/50">
                 <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={14} /> AI Analysis
               </p>
               {recap?.brief ? (
@@ -168,17 +168,17 @@ export function NicheResearcher() {
             <div className="relative mt-5">
               <button
                 onClick={() => setWeekMenuOpen((o) => !o)}
-                className="flex w-full items-center gap-2.5 rounded-md border border-white/15 bg-white/[0.02] px-4 py-3 text-[13.5px] font-medium text-on-surface transition-colors hover:border-white/30 hover:bg-white/[0.05]"
+                className="flex w-full items-center gap-2.5 rounded-md border border-black bg-white px-4 py-3 text-[13.5px] font-medium text-on-surface transition-colors hover:border-black hover:bg-white"
               >
                 <Icon d="M12 8v4l3 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={15} />
                 <span className="flex-1 text-left">{selectedWeek ? `Week of ${weekLabel(selectedWeek)}` : "Latest week"}</span>
                 <Icon d="m6 9 6 6 6-6" size={15} />
               </button>
               {weekMenuOpen && (
-                <div className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-md border border-white/10 bg-[#0c0c0f]">
+                <div className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-md border border-black bg-[#ffffff]">
                   <button
                     onClick={() => { setSelectedWeek(""); setWeekMenuOpen(false); }}
-                    className={`block w-full px-4 py-2.5 text-left text-[14px] transition-colors hover:bg-white/[0.05] ${!selectedWeek ? "font-semibold text-primary" : "text-on-surface"}`}
+                    className={`block w-full px-4 py-2.5 text-left text-[14px] transition-colors hover:bg-white ${!selectedWeek ? "font-semibold text-primary" : "text-on-surface"}`}
                   >
                     Latest week
                   </button>
@@ -186,7 +186,7 @@ export function NicheResearcher() {
                     <button
                       key={w}
                       onClick={() => { setSelectedWeek(w); setWeekMenuOpen(false); }}
-                      className={`block w-full px-4 py-2.5 text-left text-[14px] transition-colors hover:bg-white/[0.05] ${selectedWeek === w ? "font-semibold text-primary" : "text-on-surface"}`}
+                      className={`block w-full px-4 py-2.5 text-left text-[14px] transition-colors hover:bg-white ${selectedWeek === w ? "font-semibold text-primary" : "text-on-surface"}`}
                     >
                       Week of {weekLabel(w)}
                     </button>
@@ -197,7 +197,7 @@ export function NicheResearcher() {
           )}
 
           {!recap ? (
-            <div className="mt-5 rounded-none border border-white/10 bg-white/[0.02] p-10 text-center">
+            <div className="mt-5 rounded-none border border-black bg-white p-10 text-center">
               <p className="text-[16px] font-bold text-on-surface">No data yet for this niche</p>
               <p className="mx-auto mt-2 max-w-[440px] text-[14px] text-on-surface-variant">
                 The first weekly refresh hasn&apos;t run for this niche yet. Once it does, the recap appears here.
@@ -307,7 +307,7 @@ function RocketLoader({ label }: { label: string }) {
           <span></span><span></span><span></span><span></span>
         </div>
       </div>
-      <p className="mt-4 text-[15px] font-semibold text-white">{label}…</p>
+      <p className="mt-4 text-[15px] font-semibold text-black">{label}…</p>
       <p className="mt-1.5 text-[13px] text-on-surface-variant">Pulling viral videos, movers, and where the opportunity is</p>
     </div>
   );
@@ -325,15 +325,15 @@ const DEFAULT_NICHES: NicheDef[] = [
 function SkeletonLines({ dim }: { dim?: boolean }) {
   return (
     <div className={`space-y-2.5 ${dim ? "opacity-40" : ""}`}>
-      <div className="h-3 w-[92%] animate-pulse rounded bg-white/10" />
-      <div className="h-3 w-[78%] animate-pulse rounded bg-white/10" />
-      <div className="h-3 w-[85%] animate-pulse rounded bg-white/10" />
+      <div className="h-3 w-[92%] animate-pulse rounded bg-white" />
+      <div className="h-3 w-[78%] animate-pulse rounded bg-white" />
+      <div className="h-3 w-[85%] animate-pulse rounded bg-white" />
     </div>
   );
 }
 
 const SkBar = ({ w = "100%", h = "h-3" }: { w?: string; h?: string }) => (
-  <div className={`${h} animate-pulse rounded bg-white/[0.22]`} style={{ width: w }} />
+  <div className={`${h} animate-pulse rounded bg-white`} style={{ width: w }} />
 );
 
 // Dimmed skeleton of the full page, shown behind the "Select a niche" prompt.
@@ -343,16 +343,16 @@ function NichePreview() {
       {/* AI Analysis */}
       <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
       {/* AI Analysis (full width) */}
-      <div className="rounded-xl border border-white/15 bg-white/[0.05] p-6">
+      <div className="rounded-xl border border-black bg-white p-6">
         <SkBar w="30%" h="h-2.5" />
         <div className="mt-4 space-y-2.5"><SkBar w="94%" /><SkBar w="88%" /><SkBar w="91%" /><SkBar w="70%" /></div>
       </div>
       {/* Filter */}
-      <div className="mt-5 h-10 w-[240px] animate-pulse rounded-md border border-white/15 bg-white/[0.08]" />
+      <div className="mt-5 h-10 w-[240px] animate-pulse rounded-md border border-black bg-white" />
       {/* Stats */}
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="rounded-lg border border-white/15 bg-white/[0.05] p-4">
+          <div key={i} className="rounded-lg border border-black bg-white p-4">
             <SkBar w="55%" h="h-2.5" /><div className="mt-3"><SkBar w="45%" h="h-6" /></div><div className="mt-2"><SkBar w="70%" h="h-2.5" /></div>
           </div>
         ))}
@@ -367,12 +367,12 @@ function NichePreview() {
       <div className="mt-8"><SkBar w="200px" h="h-4" /></div>
       <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="rounded-lg border border-white/15 bg-white/[0.05] p-5">
+          <div key={i} className="rounded-lg border border-black bg-white p-5">
             <SkBar w="45%" h="h-2.5" />
             <div className="mt-4 space-y-3">
               {[0, 1, 2, 3].map((j) => (
                 <div key={j} className="flex items-center gap-2.5">
-                  <div className="size-8 shrink-0 animate-pulse rounded-full bg-white/[0.22]" />
+                  <div className="size-8 shrink-0 animate-pulse rounded-full bg-white" />
                   <div className="flex-1 space-y-1.5"><SkBar w="70%" h="h-2.5" /><SkBar w="40%" h="h-2" /></div>
                 </div>
               ))}
@@ -384,10 +384,10 @@ function NichePreview() {
       <div className="mt-8"><SkBar w="220px" h="h-4" /></div>
       <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {[0, 1].map((i) => (
-          <div key={i} className="rounded-xl border border-white/15 bg-white/[0.05] p-5">
+          <div key={i} className="rounded-xl border border-black bg-white p-5">
             <SkBar w="40%" h="h-3" />
             <div className="mt-3 grid grid-cols-3 gap-3">
-              {[0, 1, 2].map((j) => <div key={j} className="rounded-lg bg-white/[0.08] p-3"><SkBar w="60%" h="h-4" /><div className="mt-1.5"><SkBar w="80%" h="h-2" /></div></div>)}
+              {[0, 1, 2].map((j) => <div key={j} className="rounded-lg bg-white p-3"><SkBar w="60%" h="h-4" /><div className="mt-1.5"><SkBar w="80%" h="h-2" /></div></div>)}
             </div>
             <div className="mt-4 space-y-2"><SkBar w="90%" h="h-2.5" /><SkBar w="75%" h="h-2.5" /></div>
           </div>
@@ -402,8 +402,8 @@ function SkVideoGrid() {
   return (
     <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
       {Array.from({ length: 7 }).map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-lg border border-white/15 bg-white/[0.05]">
-          <div className="aspect-[9/16] animate-pulse bg-white/[0.12]" />
+        <div key={i} className="overflow-hidden rounded-lg border border-black bg-white">
+          <div className="aspect-[9/16] animate-pulse bg-white" />
           <div className="space-y-1.5 p-2"><SkBar h="h-2.5" /><SkBar w="60%" h="h-2" /></div>
         </div>
       ))}
@@ -424,7 +424,7 @@ const OPP_STYLE: Record<string, { label: string; c: string; bg: string; border: 
 function SubNicheCard({ s }: { s: SubNiche }) {
   const opp = OPP_STYLE[s.opportunity] ?? OPP_STYLE.rising;
   return (
-    <div className="rounded-lg border bg-[#050506] p-3.5" style={{ borderColor: opp.border }}>
+    <div className="rounded-lg border bg-[#F0F0F0] p-3.5" style={{ borderColor: opp.border }}>
       {/* Header row */}
       <div className="flex items-center gap-2">
         <span className="flex size-2 shrink-0 rounded-full" style={{ background: opp.c, boxShadow: `0 0 6px ${opp.c}` }} />
@@ -445,9 +445,9 @@ function SubNicheCard({ s }: { s: SubNiche }) {
 
       {/* Actionable idea — the key takeaway */}
       {s.contentAngle && (
-        <div className="mt-2.5 flex gap-2 rounded-md border border-white/12 bg-white/[0.04] p-2.5">
-          <span className="mt-0.5 shrink-0 text-white/60"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={13} /></span>
-          <p className="text-[12px] leading-snug text-on-surface"><span className="font-semibold text-white/85">Make this: </span>{s.contentAngle}</p>
+        <div className="mt-2.5 flex gap-2 rounded-md border border-black bg-white p-2.5">
+          <span className="mt-0.5 shrink-0 text-black/60"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={13} /></span>
+          <p className="text-[12px] leading-snug text-on-surface"><span className="font-semibold text-black">Make this: </span>{s.contentAngle}</p>
         </div>
       )}
 
@@ -455,7 +455,7 @@ function SubNicheCard({ s }: { s: SubNiche }) {
       {(s.examples.length > 0 || s.titlePatterns.length > 0) && (
         <div className="mt-2.5 flex items-end gap-2">
           {s.examples.slice(0, 3).map((e) => (
-            <a key={e.url} href={e.url} target="_blank" rel="noopener noreferrer" className="group relative block h-16 w-9 shrink-0 overflow-hidden rounded bg-white/[0.04]">
+            <a key={e.url} href={e.url} target="_blank" rel="noopener noreferrer" className="group relative block h-16 w-9 shrink-0 overflow-hidden rounded bg-white">
               {e.thumbnail && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={e.thumbnail} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
@@ -465,7 +465,7 @@ function SubNicheCard({ s }: { s: SubNiche }) {
           {s.titlePatterns.length > 0 && (
             <div className="flex flex-1 flex-wrap gap-1">
               {s.titlePatterns.slice(0, 3).map((p) => (
-                <span key={p} className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-on-surface-variant">{p}</span>
+                <span key={p} className="rounded-full border border-black bg-white px-2 py-0.5 text-[10px] font-medium text-on-surface-variant">{p}</span>
               ))}
             </div>
           )}
@@ -481,20 +481,20 @@ function VideoGrid({ videos }: { videos: ViralVideo[] }) {
       {videos.slice(0, 14).map((v) => {
         const ago = timeAgo(v.publishedAt);
         return (
-          <div key={v.id} className="group flex flex-col overflow-hidden rounded-none border border-white/10 bg-white/[0.02] transition-colors hover:border-white/25">
+          <div key={v.id} className="group flex flex-col overflow-hidden rounded-none border border-black bg-white transition-colors hover:border-black">
             {/* 9:16 thumbnail — click to open the Short on YouTube */}
-            <a href={v.url} target="_blank" rel="noopener noreferrer" className="group/thumb relative block aspect-[9/16] overflow-hidden bg-white/[0.04]">
+            <a href={v.url} target="_blank" rel="noopener noreferrer" className="group/thumb relative block aspect-[9/16] overflow-hidden bg-white">
               {v.thumbnail && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={v.thumbnail} alt="" className="h-full w-full object-cover" />
               )}
               {/* open-in-new button (always visible, top-right) */}
-              <span className="absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-md bg-black/60 text-white backdrop-blur-sm transition-colors group-hover/thumb:bg-black/80">
+              <span className="absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-md bg-white/60 text-black backdrop-blur-sm transition-colors group-hover/thumb:bg-white/80">
                 <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={12} />
               </span>
               {/* play affordance on hover */}
-              <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover/thumb:bg-black/30 group-hover/thumb:opacity-100">
-                <span className="flex size-9 items-center justify-center rounded-full bg-white/90 text-black">
+              <span className="absolute inset-0 flex items-center justify-center bg-white/0 opacity-0 transition-all group-hover/thumb:bg-white/30 group-hover/thumb:opacity-100">
+                <span className="flex size-9 items-center justify-center rounded-full bg-white text-black">
                   <Icon d="M8 5v14l11-7z" size={16} />
                 </span>
               </span>
@@ -518,7 +518,7 @@ function VideoGrid({ videos }: { videos: ViralVideo[] }) {
               </div>
               <a
                 href={`/dashboard/shorts-transcript?url=${encodeURIComponent(v.url)}`}
-                className="mt-2 inline-flex items-center justify-center gap-1 rounded-none border border-white/12 px-2 py-1.5 text-[10px] font-semibold text-on-surface-variant transition-colors hover:bg-white/[0.05] hover:text-on-surface"
+                className="mt-2 inline-flex items-center justify-center gap-1 rounded-none border border-black px-2 py-1.5 text-[10px] font-semibold text-on-surface-variant transition-colors hover:bg-white hover:text-on-surface"
               >
                 <Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={11} /> Get Transcript
               </a>
@@ -537,7 +537,7 @@ function StatCard({ icon, label, value, foot, trend = "flat" }: { icon: string; 
     trend === "down" ? { d: "M7 7l10 10M17 17H8M17 17V8", c: "#f87171" } :
     { d: "M5 12h14", c: "#8b8b93" };
   return (
-    <div className="rounded-none border border-white/10 bg-white/[0.02] p-4">
+    <div className="rounded-none border border-black bg-white p-4">
       <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/70">
         <Icon d={icon} size={13} /> {label}
       </p>
@@ -552,7 +552,7 @@ function StatCard({ icon, label, value, foot, trend = "flat" }: { icon: string; 
 
 function RankColumn({ title, icon, channels, render }: { title: string; icon: string; channels: RankedChannel[]; render: (c: RankedChannel) => string }) {
   return (
-    <div className="rounded-none border border-white/10 bg-white/[0.02] p-5">
+    <div className="rounded-none border border-black bg-white p-5">
       <p className="mb-3 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-on-surface-variant/70">
         <Icon d={icon} size={14} /> {title}
       </p>

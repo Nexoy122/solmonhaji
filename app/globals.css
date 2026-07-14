@@ -117,37 +117,37 @@ body {
    Only the live waitlist pages keep the light scheme above.
    ============================================================================ */
 .dashboard-dark {
-  /* Neutral gray "primary" — no cyan anywhere. Buttons/badges read as dark gray
-     (#1E1F21) with light-gray text; containers are subtle gray. */
-  --color-primary: #1E1F21;
-  --color-on-primary: #d4d4d8;
-  --color-primary-container: #1E1F21;
-  --color-on-primary-container: #c5c5cc;
+  /* BAUHAUS dashboard — off-white canvas, black borders, primary-color accents.
+     Bauhaus palette: red #D02020, blue #1040C0, yellow #F0C020, black #121212. */
+  --color-primary: #D02020;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #F0C020;
+  --color-on-primary-container: #121212;
 
-  --color-error: #ff6b6b;
+  --color-error: #D02020;
   --color-on-error: #ffffff;
-  --color-error-container: rgba(255,107,107,0.12);
-  --color-on-error-container: #ff9d9d;
+  --color-error-container: rgba(208,32,32,0.12);
+  --color-on-error-container: #D02020;
 
-  --color-success: #34d399;
-  --color-success-container: rgba(52,211,153,0.12);
+  --color-success: #118A3E;
+  --color-success-container: rgba(17,138,62,0.12);
 
-  /* surfaces (dark, minimal flat near-black) */
-  --color-surface: #060608;
-  --color-surface-dim: #000101;
-  --color-surface-bright: #141418;
-  --color-surface-container-lowest: #000101;
-  --color-surface-container-low: #08080a;
-  --color-surface-container: #0c0c0f;
-  --color-surface-container-high: #141418;
-  --color-surface-container-highest: #1c1c20;
+  /* surfaces — off-white canvas, white cards */
+  --color-surface: #F0F0F0;
+  --color-surface-dim: #E0E0E0;
+  --color-surface-bright: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #ffffff;
+  --color-surface-container: #ffffff;
+  --color-surface-container-high: #F0F0F0;
+  --color-surface-container-highest: #E0E0E0;
 
-  --color-on-surface: #ededef;
-  --color-on-surface-variant: #8b8b93;
-  --color-outline: #3a3a42;
-  --color-outline-variant: #1e1e24;
+  --color-on-surface: #121212;
+  --color-on-surface-variant: #5A5A5A;
+  --color-outline: #121212;
+  --color-outline-variant: #121212;
 }
-.dashboard-dark ::selection { background: rgba(255,255,255,0.22); color: #fff; }
+.dashboard-dark ::selection { background: #F0C020; color: #121212; }
 /* Slim dark scrollbar for the dashboard — covers inner scroll areas AND the
    window scrollbar (via :has, since .dashboard-dark is on an inner element). */
 .dashboard-dark ::-webkit-scrollbar,
@@ -155,25 +155,30 @@ html:has(.dashboard-dark)::-webkit-scrollbar,
 html:has(.dashboard-dark) body::-webkit-scrollbar { width: 9px; height: 9px; }
 .dashboard-dark ::-webkit-scrollbar-track,
 html:has(.dashboard-dark)::-webkit-scrollbar-track,
-html:has(.dashboard-dark) body::-webkit-scrollbar-track { background: #000101; }
+html:has(.dashboard-dark) body::-webkit-scrollbar-track { background: #F0F0F0; }
 .dashboard-dark ::-webkit-scrollbar-thumb,
 html:has(.dashboard-dark)::-webkit-scrollbar-thumb,
 html:has(.dashboard-dark) body::-webkit-scrollbar-thumb {
-  background: #01D4FF; border-radius: 9999px;
+  background: #121212; border-radius: 0;
   border: 2px solid transparent; background-clip: padding-box;
 }
 .dashboard-dark ::-webkit-scrollbar-thumb:hover,
 html:has(.dashboard-dark)::-webkit-scrollbar-thumb:hover,
-html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: #33ddff; background-clip: padding-box; }
-.dashboard-dark, html:has(.dashboard-dark) { scrollbar-width: thin; scrollbar-color: #01D4FF #000101; }
+html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: #333; background-clip: padding-box; }
+.dashboard-dark, html:has(.dashboard-dark) { scrollbar-width: thin; scrollbar-color: #121212 #F0F0F0; }
 
 /* Zoom the whole dashboard out for a denser, premium feel. */
 .dashboard-zoom { zoom: 0.92; }
 @supports not (zoom: 1) { .dashboard-zoom { transform: scale(0.92); transform-origin: top center; width: 108.7%; } }
-/* Heading font across the dashboard — Google's product typeface (Roboto). */
+/* Bauhaus dashboard — Outfit typeface, off-white base. */
+.dashboard-dark {
+  font-family: var(--font-outfit), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 .dashboard-dark .font-heading, .dashboard-dark h1, .dashboard-dark h2, .dashboard-dark h3 {
-  font-family: "Google Sans", "Product Sans", var(--font-roboto), -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
-  letter-spacing: -0.01em;
+  font-family: var(--font-outfit), system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 /* premium card entrance */
@@ -297,6 +302,17 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: #33d
 .legal-body li{ font-size:17px; line-height:1.7; color:var(--color-on-surface-variant); margin:0 0 8px; }
 .legal-body a{ color:var(--color-primary); text-decoration:underline; text-underline-offset:2px; }
 .legal-body strong{ color:var(--color-on-surface); font-weight:600; }
+
+/* Bauhaus legal prose (privacy/terms). */
+.bh-legal h2{ font-size:26px; font-weight:900; text-transform:uppercase; letter-spacing:-.5px; margin:44px 0 14px; color:#121212; }
+.bh-legal h2:first-child{ margin-top:0; }
+.bh-legal h3{ font-size:19px; font-weight:700; text-transform:uppercase; margin:28px 0 10px; color:#121212; }
+.bh-legal p{ font-size:16px; line-height:1.7; font-weight:500; color:#333; margin:0 0 16px; }
+.bh-legal ul{ margin:0 0 18px; padding-left:22px; list-style:none; }
+.bh-legal li{ position:relative; font-size:16px; line-height:1.7; font-weight:500; color:#333; margin:0 0 10px; padding-left:8px; }
+.bh-legal li::before{ content:""; position:absolute; left:-14px; top:10px; width:8px; height:8px; background:#D02020; border:1px solid #121212; }
+.bh-legal a{ color:#1040C0; font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+.bh-legal strong{ color:#121212; font-weight:700; }
 
 /* ============================================================================
    M3 SHAPE + ELEVATION
@@ -673,14 +689,89 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: #33d
 }
 
 /* ============================================================================
-   LANDING PAGE (/) — vidIQ-style, scoped to .lp-root so the dashboard/auth
-   pages keep their own fonts. (Merged from the tatti landing.)
+   LANDING PAGE (/) — BAUHAUS design system. Scoped to .lp-root so the
+   dashboard/auth pages keep their own theme. Constructivist, geometric, primary
+   colors, hard offset shadows, Outfit typeface.
    ============================================================================ */
 .lp-root {
-  font-family: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bh-bg: #F0F0F0;
+  --bh-fg: #121212;
+  --bh-red: #D02020;
+  --bh-blue: #1040C0;
+  --bh-yellow: #F0C020;
+  --bh-muted: #E0E0E0;
+  font-family: var(--font-outfit), system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bh-bg);
+  color: var(--bh-fg);
 }
 .lp-root .font-heading,
 .lp-root h1, .lp-root h2, .lp-root h3, .lp-root h4 {
-  font-family: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
-  letter-spacing: -0.02em;
+  font-family: var(--font-outfit), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+/* Dot-grid texture helper (Bauhaus pattern). */
+.bh-dots {
+  background-image: radial-gradient(#12121233 2px, transparent 2px);
+  background-size: 20px 20px;
+}
+.bh-dots-light {
+  background-image: radial-gradient(#ffffff44 2px, transparent 2px);
+  background-size: 20px 20px;
+}
+/* Triangle via clip-path. */
+.bh-triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+
+/* Black scrollbar for the Bauhaus landing. */
+html:has(.lp-root)::-webkit-scrollbar { width: 14px; height: 14px; }
+html:has(.lp-root)::-webkit-scrollbar-track { background: #F0F0F0; }
+html:has(.lp-root)::-webkit-scrollbar-thumb {
+  background: #121212; border-radius: 0;
+  border: 3px solid #F0F0F0; background-clip: padding-box;
+}
+html:has(.lp-root) { scrollbar-color: #121212 #F0F0F0; }
+
+/* Continuous horizontal marquee for the niche video strip. The row is duplicated
+   in JS, so translating -50% loops seamlessly. */
+@keyframes lp-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.lp-marquee { animation: lp-marquee-scroll 40s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .lp-marquee { animation: none; } }
+
+/* Bauhaus overrides for the dashboard's legacy gradient buttons. */
+.dashboard-dark .btn-donate,
+.dashboard-dark .gbtn,
+.dashboard-dark .niche-shine {
+  background: #D02020 !important;
+  color: #fff !important;
+  border: 2px solid #121212 !important;
+  border-radius: 0 !important;
+  box-shadow: 4px 4px 0 0 #121212 !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  transition: all .2s ease-out !important;
+}
+.dashboard-dark .btn-donate:active,
+.dashboard-dark .gbtn:active,
+.dashboard-dark .niche-shine:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: none !important;
+}
+.dashboard-dark .btn-donate::before,
+.dashboard-dark .btn-donate::after,
+.dashboard-dark .niche-shine::before,
+.dashboard-dark .niche-shine::after { display: none !important; }
+
+/* Bauhaus: strip the animated glow from BorderGlow inside the dashboard —
+   render as a plain hard-bordered box instead. */
+.dashboard-dark .border-glow-card {
+  border: 2px solid #121212 !important;
+  border-radius: 0 !important;
+  box-shadow: 4px 4px 0 0 #121212 !important;
+  background: #fff !important;
+}
+.dashboard-dark .border-glow-card > .edge-light,
+.dashboard-dark .border-glow-card::before,
+.dashboard-dark .border-glow-card::after { display: none !important; }
+.dashboard-dark .border-glow-inner { background: transparent !important; }

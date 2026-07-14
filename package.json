@@ -15,6 +15,7 @@
     "firebase": "^12.15.0",
     "firebase-admin": "^14.1.0",
     "framer-motion": "^11.15.0",
+    "lucide-react": "^1.24.0",
     "material-symbols": "^0.45.6",
     "next": "^15.5.19",
     "ogl": "^1.0.11",

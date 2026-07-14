@@ -89,7 +89,7 @@ export function ShortsTranscript() {
       )}
 
       {/* Input */}
-      <div className="rounded-3xl border border-outline-variant bg-surface p-6">
+      <div className="rounded-none border-2 border-black bg-white shadow-[6px_6px_0px_0px_#121212] md:border-4 p-6">
         <label className="text-[13px] font-semibold uppercase tracking-wider text-on-surface-variant/70">YouTube Shorts URL</label>
         <input
           value={url}
@@ -97,11 +97,11 @@ export function ShortsTranscript() {
           onKeyDown={(e) => e.key === "Enter" && getTranscript()}
           disabled={busy}
           placeholder="https://www.youtube.com/shorts/…"
-          className="mt-2 h-12 w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-4 text-[15px] text-on-surface outline-none transition-colors placeholder:text-on-surface-variant focus:border-primary disabled:opacity-60"
+          className="mt-2 h-12 w-full rounded-none border-2 border-black bg-white px-4 text-[15px] text-on-surface outline-none transition-colors placeholder:text-on-surface-variant focus:border-primary disabled:opacity-60"
         />
         <button onClick={getTranscript} disabled={busy || !url.trim()} className="m3-btn-filled mt-4 inline-flex w-full items-center justify-center gap-2 disabled:opacity-60">
           {busy ? (
-            <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" /> Getting transcript…</>
+            <><span className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-white" /> Getting transcript…</>
           ) : (
             <><Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={16} /> Get transcript</>
           )}
@@ -111,7 +111,7 @@ export function ShortsTranscript() {
 
       {/* Result */}
       {transcript && (
-        <div className="mt-6 rounded-3xl border border-outline-variant bg-surface p-6">
+        <div className="mt-6 rounded-none border-2 border-black bg-white shadow-[6px_6px_0px_0px_#121212] md:border-4 p-6">
           {(title || thumbnail) && (
             <div className="mb-4 flex items-center gap-3">
               {thumbnail && (
@@ -128,7 +128,7 @@ export function ShortsTranscript() {
               {copied ? "Copied!" : "Copy"}
             </button>
           </div>
-          <p className="whitespace-pre-wrap rounded-2xl bg-surface-container-low p-4 text-[15px] leading-relaxed text-on-surface">{transcript}</p>
+          <p className="whitespace-pre-wrap rounded-none border-2 border-black bg-[#F0F0F0] p-4 text-[15px] leading-relaxed text-on-surface">{transcript}</p>
         </div>
       )}
     </div>

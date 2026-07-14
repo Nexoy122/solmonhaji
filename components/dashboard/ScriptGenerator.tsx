@@ -42,7 +42,7 @@ const IMPROVE_OPTS: { id: string; label: string }[] = [
   { id: "longer", label: "Make longer" },
 ];
 
-const inputCls = "w-full rounded-md border border-white/20 bg-[#1E1F21] px-4 py-3 text-[14px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-[#2e8eff]/70";
+const inputCls = "w-full rounded-md border border-black bg-white px-4 py-3 text-[14px] text-black outline-none transition-colors placeholder:text-black/40 focus:border-[#D02020]/70";
 
 // Idea starter chips — fill the idea box on click.
 const IDEA_CHIPS = ["Weird product review", "Internet drama recap", "“Healthy” habit myth", "Overrated or underrated"];
@@ -92,13 +92,13 @@ export function ScriptGenerator() {
     <>
       <input ref={fileRef} type="file" accept="video/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="hidden" />
       {file ? (
-        <div className="flex items-center gap-2.5 border border-white/12 bg-[#1E1F21] p-3.5">
+        <div className="flex items-center gap-2.5 border border-black bg-white p-3.5">
           <Icon d="M15 10l4.55-2.28A1 1 0 0 1 21 8.6v6.8a1 1 0 0 1-1.45.88L15 14M5 6h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" size={20} />
-          <span className="min-w-0 flex-1 truncate text-[13.5px] text-white">{file.name}</span>
-          <button onClick={() => { setFile(null); if (fileRef.current) fileRef.current.value = ""; }} className="text-white/50 hover:text-[#ff6b6b]"><Icon d="M18 6 6 18M6 6l12 12" size={16} /></button>
+          <span className="min-w-0 flex-1 truncate text-[13.5px] text-black">{file.name}</span>
+          <button onClick={() => { setFile(null); if (fileRef.current) fileRef.current.value = ""; }} className="text-black/50 hover:text-[#ff6b6b]"><Icon d="M18 6 6 18M6 6l12 12" size={16} /></button>
         </div>
       ) : (
-        <button onClick={() => fileRef.current?.click()} className="flex w-full flex-col items-center justify-center gap-2 border border-dashed border-white/15 py-8 text-white/55 transition-colors hover:border-white/30 hover:bg-white/[0.03] hover:text-white/80">
+        <button onClick={() => fileRef.current?.click()} className="flex w-full flex-col items-center justify-center gap-2 border border-dashed border-black py-8 text-black/60 transition-colors hover:border-black hover:bg-white hover:text-black/80">
           <Icon d="M12 16V4M7 9l5-5 5 5M5 20h14" size={26} />
           <span className="text-[13.5px] font-medium">Click to upload a video</span>
           <span className="text-[11.5px] text-on-surface-variant">MP4, MOV, WEBM — up to 500 MB</span>
@@ -116,12 +116,12 @@ export function ScriptGenerator() {
   );
 
   const optionsStep = (
-    <label className="flex cursor-pointer items-center gap-3 border border-white/10 bg-[#1E1F21] p-4">
-      <span onClick={() => setWithTimestamps((v) => !v)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${withTimestamps ? "bg-[#2e8eff]" : "bg-white/15"}`}>
+    <label className="flex cursor-pointer items-center gap-3 border border-black bg-white p-4">
+      <span onClick={() => setWithTimestamps((v) => !v)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${withTimestamps ? "bg-[#D02020]" : "bg-white"}`}>
         <span className={`absolute top-0.5 size-5 rounded-full bg-white shadow transition-transform ${withTimestamps ? "translate-x-5" : "translate-x-0.5"}`} />
       </span>
       <div>
-        <p className="text-[14px] font-semibold text-white">Include timestamps</p>
+        <p className="text-[14px] font-semibold text-black">Include timestamps</p>
         <p className="text-[12px] text-on-surface-variant">Add [0-3s] beats to each line — handy for editing.</p>
       </div>
     </label>
@@ -140,7 +140,7 @@ export function ScriptGenerator() {
             </p>
             <div className="flex flex-wrap gap-2">
               {IDEA_CHIPS.map((c) => (
-                <button key={c} onClick={() => setIdea(c)} className="rounded-full border border-white/15 bg-[#1E1F21] px-3.5 py-1.5 text-[12px] font-medium text-white/70 transition-colors hover:border-white/30 hover:text-white">{c}</button>
+                <button key={c} onClick={() => setIdea(c)} className="rounded-full border border-black bg-white px-3.5 py-1.5 text-[12px] font-medium text-black/70 transition-colors hover:border-black hover:text-black">{c}</button>
               ))}
             </div>
           </div>
@@ -155,12 +155,12 @@ export function ScriptGenerator() {
         content: (
           <div className="flex flex-wrap gap-2">
             {IMPROVE_OPTS.map((o) => (
-              <button key={o.id} onClick={() => toggleOpt(o.id)} className={`border px-3.5 py-2 text-[13px] font-medium transition-all ${improveOpts.includes(o.id) ? "border-white/40 bg-white/[0.06] text-white" : "border-white/12 bg-[#1E1F21] text-white/55 hover:text-white/80"}`}>{o.label}</button>
+              <button key={o.id} onClick={() => toggleOpt(o.id)} className={`border px-3.5 py-2 text-[13px] font-medium transition-all ${improveOpts.includes(o.id) ? "border-black bg-white text-black" : "border-black bg-white text-black/60 hover:text-black/80"}`}>{o.label}</button>
             ))}
           </div>
         ) },
       { title: "Reference & options", hint: "Optional style reference + formatting.", canNext: true, optional: true,
-        content: <div className="space-y-4">{refStep}<div className="border-t border-white/[0.06] pt-4">{optionsStep}</div></div> },
+        content: <div className="space-y-4">{refStep}<div className="border-t border-black pt-4">{optionsStep}</div></div> },
     ] :
     [
       { title: "Your video", hint: "Upload a video (≤60s works best). Our AI watches & analyzes it — no captions or voiceover needed.", canNext: Boolean(file),
@@ -233,18 +233,18 @@ export function ScriptGenerator() {
       <p className="mb-4 text-[14px] text-on-surface-variant">Write scroll-stopping YouTube Shorts scripts — from an idea, a script, or a video.</p>
 
       {/* How to get the best script — collapsible help */}
-      <div className="mb-5 overflow-hidden rounded-xl border border-white/15 bg-[#0a0a0c]">
-        <button onClick={() => setHelpOpen((o) => !o)} className="flex w-full items-center gap-2.5 px-5 py-3.5 text-left transition-colors hover:bg-white/[0.02]">
-          <span className="text-[#2e8eff]"><Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 16v-4M12 8h.01" size={17} /></span>
-          <span className="flex-1 text-[14px] font-semibold text-white">How to get the best script</span>
+      <div className="mb-5 overflow-hidden rounded-xl border border-black bg-[#ffffff]">
+        <button onClick={() => setHelpOpen((o) => !o)} className="flex w-full items-center gap-2.5 px-5 py-3.5 text-left transition-colors hover:bg-white">
+          <span className="text-[#D02020]"><Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 16v-4M12 8h.01" size={17} /></span>
+          <span className="flex-1 text-[14px] font-semibold text-black">How to get the best script</span>
           <Icon d={helpOpen ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6"} size={17} />
         </button>
         {helpOpen && (
-          <div className="step-in border-t border-white/[0.07] px-5 py-4">
+          <div className="step-in border-t border-black px-5 py-4">
             <ul className="space-y-2">
               {HELP_TIPS.map((t, i) => (
                 <li key={i} className="flex gap-2.5 text-[13px] leading-relaxed text-on-surface-variant">
-                  <span className="mt-0.5 shrink-0 text-[#2e8eff]"><Icon d="M20 6 9 17l-5-5" size={14} /></span> {t}
+                  <span className="mt-0.5 shrink-0 text-[#D02020]"><Icon d="M20 6 9 17l-5-5" size={14} /></span> {t}
                 </li>
               ))}
             </ul>
@@ -254,12 +254,12 @@ export function ScriptGenerator() {
 
       <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2">
         {/* ── Left: wizard ── */}
-        <div className="flex min-h-[600px] flex-col rounded-xl border border-white/20 bg-[#0a0a0c] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_8px_30px_rgba(0,0,0,0.5)]">
+        <div className="flex min-h-[600px] flex-col rounded-xl border border-black bg-[#ffffff] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_8px_30px_rgba(0,0,0,0.5)]">
           {/* Mode tabs */}
-          <div className="grid grid-cols-3 border-b border-white/15">
+          <div className="grid grid-cols-3 border-b border-black">
             {MODES.map((m) => (
               <button key={m.id} onClick={() => setMode(m.id)}
-                className={`flex flex-col items-center gap-1.5 px-2 py-4 text-center transition-all first:rounded-tl-xl last:rounded-tr-xl ${mode === m.id ? "bg-white/[0.06] text-white" : "text-on-surface-variant hover:bg-white/[0.02] hover:text-white"}`}>
+                className={`flex flex-col items-center gap-1.5 px-2 py-4 text-center transition-all first:rounded-tl-xl last:rounded-tr-xl ${mode === m.id ? "bg-white text-black" : "text-on-surface-variant hover:bg-white hover:text-black"}`}>
                 <Icon d={m.icon} size={20} /><span className="text-[13px] font-semibold">{m.label}</span>
               </button>
             ))}
@@ -272,7 +272,7 @@ export function ScriptGenerator() {
                 Step {step + 1} of {total}{cur.optional ? " · optional" : ""}
               </p>
               <div className="flex gap-1.5">
-                {steps.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i <= step ? "w-6 bg-[#2e8eff]" : "w-1.5 bg-white/15"}`} />)}
+                {steps.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i <= step ? "w-6 bg-[#D02020]" : "w-1.5 bg-white"}`} />)}
               </div>
             </div>
 
@@ -292,7 +292,7 @@ export function ScriptGenerator() {
             {/* Nav (pinned to bottom) */}
             <div className="mt-6 flex items-center gap-3">
               {step > 0 && (
-                <button onClick={() => { setStep((s) => s - 1); setErr(""); }} className="gbtn flex items-center gap-1.5 px-4 py-3 text-[13.5px] font-semibold text-white/70">
+                <button onClick={() => { setStep((s) => s - 1); setErr(""); }} className="gbtn flex items-center gap-1.5 px-4 py-3 text-[13.5px] font-semibold text-black/70">
                   <Icon d="M19 12H5M11 18l-6-6 6-6" size={15} /> Back
                 </button>
               )}
@@ -315,11 +315,11 @@ export function ScriptGenerator() {
         </div>
 
         {/* ── Right: output ── */}
-        <div className="flex min-h-[600px] flex-col rounded-xl border border-white/20 bg-[#0a0a0c] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_8px_30px_rgba(0,0,0,0.5)]">
-          <div className="grid grid-cols-2 border-b border-white/15">
+        <div className="flex min-h-[600px] flex-col rounded-xl border border-black bg-[#ffffff] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_8px_30px_rgba(0,0,0,0.5)]">
+          <div className="grid grid-cols-2 border-b border-black">
             {(["output", "history"] as const).map((t) => (
               <button key={t} onClick={() => setOutTab(t)}
-                className={`py-4 text-[13.5px] font-semibold capitalize transition-colors first:rounded-tl-xl last:rounded-tr-xl ${outTab === t ? "bg-white/[0.06] text-white" : "text-on-surface-variant hover:text-white"}`}>
+                className={`py-4 text-[13.5px] font-semibold capitalize transition-colors first:rounded-tl-xl last:rounded-tr-xl ${outTab === t ? "bg-white text-black" : "text-on-surface-variant hover:text-black"}`}>
                 {t}{t === "history" && history.length > 0 ? ` (${history.length})` : ""}
               </button>
             ))}
@@ -338,7 +338,7 @@ export function ScriptGenerator() {
                 </>
               ) : (
                 <div className="flex h-full min-h-[460px] flex-col items-center justify-center text-center">
-                  <span className="mb-4 flex size-14 items-center justify-center rounded-xl border border-white/10 text-white/40">
+                  <span className="mb-4 flex size-14 items-center justify-center rounded-xl border border-black text-black/40">
                     <Icon d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" size={24} />
                   </span>
                   <p className="text-[15px] font-semibold text-on-surface">Your script will appear here</p>
@@ -353,9 +353,9 @@ export function ScriptGenerator() {
               <div className="space-y-2.5">
                 {history.map((h) => (
                   <button key={h.id} onClick={() => { setScript(h.script); setOutTab("output"); }}
-                    className="flex w-full items-center gap-3 border border-white/10 bg-white/[0.02] px-4 py-3 text-left transition-colors hover:border-white/25 hover:bg-white/[0.04]">
-                    <span className="text-white/40"><Icon d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" size={16} /></span>
-                    <span className="min-w-0 flex-1 truncate text-[13.5px] text-white">{h.title}</span>
+                    className="flex w-full items-center gap-3 border border-black bg-white px-4 py-3 text-left transition-colors hover:border-black hover:bg-white">
+                    <span className="text-black/40"><Icon d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" size={16} /></span>
+                    <span className="min-w-0 flex-1 truncate text-[13.5px] text-black">{h.title}</span>
                     <span className="shrink-0 text-[11px] text-on-surface-variant">{new Date(h.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                   </button>
                 ))}
@@ -371,7 +371,7 @@ export function ScriptGenerator() {
 function OrDivider() {
   return (
     <div className="flex items-center gap-3 text-[11px] font-medium text-on-surface-variant/60">
-      <span className="h-px flex-1 bg-white/10" /> or <span className="h-px flex-1 bg-white/10" />
+      <span className="h-px flex-1 bg-white" /> or <span className="h-px flex-1 bg-white" />
     </div>
   );
 }
@@ -411,7 +411,7 @@ function ScriptOutput({ text, onImprove, refining }: { text: string; onImprove: 
             <span className="inline-flex items-center gap-1"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={12} /> ~{secs}s spoken</span>
           </p>
         </div>
-        <button onClick={copy} className="gbtn inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-white/80">
+        <button onClick={copy} className="gbtn inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-black/80">
           <Icon d={copied ? "M20 6 9 17l-5-5" : "M9 9h10v10H9zM5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"} size={14} />
           {copied ? "Copied" : "Copy"}
         </button>
@@ -421,14 +421,14 @@ function ScriptOutput({ text, onImprove, refining }: { text: string; onImprove: 
       <div className="relative flex-1">
         <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-on-surface">{text}</p>
         {refining && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#050506]/70 backdrop-blur-[1px]">
-            <span className="flex items-center gap-2 text-[13px] text-white/80"><span className="size-4 animate-spin rounded-full border-2 border-white/20 border-t-white/70" /> Improving…</span>
+          <div className="absolute inset-0 flex items-center justify-center bg-[#F0F0F0]/70 backdrop-blur-[1px]">
+            <span className="flex items-center gap-2 text-[13px] text-black/80"><span className="size-4 animate-spin rounded-full border-2 border-black border-t-white/70" /> Improving…</span>
           </div>
         )}
       </div>
 
       {/* Inline improve box */}
-      <div className="mt-4 border-t border-white/[0.06] pt-4">
+      <div className="mt-4 border-t border-black pt-4">
         <div className="flex items-center gap-2">
           <input
             value={change}
@@ -436,7 +436,7 @@ function ScriptOutput({ text, onImprove, refining }: { text: string; onImprove: 
             onKeyDown={(e) => e.key === "Enter" && submit(change)}
             placeholder="What would you like to change?"
             disabled={refining}
-            className="h-11 flex-1 border border-white/12 bg-[#1E1F21] px-4 text-[13.5px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-white/30 disabled:opacity-50"
+            className="h-11 flex-1 border border-black bg-white px-4 text-[13.5px] text-black outline-none transition-colors placeholder:text-black/40 focus:border-black disabled:opacity-50"
           />
           <button onClick={() => submit(change)} disabled={!change.trim() || refining} className="btn-donate flex items-center gap-1.5 px-5 text-[13px] disabled:cursor-not-allowed disabled:opacity-40">
             <Icon d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" size={15} /> Improve
@@ -446,7 +446,7 @@ function ScriptOutput({ text, onImprove, refining }: { text: string; onImprove: 
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           {IMPROVE_CHIPS.map((c) => (
             <button key={c} onClick={() => submit(c)} disabled={refining}
-              className="rounded-full border border-white/12 bg-[#1E1F21] px-3 py-1 text-[11.5px] font-medium text-white/55 transition-colors hover:border-white/25 hover:text-white/80 disabled:opacity-40">
+              className="rounded-full border border-black bg-white px-3 py-1 text-[11.5px] font-medium text-black/60 transition-colors hover:border-black hover:text-black/80 disabled:opacity-40">
               {c}
             </button>
           ))}

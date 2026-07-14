@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto, Roboto_Mono, Space_Grotesk, Figtree } from "next/font/google";
+import { Roboto, Roboto_Mono, Space_Grotesk, Outfit } from "next/font/google";
 import "./globals.css";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -26,11 +26,11 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-// Landing page (/) typeface — vidIQ-style.
-const figtree = Figtree({
+// Landing page (/) typeface — Outfit (geometric sans, Bauhaus design system).
+const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-figtree",
+  weight: ["400", "500", "700", "900"],
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -87,7 +87,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${roboto.variable} ${robotoMono.variable} ${spaceGrotesk.variable} ${figtree.variable}`}>
+    <html lang="en" className={`${roboto.variable} ${robotoMono.variable} ${spaceGrotesk.variable} ${outfit.variable}`}>
       <head>
         {/* Preload the Material Symbols font so sidebar icons render fast (it's
             large — without this the browser fetches it late and icons flash in). */}

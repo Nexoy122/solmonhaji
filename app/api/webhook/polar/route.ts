@@ -1,6 +1,7 @@
-﻿import { Webhooks } from "@polar-sh/nextjs";
-import { planIdForProduct } from "@/lib/polar";
+import { Webhooks } from "@polar-sh/nextjs";
+import { planIdForProduct, PLAN_CREDITS } from "@/lib/polar";
 import { setUserSubscription } from "@/lib/subscription";
+import { setPlanAndCredits, webhookAlreadyProcessed, markWebhookProcessed } from "@/lib/credits";
 
 interface SubscriptionEventData {
   id: string;
@@ -11,7 +12,9 @@ interface SubscriptionEventData {
   customer: { id: string; externalId?: string | null };
 }
 
-async function syncFromSubscription(payload: { data: SubscriptionEventData }) {
+// Sync a subscription event → Firestore (status) AND the Postgres credit ledger.
+// Idempotent per event id so Polar's retried deliveries never double-credit.
+async function syncFromSubscription(payload: { data: SubscriptionEventData; type?: string }) {
   const sub = payload.data;
   const uid = sub.customer.externalId;
   if (!uid) {
@@ -27,6 +30,7 @@ async function syncFromSubscription(payload: { data: SubscriptionEventData }) {
 
   const isActive = sub.status === "active";
 
+  // 1) Firestore — subscription status (for UI / access checks).
   await setUserSubscription(uid, {
     plan: isActive ? planId : "free",
     status: sub.status,
@@ -35,6 +39,25 @@ async function syncFromSubscription(payload: { data: SubscriptionEventData }) {
     currentPeriodEnd: sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toISOString() : null,
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
   });
+
+  // 2) Postgres ledger — grant the monthly credit allotment on active/renewal.
+  // Reference the current period end so each billing cycle credits once.
+  try {
+    const periodRef = `${sub.id}:${sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toISOString() : "na"}`;
+    const eventKey = `${sub.id}:${sub.status}:${periodRef}`;
+    if (await webhookAlreadyProcessed(eventKey)) return;
+
+    if (isActive) {
+      await setPlanAndCredits(uid, planId, PLAN_CREDITS[planId], periodRef);
+    } else {
+      // canceled / revoked / past_due → drop to free plan (keeps existing balance).
+      await setPlanAndCredits(uid, "free", 0);
+    }
+    await markWebhookProcessed(eventKey);
+  } catch (e) {
+    console.error("[polar webhook] credit ledger update failed:", (e as Error).message);
+    // Don't throw — Firestore status already updated; Polar will retry.
+  }
 }
 
 export const POST = Webhooks({

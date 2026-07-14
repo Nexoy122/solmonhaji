@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequest } from "@/lib/firebaseAdmin";
+import { chargeCredits } from "@/lib/requireCredits";
 import {
   generateScript,
   generateFromIdeaWithReference,
@@ -30,6 +31,10 @@ export async function POST(req: NextRequest) {
   const transcript = str(body.transcript) || null;
   const youtubeUrl = str(body.youtubeUrl) || null;
   const withTimestamps = body.withTimestamps === true;
+
+  // Charge credits before generating (server-side, race-safe).
+  const charge = await chargeCredits(uid, "script");
+  if (!charge.ok) return charge.response;
 
   try {
     let script = "";

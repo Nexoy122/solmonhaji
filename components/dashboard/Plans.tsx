@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useState } from "react";
-import BorderGlow from "@/components/dashboard/BorderGlow";
 import { useAuth } from "@/components/AuthProvider";
 
 const DISCOUNT_RATE = 0.5; // 50% off
@@ -27,8 +26,8 @@ const PLANS: Plan[] = [
     name: "Starter",
     tagline: "For a solo creator just getting started.",
     icon: "auto_awesome",
-    price: 9,
-    credits: 500,
+    price: 5,
+    credits: 1000,
     groups: [
       {
         heading: "Includes",
@@ -41,16 +40,16 @@ const PLANS: Plan[] = [
         ],
       },
     ],
-    included: ["500 credits / month (~150 scripts, or ~100 niche researches)", "Community support (Discord)"],
+    included: ["1,000 credits / month (~500 scripts, or ~333 niche researches)", "Community support (Discord)"],
   },
   {
     id: "creator",
     name: "Creator",
     tagline: "For an active faceless creator running 1–3 channels.",
     icon: "workspace_premium",
-    price: 19,
+    price: 12,
     popular: true,
-    credits: 1500,
+    credits: 3000,
     groups: [
       {
         heading: "Everything in Starter, plus",
@@ -62,15 +61,15 @@ const PLANS: Plan[] = [
         ],
       },
     ],
-    included: ["1,500 credits / month (~450 scripts, or ~300 niche researches)", "Priority email support"],
+    included: ["3,000 credits / month (~1,500 scripts, or ~1,000 niche researches)", "Priority email support"],
   },
   {
     id: "plus",
     name: "Plus",
     tagline: "For agencies and power users managing many channels.",
     icon: "bolt",
-    price: 39,
-    credits: 4000,
+    price: 25,
+    credits: 8000,
     groups: [
       {
         heading: "Everything in Creator, plus",
@@ -82,7 +81,7 @@ const PLANS: Plan[] = [
         ],
       },
     ],
-    included: ["4,000 credits / month (~1,200 scripts, or ~800 niche researches)", "Priority + early access"],
+    included: ["8,000 credits / month (~4,000 scripts)", "Priority + early access"],
   },
 ];
 
@@ -116,7 +115,7 @@ function Icon({ d, size = 18 }: { d: string; size?: number }) {
 
 function Check() {
   return (
-    <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center text-[#01D4FF]">
+    <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center text-[#D02020]">
       <Icon d="M20 6 9 17l-5-5" size={14} />
     </span>
   );
@@ -124,8 +123,8 @@ function Check() {
 
 function CreditPill({ credits }: { credits: number }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2.5">
-      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#01D4FF]/15 text-[#01D4FF]">
+    <div className="flex items-center gap-2 rounded-lg border border-black bg-white px-3.5 py-2.5">
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#D02020]/15 text-[#D02020]">
         <Icon d="M13 2L3 14h7l-1 8 10-12h-7z" size={13} />
       </span>
       <span className="text-[13.5px] text-on-surface-variant">
@@ -143,7 +142,7 @@ function PlanCard({ plan, onUpgrade, loading, yearly }: { plan: Plan; onUpgrade:
       <div className="flex items-center gap-3">
         <span
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-            plan.popular ? "bg-[#01D4FF] text-[#001318]" : "bg-white/[0.06] text-on-surface"
+            plan.popular ? "bg-[#D02020] text-white" : "bg-white text-on-surface"
           }`}
         >
           <Icon d={ICON_PATHS[plan.icon] ?? ICON_PATHS.auto_awesome} size={19} />
@@ -162,7 +161,7 @@ function PlanCard({ plan, onUpgrade, loading, yearly }: { plan: Plan; onUpgrade:
         </div>
         <div className="mt-2 flex items-center gap-2">
           <span className="text-[13px] font-medium text-on-surface-variant/60 line-through">${original}/{period}</span>
-          <span className="rounded-full bg-[#01D4FF] px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-[#001318] shadow-[0_0_0_1px_rgba(1,212,255,0.4)]">
+          <span className="rounded-full bg-[#D02020] px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-white ">
             50% off
           </span>
         </div>
@@ -192,7 +191,7 @@ function PlanCard({ plan, onUpgrade, loading, yearly }: { plan: Plan; onUpgrade:
         ))}
       </div>
 
-      <div className="mt-6 space-y-2 border-t border-white/[0.06] pt-5">
+      <div className="mt-6 space-y-2 border-t border-black pt-5">
         {plan.included.map((line) => (
           <div key={line} className="flex items-start gap-2 text-[13px] text-on-surface-variant">
             <Check />
@@ -214,7 +213,7 @@ function PlanCard({ plan, onUpgrade, loading, yearly }: { plan: Plan; onUpgrade:
           <button
             onClick={() => onUpgrade(plan.id)}
             disabled={loading}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-3 text-[14px] font-bold text-on-surface transition-colors hover:bg-white/[0.06] disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black px-4 py-3 text-[14px] font-bold text-on-surface transition-colors hover:bg-white disabled:opacity-60"
           >
             {loading ? "Redirecting…" : `Upgrade to ${plan.name}`}
           </button>
@@ -226,19 +225,19 @@ function PlanCard({ plan, onUpgrade, loading, yearly }: { plan: Plan; onUpgrade:
 
   if (plan.popular) {
     return (
-      <div className="relative">
-        <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-[#01D4FF] px-3 py-1 text-[11px] font-bold text-[#001318]">
+      <div className="relative md:-translate-y-3">
+        <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 border-2 border-black bg-[#D02020] px-3 py-1 text-[11px] font-black uppercase tracking-widest text-white shadow-[3px_3px_0px_0px_#121212]">
           Most popular
         </span>
-        <BorderGlow borderRadius={20} backgroundColor="#0a0d10" glowColor="199 89 55" glowIntensity={0.7} className="h-full">
+        <div className="h-full border-4 border-black bg-white shadow-[8px_8px_0px_0px_#121212]">
           {cardInner}
-        </BorderGlow>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full rounded-[20px] border border-white/10 bg-white/[0.02] transition-colors hover:border-white/20">
+    <div className="h-full border-2 border-black bg-white shadow-[6px_6px_0px_0px_#121212] md:border-4">
       {cardInner}
     </div>
   );
@@ -297,12 +296,12 @@ export function Plans() {
   return (
     <div className="mx-auto max-w-6xl">
       <div className="text-center">
-        <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-[#01D4FF] px-4 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-[#001318]">
+        <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-[#D02020] px-4 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-white">
           <Icon d="M13 2L3 14h7l-1 8 10-12h-7z" size={14} />
           50% off every plan — limited time
         </div>
 
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#01D4FF]">Pricing</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#D02020]">Pricing</p>
         <h1 className="mt-2 font-heading text-[28px] font-bold tracking-[-0.01em] text-on-surface md:text-[34px]">
           Simple, credit-based pricing
         </h1>
@@ -319,11 +318,11 @@ export function Plans() {
         </button>
         {error && <p className="mt-3 text-[13px] text-[#ff6b6b]">{error}</p>}
 
-        <div className="mx-auto mt-6 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1">
+        <div className="mx-auto mt-6 inline-flex items-center gap-1 rounded-full border border-black bg-white p-1">
           <button
             onClick={() => setYearly(false)}
             className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
-              !yearly ? "bg-white/10 text-on-surface" : "text-on-surface-variant"
+              !yearly ? "bg-white text-on-surface" : "text-on-surface-variant"
             }`}
           >
             Monthly
@@ -331,7 +330,7 @@ export function Plans() {
           <button
             onClick={() => setYearly(true)}
             className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
-              yearly ? "bg-white/10 text-on-surface" : "text-on-surface-variant"
+              yearly ? "bg-white text-on-surface" : "text-on-surface-variant"
             }`}
           >
             Yearly
@@ -352,19 +351,19 @@ export function Plans() {
           cheap actions cost few credits, and Channel Audit (our heaviest action) costs more.
         </p>
 
-        <div className="mx-auto mt-6 max-w-2xl overflow-hidden rounded-[16px] border border-white/10 bg-white/[0.02]">
+        <div className="mx-auto mt-6 max-w-2xl overflow-hidden rounded-[16px] border border-black bg-white">
           {CREDIT_COSTS.map((row, i) => (
             <div
               key={row.action}
               className={`flex items-center justify-between gap-4 px-5 py-3.5 ${
-                i !== CREDIT_COSTS.length - 1 ? "border-b border-white/[0.06]" : ""
+                i !== CREDIT_COSTS.length - 1 ? "border-b border-black" : ""
               }`}
             >
               <div>
                 <p className="text-[13.5px] font-medium text-on-surface">{row.action}</p>
                 {row.note && <p className="mt-0.5 text-[12px] text-on-surface-variant/70">{row.note}</p>}
               </div>
-              <span className="shrink-0 rounded-full bg-[#01D4FF]/15 px-3 py-1 text-[12.5px] font-bold text-[#01D4FF]">
+              <span className="shrink-0 rounded-full bg-[#D02020]/15 px-3 py-1 text-[12.5px] font-bold text-[#D02020]">
                 {row.credits} {row.credits === "1" ? "credit" : "credits"}
               </span>
             </div>

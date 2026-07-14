@@ -29,21 +29,21 @@ const TOOLS: Tool[] = [
     name: "Discover Winning Channels",
     icon: "travel_explore",
     desc: "An auto-growing index of faceless Shorts channels — filter by niche, subs, views, and momentum to find creators worth studying.",
-    img: "/lp-shots/discover.png",
+    // img omitted — placeholder icon panel
     span: 3,
   },
   {
     name: "Find Viral Outliers",
     icon: "trending_up",
     desc: "Every Short from the creators you track, sorted by exactly how hard it beat the average — see the exact videos winning right now.",
-    img: "/lp-shots/explore.png",
+    // img omitted — placeholder icon panel
     span: 3,
   },
   {
     name: "Map Any Niche",
     icon: "hub",
     desc: "Top channels, breakout topics, and the untapped gaps nobody has covered yet — map a whole niche end to end.",
-    img: "/lp-shots/niche-researcher.png",
+    // img omitted — placeholder icon panel
     span: 3,
   },
   {

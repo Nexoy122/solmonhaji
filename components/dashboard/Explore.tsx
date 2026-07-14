@@ -128,13 +128,13 @@ function FilterDropdown({ title, icon, options, value, onChange }: {
       <p className="mb-2 text-[13.5px] font-semibold text-on-surface">{title}</p>
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`inline-flex w-full items-center justify-between gap-2 rounded-none border px-4 py-3 text-[14px] font-medium transition-colors ${active ? "border-primary bg-primary-container text-on-primary-container" : "border-white/10 bg-black/25 text-on-surface hover:bg-black/40"}`}
+        className={`inline-flex w-full items-center justify-between gap-2 rounded-none border px-4 py-3 text-[14px] font-medium transition-colors ${active ? "border-primary bg-primary-container text-on-primary-container" : "border-black bg-white/25 text-on-surface hover:bg-white/40"}`}
       >
         <span className="inline-flex items-center gap-2 truncate"><Icon d={icon} size={14} />{options[value].label}</span>
         <Icon d="m6 9 6 6 6-6" size={14} />
       </button>
       {open && (
-        <div className="absolute left-0 z-30 mt-2 w-full min-w-[180px] overflow-hidden rounded-none border border-white/12 bg-[#0c0c0f] py-1">
+        <div className="absolute left-0 z-30 mt-2 w-full min-w-[180px] overflow-hidden rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 py-1">
           {options.map((o, i) => (
             <button
               key={o.label}
@@ -170,18 +170,18 @@ function SelectDropdown({ title, icon, options, value, onChange }: {
       <p className="mb-2 text-[13.5px] font-semibold text-on-surface">{title}</p>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex w-full items-center justify-between gap-2 rounded-none border border-white/10 bg-black/25 px-4 py-3 text-[14px] font-medium text-on-surface transition-colors hover:bg-black/40"
+        className="inline-flex w-full items-center justify-between gap-2 rounded-none border border-black bg-white/25 px-4 py-3 text-[14px] font-medium text-on-surface transition-colors hover:bg-white/40"
       >
         <span className="inline-flex items-center gap-2 truncate"><Icon d={icon} size={14} />{options[i]}</span>
         <Icon d="m6 9 6 6 6-6" size={14} />
       </button>
       {open && (
-        <div className="absolute left-0 z-30 mt-2 max-h-[280px] w-full min-w-[180px] overflow-auto rounded-none border border-white/12 bg-[#0c0c0f] py-1">
+        <div className="absolute left-0 z-30 mt-2 max-h-[280px] w-full min-w-[180px] overflow-auto rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 py-1">
           {options.map((o, idx) => (
             <button
               key={o}
               onClick={() => { onChange(idx); setOpen(false); }}
-              className={`flex w-full items-center gap-2 px-3.5 py-2 text-left text-[13.5px] transition-colors hover:bg-white/[0.06] ${idx === i ? "font-semibold text-primary" : "text-on-surface"}`}
+              className={`flex w-full items-center gap-2 px-3.5 py-2 text-left text-[13.5px] transition-colors hover:bg-white ${idx === i ? "font-semibold text-primary" : "text-on-surface"}`}
             >
               {idx === i ? <Icon d="M20 6 9 17l-5-5" size={13} /> : <span className="w-[13px]" />}
               <span className="truncate">{o}</span>
@@ -211,7 +211,7 @@ function DurationRange({ min, max, onChange }: {
           <button onClick={() => onChange(DUR_MIN, DUR_MAX)} className="text-[12px] font-semibold text-primary hover:underline">Reset</button>
         )}
       </div>
-      <div className={`rounded-none border px-3.5 pb-3.5 pt-3 transition-colors ${active ? "border-primary bg-primary-container/40" : "border-white/12 bg-white/[0.03]"}`}>
+      <div className={`rounded-none border px-3.5 pb-3.5 pt-3 transition-colors ${active ? "border-primary bg-primary-container/40" : "border-black bg-white"}`}>
         {/* Value readout */}
         <div className="mb-3 flex items-center justify-between text-[13px] font-semibold text-on-surface">
           <span className="inline-flex items-center gap-1"><Icon d="M12 8v4l3 2M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" size={13} />{dur(min)}</span>
@@ -263,9 +263,9 @@ function DurationRange({ min, max, onChange }: {
 function VideoCard({ v }: { v: ExploreVideo }) {
   const transcriptHref = `/dashboard/shorts-transcript?url=${encodeURIComponent(v.url)}`;
   return (
-    <div className="group flex flex-col overflow-hidden border border-white/[0.08] bg-[#0c0c0f] transition-colors hover:border-white/25">
+    <div className="group flex flex-col overflow-hidden border border-black bg-[#ffffff] transition-colors hover:border-black">
       {/* Thumbnail */}
-      <a href={v.url} target="_blank" rel="noopener noreferrer" className="relative block aspect-[9/16] overflow-hidden bg-black">
+      <a href={v.url} target="_blank" rel="noopener noreferrer" className="relative block aspect-[9/16] overflow-hidden bg-white">
         {v.id || v.thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -279,17 +279,17 @@ function VideoCard({ v }: { v: ExploreVideo }) {
           <div className="flex h-full items-center justify-center text-on-surface-variant"><Icon d="M23 7l-7 5 7 5V7zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" size={28} /></div>
         )}
         {/* open-in-new corner chip */}
-        <span className="absolute left-2 top-2 flex size-7 items-center justify-center bg-black/55 text-white/90 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+        <span className="absolute left-2 top-2 flex size-7 items-center justify-center bg-white/55 text-black opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
           <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={14} />
         </span>
         {/* center play on hover */}
         <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/55 text-black backdrop-blur-sm">
             <Icon d="M5 3l14 9-14 9V3z" size={18} />
           </span>
         </span>
         {v.durationSec > 0 && (
-          <span className="absolute bottom-2 right-2 bg-black/80 px-1.5 py-0.5 text-[11px] font-semibold text-white">{dur(v.durationSec)}</span>
+          <span className="absolute bottom-2 right-2 bg-white/80 px-1.5 py-0.5 text-[11px] font-semibold text-black">{dur(v.durationSec)}</span>
         )}
       </a>
 
@@ -312,7 +312,7 @@ function VideoCard({ v }: { v: ExploreVideo }) {
           )}
           <span className="inline-flex items-center gap-1"><Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={12} />{timeAgo(v.publishedAt)}</span>
         </div>
-        <Link href={transcriptHref} className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-none border border-white/12 py-1.5 text-[12.5px] font-semibold text-on-surface transition-colors hover:bg-white/[0.06]">
+        <Link href={transcriptHref} className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-none border border-black py-1.5 text-[12.5px] font-semibold text-on-surface transition-colors hover:bg-white">
           <Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={13} /> Transcript
         </Link>
       </div>
@@ -397,9 +397,9 @@ export function Explore() {
   // transform (which makes position:fixed anchor to the zoomed container and
   // drift on scroll). Portaled + fixed = truly locked, full sidebar height.
   const railPanel = (
-    <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-white/[0.08] bg-[#08080a] p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
+    <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-black bg-white p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
       <div className="mb-5 flex items-center justify-between">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/55">Filters</p>
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-black/60">Filters</p>
         {(anyFilter || sort !== "views" || active !== "all") && (
           <button onClick={() => { clearFilters(); setSort("views"); setActive("all"); }} className="text-[12.5px] font-semibold text-primary hover:underline">Clear</button>
         )}
@@ -435,7 +435,7 @@ export function Explore() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`gbtn inline-flex items-center gap-2 rounded-none px-7 py-2.5 text-[14.5px] font-semibold ${tab === t ? "is-active text-white/90" : "text-white/55 hover:text-white/80"}`}
+              className={`gbtn inline-flex items-center gap-2 rounded-none px-7 py-2.5 text-[14.5px] font-semibold ${tab === t ? "is-active text-black" : "text-black/60 hover:text-black/80"}`}
             >
               <Icon d={icon} size={16} /> {label}
             </button>
@@ -451,7 +451,7 @@ export function Explore() {
       {/* Count badge (weekly-refresh countdown lives in the topbar). */}
       {!loading && (
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#0c0c0f] py-1.5 pl-1.5 pr-3.5">
+          <div className="inline-flex items-center gap-2.5 rounded-lg border border-black bg-[#ffffff] py-1.5 pl-1.5 pr-3.5">
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(total)}</span>
             <span className="text-[13px] font-medium text-on-surface-variant">videos match your filters</span>
           </div>
@@ -469,8 +469,8 @@ export function Explore() {
       {loading ? (
         <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="overflow-hidden rounded-none border border-white/[0.08] bg-[#0c0c0f]">
-              <div className="aspect-[9/16] animate-pulse bg-white/[0.05]" />
+            <div key={i} className="overflow-hidden rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4">
+              <div className="aspect-[9/16] animate-pulse bg-white" />
               <div className="space-y-2 p-3">
                 <div className="h-3.5 w-full animate-pulse rounded bg-surface-container-high" />
                 <div className="h-3 w-2/3 animate-pulse rounded bg-surface-container-high" />
@@ -479,12 +479,12 @@ export function Explore() {
           ))}
         </div>
       ) : videos.length === 0 && !error ? (
-        <div className="rounded-none border border-dashed border-white/12 py-16 text-center">
+        <div className="rounded-none border border-dashed border-black py-16 text-center">
           {anyFilter ? (
             <>
               <p className="text-[15px] font-semibold text-on-surface">No videos match your filters</p>
               <p className="mt-1 text-[14px] text-on-surface-variant">Try loosening a filter.</p>
-              <button onClick={clearFilters} className="mt-4 rounded-none border border-white/12 bg-white/[0.03] px-4 py-2 text-[13px] font-semibold text-on-surface transition-colors hover:bg-white/[0.06]">Clear filters</button>
+              <button onClick={clearFilters} className="mt-4 rounded-none border border-black bg-white px-4 py-2 text-[13px] font-semibold text-on-surface transition-colors hover:bg-white">Clear filters</button>
             </>
           ) : (
             <>
@@ -500,7 +500,7 @@ export function Explore() {
           </div>
           {videos.length < total && (
             <div className="mt-8 flex justify-center">
-              <button onClick={loadMore} disabled={loadingMore} className="rounded-none border border-white/12 bg-white/[0.03] px-5 py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-white/[0.06] disabled:opacity-60">
+              <button onClick={loadMore} disabled={loadingMore} className="rounded-none border border-black bg-white px-5 py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-white disabled:opacity-60">
                 {loadingMore ? "Loading…" : `Load more (${fmt(total - videos.length)} left)`}
               </button>
             </div>

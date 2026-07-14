@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyRequest, adminDb } from "@/lib/firebaseAdmin";
 import { fetchYouTubeAnalytics, refreshAccessToken } from "@/lib/youtube/analytics";
 import { calculateScoreFromAnalytics } from "@/lib/scoring/engine";
+import { chargeCredits } from "@/lib/requireCredits";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -226,6 +227,11 @@ export async function POST(req: NextRequest) {
         { status: quotaExceeded ? 429 : 502 }
       );
     }
+
+    // Charge credits — only now, after all validation passed and we're about to
+    // run the (paid) analytics pull. Avoids charging for early error returns.
+    const charge = await chargeCredits(uid, "trustScore");
+    if (!charge.ok) return charge.response;
 
     // ── Analytics ── This is a Shorts tool: score Shorts-only metrics when the
     // channel is mostly Shorts, so retention/engagement reflect the Shorts feed.

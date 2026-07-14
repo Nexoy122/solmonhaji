@@ -1,39 +1,34 @@
 import type { Metadata } from "next";
-import { LpNavbar } from "@/components/lp/LpNavbar";
-import { LpHero } from "@/components/lp/LpHero";
-import { LpStats } from "@/components/lp/LpStats";
-import { LpTrustedBy } from "@/components/lp/LpTrustedBy";
-import { LpToolsBento } from "@/components/lp/LpToolsBento";
-import { LpHowItWorks } from "@/components/lp/LpHowItWorks";
-import { LpFaq } from "@/components/lp/LpFaq";
-import { LpFinalCta } from "@/components/lp/LpFinalCta";
-import { LpFooter } from "@/components/lp/LpFooter";
-import { LpOfferPopup } from "@/components/lp/LpOfferPopup";
-import { LpScrollProgress } from "@/components/lp/LpScrollFx";
+import { BhNavbar } from "@/components/lp/bauhaus/BhNavbar";
+import { BhHero } from "@/components/lp/bauhaus/BhHero";
+import { BhStats } from "@/components/lp/bauhaus/BhStats";
+import { BhTools } from "@/components/lp/bauhaus/BhTools";
+import { BhReviews } from "@/components/lp/bauhaus/BhReviews";
+import { BhPricing } from "@/components/lp/bauhaus/BhPricing";
+import { BhFaq } from "@/components/lp/bauhaus/BhFaq";
+import { BhFinalCta } from "@/components/lp/bauhaus/BhFinalCta";
+import { BhFooter } from "@/components/lp/bauhaus/BhFooter";
 
-// Homepage = the vidIQ-style product landing (from the tatti design). Sign Up /
-// Sign In link to this same app's /signup, /login → /dashboard. The old light
-// waitlist page is preserved at components/{Hero,Features,…} + app/_waitlist.
+// Homepage — Bauhaus design system: constructivist, geometric, primary colors,
+// hard offset shadows, Outfit typeface. Scoped via .lp-root.
 export const metadata: Metadata = {
-  title: "NicheSpy — Get More Views & Subscribers on YouTube",
+  title: "NicheSpy — Spy on What Actually Works",
   description:
-    "AI-powered competitor intelligence, outlier detection, and untapped-topic ideas that do the heavy lifting — so you can focus on creating. Sign up free.",
+    "AI-powered competitor intelligence, outlier detection, and untapped-topic ideas for YouTube Shorts creators.",
 };
 
 export default function Home() {
   return (
-    <main className="lp-root min-h-screen bg-[#0f1420] text-white antialiased">
-      <LpScrollProgress />
-      <LpNavbar />
-      <LpHero />
-      <LpStats />
-      <LpTrustedBy />
-      <LpToolsBento />
-      <LpHowItWorks />
-      <LpFaq />
-      <LpFinalCta />
-      <LpFooter />
-      <LpOfferPopup />
+    <main className="lp-root min-h-screen bg-[#F0F0F0] text-[#121212] antialiased">
+      <BhNavbar />
+      <BhHero />
+      <BhStats />
+      <BhTools />
+      <BhReviews />
+      <BhPricing />
+      <BhFaq />
+      <BhFinalCta />
+      <BhFooter />
     </main>
   );
 }

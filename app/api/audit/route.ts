@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequest } from "@/lib/firebaseAdmin";
+import { chargeCredits } from "@/lib/requireCredits";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,10 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const channel = (body?.channel ?? "").toString().trim();
   if (!channel) return NextResponse.json({ error: "Enter a channel (@handle, URL, or ID)." }, { status: 400 });
+
+  // Channel Audit is our most expensive action — charge before starting the job.
+  const charge = await chargeCredits(uid, "channelAudit");
+  if (!charge.ok) return charge.response;
 
   try {
     const res = await fetch(`${WORKER_URL}/audit`, {

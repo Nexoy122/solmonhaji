@@ -14,32 +14,44 @@ type Plan = {
 
 const PLANS: Plan[] = [
   {
-    name: "Free",
-    price: "$0",
-    cadence: "forever",
-    tagline: "Get started and see the field.",
-    features: ["Competitor preview", "Limited outlier feed", "1 tracked niche", "Community access"],
+    name: "Starter",
+    price: "$9",
+    cadence: "/ month",
+    tagline: "For a solo creator getting started.",
+    features: [
+      "All tools included",
+      "500 credits / month",
+      "1 connected channel",
+      "7-day history",
+      "Community support",
+    ],
   },
   {
     name: "Creator",
-    price: "$0",
-    cadence: "during early access",
-    tagline: "Everything, unlocked for beta users.",
+    price: "$19",
+    cadence: "/ month",
+    tagline: "For an active creator running 1–3 channels.",
     features: [
-      "Full outlier & video library",
-      "Gap Finder + performance sorting",
-      "AI script generator",
-      "Unlimited tracked channels",
-      "Viral alerts by email",
+      "All tools included",
+      "1,500 credits / month",
+      "3 connected channels",
+      "30-day history",
+      "Priority email support",
     ],
     featured: true,
   },
   {
-    name: "Pro",
-    price: "Soon",
-    cadence: "for teams & agencies",
-    tagline: "For creators running multiple channels.",
-    features: ["Everything in Creator", "Multi-channel workspace", "Trust Score at scale", "Priority support"],
+    name: "Plus",
+    price: "$39",
+    cadence: "/ month",
+    tagline: "For agencies & power users.",
+    features: [
+      "All tools included",
+      "4,000 credits / month",
+      "10 connected channels",
+      "Unlimited history",
+      "Priority + early access",
+    ],
   },
 ];
 
@@ -49,15 +61,15 @@ export function LpPricing() {
       <Reveal>
         <div className="text-center">
           <span className="inline-flex items-center rounded-full border border-[#01D4FF]/30 bg-[#01D4FF]/10 px-4 py-1.5 text-[13px] font-bold text-[#01D4FF]">
-            EARLY ACCESS PRICING
+            PRICING
           </span>
           <h2 className="font-heading mt-6 text-[clamp(30px,4vw,46px)] font-bold tracking-[-0.01em] text-white mx-auto max-w-[720px]">
-            Join now and get{" "}
-            <span className="bg-gradient-to-r from-[#0FA5E9] to-[#01D4FF] bg-clip-text text-transparent">Creator free</span> at launch
+            Every plan gets{" "}
+            <span className="bg-gradient-to-r from-[#0FA5E9] to-[#01D4FF] bg-clip-text text-transparent">every tool</span>
           </h2>
           <p className="mt-5 text-[18px] leading-relaxed text-white/60 mx-auto max-w-[560px]">
-            The first 1,000 beta users get 1 week of premium tools — completely free.
-            No credit card, no catch.
+            Pick your plan by how much you create. All tools unlocked on every tier —
+            you only scale credits, channels, and support.
           </p>
         </div>
       </Reveal>
@@ -104,7 +116,7 @@ export function LpPricing() {
                     : "border border-white/15 text-white hover:bg-white/[0.05]"
                 }`}
               >
-                {p.featured ? "Claim early access" : "Get started"}
+                Get started
               </Link>
             </div>
           </Reveal>

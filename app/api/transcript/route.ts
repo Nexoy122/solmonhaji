@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequest } from "@/lib/firebaseAdmin";
 import { getTranscript } from "@/lib/transcriptFetcher";
+import { chargeCredits } from "@/lib/requireCredits";
 
 export const runtime = "nodejs";
 export const maxDuration = 120; // Whisper fallback can take a bit
@@ -68,6 +69,10 @@ export async function POST(req: NextRequest) {
       }
     }
   }
+
+  // Charge credits before transcribing (server-side).
+  const charge = await chargeCredits(uid, "transcript", `transcript:${id}`);
+  if (!charge.ok) return charge.response;
 
   // ── Transcribe ──
   try {

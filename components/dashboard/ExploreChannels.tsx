@@ -105,14 +105,14 @@ function Dropdown({ title, options, value, onChange }: { title: string; options:
   return (
     <div className="relative" ref={ref}>
       <p className="mb-2 text-[13.5px] font-semibold text-on-surface">{title}</p>
-      <button onClick={() => setOpen((o) => !o)} className={`inline-flex w-full items-center justify-between gap-2 rounded-none border px-4 py-3 text-[14px] font-medium transition-colors ${value > 0 ? "border-primary bg-primary-container text-on-primary-container" : "border-white/10 bg-black/25 text-on-surface hover:bg-black/40"}`}>
+      <button onClick={() => setOpen((o) => !o)} className={`inline-flex w-full items-center justify-between gap-2 rounded-none border px-4 py-3 text-[14px] font-medium transition-colors ${value > 0 ? "border-primary bg-primary-container text-on-primary-container" : "border-black bg-white/25 text-on-surface hover:bg-white/40"}`}>
         <span className="truncate">{options[i]}</span>
         <Icon d="m6 9 6 6 6-6" size={14} />
       </button>
       {open && (
-        <div className="absolute left-0 z-30 mt-2 max-h-[280px] w-full overflow-auto rounded-none border border-white/12 bg-[#0c0c0f] py-1">
+        <div className="absolute left-0 z-30 mt-2 max-h-[280px] w-full overflow-auto rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 py-1">
           {options.map((o, idx) => (
-            <button key={o} onClick={() => { onChange(idx); setOpen(false); }} className={`flex w-full items-center gap-2 px-3.5 py-2 text-left text-[13.5px] transition-colors hover:bg-white/[0.06] ${idx === i ? "font-semibold text-primary" : "text-on-surface"}`}>
+            <button key={o} onClick={() => { onChange(idx); setOpen(false); }} className={`flex w-full items-center gap-2 px-3.5 py-2 text-left text-[13.5px] transition-colors hover:bg-white ${idx === i ? "font-semibold text-primary" : "text-on-surface"}`}>
               {idx === i ? <Icon d="M20 6 9 17l-5-5" size={13} /> : <span className="w-[13px]" />}
               <span className="truncate">{o}</span>
             </button>
@@ -137,50 +137,50 @@ function ChannelModal({ c, onClose }: { c: Channel; onClose: () => void }) {
   const lang = c.primaryLanguage ? (LANG_NAMES[c.primaryLanguage] ?? c.primaryLanguage.toUpperCase()) : null;
   const topics = (c.aiTopics ?? []).slice(0, 8);
   return createPortal(
-    <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className={`relative flex max-h-[90vh] w-full max-w-[760px] flex-col overflow-hidden border border-white/10 bg-[#0F0F14] transition-all duration-200 ${show ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}>
-        <div className="flex items-start gap-3 border-b border-white/[0.07] p-5">
-          <div className="size-14 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.05]">
+    <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-white/75 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className={`relative flex max-h-[90vh] w-full max-w-[760px] flex-col overflow-hidden border border-black bg-white transition-all duration-200 ${show ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}>
+        <div className="flex items-start gap-3 border-b border-black p-5">
+          <div className="size-14 shrink-0 overflow-hidden rounded-full border border-black bg-white">
             {c.thumbnailUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={c.thumbnailUrl} alt="" className="size-full object-cover" />
             ) : <div className="flex size-full items-center justify-center text-[18px] font-bold text-on-surface-variant">{c.title?.charAt(0).toUpperCase() ?? "?"}</div>}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[18px] font-bold text-white">{c.title}</p>
+            <p className="truncate text-[18px] font-bold text-black">{c.title}</p>
             {c.handle && <p className="truncate text-[13px] text-on-surface-variant">{c.handle}</p>}
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-on-surface-variant">
-              <span><span className="font-medium text-white">{fmt(c.subscriberCount)}</span> subs</span>
-              <span><span className="font-medium text-white">{fmt(c.avgShortsViews)}</span> avg/short</span>
-              <span><span className="font-medium text-white">{c.shortsCount}</span> shorts</span>
-              {c.country && <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[11px]">{c.country}</span>}
+              <span><span className="font-medium text-black">{fmt(c.subscriberCount)}</span> subs</span>
+              <span><span className="font-medium text-black">{fmt(c.avgShortsViews)}</span> avg/short</span>
+              <span><span className="font-medium text-black">{c.shortsCount}</span> shorts</span>
+              {c.country && <span className="rounded bg-white px-1.5 py-0.5 text-[11px]">{c.country}</span>}
             </div>
           </div>
-          <button onClick={onClose} className="flex size-8 shrink-0 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-white/[0.06] hover:text-white"><Icon d="M18 6 6 18M6 6l12 12" size={16} /></button>
+          <button onClick={onClose} className="flex size-8 shrink-0 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-white hover:text-black"><Icon d="M18 6 6 18M6 6l12 12" size={16} /></button>
         </div>
         <div className="overflow-y-auto p-5">
           <div className="mb-4 flex flex-wrap items-center gap-1.5">
             {c.faceless && <span className="rounded-md bg-[#10b981]/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#34d399]">Faceless</span>}
             <NicheBadge niche={c.seedNiche} label={c.seedNicheLabel} />
-            {c.format && <span className="rounded-md border border-white/12 bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{FORMAT_LABELS[c.format] ?? c.format}</span>}
-            {lang && <span className="rounded-md border border-white/12 bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{lang}</span>}
+            {c.format && <span className="rounded-md border border-black bg-white px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{FORMAT_LABELS[c.format] ?? c.format}</span>}
+            {lang && <span className="rounded-md border border-black bg-white px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{lang}</span>}
           </div>
           {topics.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-1.5">
-              {topics.map((t) => <span key={t} className="rounded-full bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-on-surface-variant">#{t}</span>)}
+              {topics.map((t) => <span key={t} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-on-surface-variant">#{t}</span>)}
             </div>
           )}
           {c.description && <p className="mb-5 whitespace-pre-line text-[13px] leading-relaxed text-on-surface-variant">{c.description}</p>}
           {shorts.length > 0 ? (
             <>
-              <p className="mb-2.5 text-[13px] font-semibold text-white">Recent Shorts</p>
+              <p className="mb-2.5 text-[13px] font-semibold text-black">Recent Shorts</p>
               <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
                 {shorts.map((v) => (
                   <a key={v.id} href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noreferrer" className="min-w-0">
-                    <div className="relative overflow-hidden border border-white/10">
+                    <div className="relative overflow-hidden border border-black">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={thumb(v.id)} alt="" loading="lazy" className="aspect-[9/16] w-full object-cover" />
-                      <span className="absolute bottom-1 left-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums text-white">{fmt(v.views)}</span>
+                      <span className="absolute bottom-1 left-1 rounded bg-white/70 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums text-black">{fmt(v.views)}</span>
                     </div>
                     {v.title && <p className="mt-1 line-clamp-2 text-[10px] leading-tight text-on-surface-variant">{v.title}</p>}
                   </a>
@@ -189,7 +189,7 @@ function ChannelModal({ c, onClose }: { c: Channel; onClose: () => void }) {
             </>
           ) : <p className="text-[13px] text-on-surface-variant">No Shorts pulled for this channel yet.</p>}
         </div>
-        <div className="border-t border-white/[0.07] p-4">
+        <div className="border-t border-black p-4">
           <a href={c.url} target="_blank" rel="noreferrer" className="flex h-10 w-full items-center justify-center gap-1.5 bg-primary text-[13.5px] font-semibold text-on-primary transition-colors hover:brightness-110">
             <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={15} /> Open channel on YouTube
           </a>
@@ -205,20 +205,20 @@ function ChannelCard({ c, onView }: { c: Channel; onView: () => void }) {
   const shortId = (c.recentVideos ?? []).find((v) => v?.id)?.id;
   const bannerSrc = c.bannerUrl || (shortId ? thumb(shortId) : null);
   return (
-    <div className="flex flex-col overflow-hidden border border-white/[0.08] bg-[#0c0c0f] transition-colors hover:border-white/25">
+    <div className="flex flex-col overflow-hidden border border-black bg-[#ffffff] transition-colors hover:border-black">
       {/* Channel banner */}
-      <button onClick={onView} className="relative block h-[120px] overflow-hidden bg-black">
+      <button onClick={onView} className="relative block h-[120px] overflow-hidden bg-white">
         {bannerSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={bannerSrc} alt="" loading="lazy" className="h-full w-full object-cover opacity-80" />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0f] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#ffffff] to-transparent" />
         <span className="absolute right-2 top-2"><NicheBadge niche={c.seedNiche} label={c.seedNicheLabel} className="uppercase tracking-wide" /></span>
       </button>
 
       {/* Header */}
       <div className="-mt-6 flex items-start gap-3 px-4">
-        <button onClick={onView} className="size-12 shrink-0 overflow-hidden rounded-full border-2 border-[#0c0c0f] bg-white/[0.05] transition-transform hover:scale-105">
+        <button onClick={onView} className="size-12 shrink-0 overflow-hidden rounded-full border-2 border-[#ffffff] bg-white transition-transform hover:scale-105">
           {c.thumbnailUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={c.thumbnailUrl} alt="" loading="lazy" className="size-full object-cover" />
@@ -242,7 +242,7 @@ function ChannelCard({ c, onView }: { c: Channel; onView: () => void }) {
 
       {/* Actions */}
       <div className="mt-auto flex gap-2 p-4 pt-3">
-        <a href={c.url} target="_blank" rel="noreferrer" className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-md border border-white/12 bg-white/[0.02] text-[12.5px] font-semibold text-on-surface-variant transition-all hover:border-white/25 hover:bg-white/[0.06] hover:text-on-surface">
+        <a href={c.url} target="_blank" rel="noreferrer" className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-md border border-black bg-white text-[12.5px] font-semibold text-on-surface-variant transition-all hover:border-black hover:bg-white hover:text-on-surface">
           <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={13} /> Open
         </a>
         <button onClick={onView} className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-md bg-primary text-[12.5px] font-semibold text-on-primary transition-all hover:brightness-110">
@@ -308,9 +308,9 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
   useEffect(() => { setVisible(24); }, [sort, niche, fSubs, fAvg, fShorts, search]);
 
   const railPanel = (
-    <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-white/[0.08] bg-[#08080a] p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
+    <aside className="dashboard-dark fixed z-20 hidden w-[272px] flex-col overflow-y-auto border border-black bg-white p-5 lg:flex" style={{ left: "calc(16rem + 15px)", top: "15px", height: "calc(100vh - 30px)" }}>
       <div className="mb-5 flex items-center justify-between">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/55">Filters</p>
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-black/60">Filters</p>
         {anyFilter && <button onClick={() => { setNiche("all"); setFSubs(0); setFAvg(0); setFShorts(0); }} className="text-[12.5px] font-semibold text-primary hover:underline">Clear</button>}
       </div>
       <div className="flex flex-col gap-5">
@@ -331,13 +331,13 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
       {/* Count badge (left) + search (right corner), same line */}
       {!loading && !error && (
         <div className="mb-4 flex items-center gap-3">
-          <div className="inline-flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#0c0c0f] py-1.5 pl-1.5 pr-3.5">
+          <div className="inline-flex items-center gap-2.5 rounded-lg border border-black bg-[#ffffff] py-1.5 pl-1.5 pr-3.5">
             <span className="inline-flex min-w-[30px] items-center justify-center rounded-md bg-primary px-2.5 py-1 text-[13px] font-bold tabular-nums text-on-primary">{fmt(filtered.length)}</span>
             <span className="text-[13px] font-medium text-on-surface-variant">channels match your filters</span>
           </div>
           <BorderGlow borderRadius={8} glowRadius={16} glowColor="189 100 50" glowIntensity={0.6} className="ml-auto w-full max-w-[260px]">
             <div className="relative">
-              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-black/40">
                 <Icon d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3" size={15} />
               </span>
               <input
@@ -345,10 +345,10 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
                 value={search}
                 onChange={(e) => onSearch(e.target.value)}
                 placeholder="Search channels…"
-                className="h-9 w-full bg-transparent pl-9 pr-8 text-[13px] text-white outline-none placeholder:text-white/35"
+                className="h-9 w-full bg-transparent pl-9 pr-8 text-[13px] text-black outline-none placeholder:text-black/40"
               />
               {search && (
-                <button onClick={() => onSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 transition-colors hover:text-white" aria-label="Clear">
+                <button onClick={() => onSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-black/40 transition-colors hover:text-black" aria-label="Clear">
                   <Icon d="M18 6 6 18M6 6l12 12" size={14} />
                 </button>
               )}
@@ -366,14 +366,14 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
       {loading ? (
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="border border-white/[0.08] bg-[#0c0c0f]">
-              <div className="h-[120px] animate-pulse bg-white/[0.05]" />
-              <div className="space-y-2 p-4"><div className="h-3.5 w-2/3 animate-pulse rounded bg-white/[0.06]" /><div className="h-3 w-1/2 animate-pulse rounded bg-white/[0.06]" /></div>
+            <div key={i} className="border border-black bg-[#ffffff]">
+              <div className="h-[120px] animate-pulse bg-white" />
+              <div className="space-y-2 p-4"><div className="h-3.5 w-2/3 animate-pulse rounded bg-white" /><div className="h-3 w-1/2 animate-pulse rounded bg-white" /></div>
             </div>
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="border border-dashed border-white/12 py-16 text-center">
+        <div className="border border-dashed border-black py-16 text-center">
           <p className="text-[15px] font-semibold text-on-surface">No channels match your filters</p>
           <p className="mt-1 text-[14px] text-on-surface-variant">Try loosening a filter.</p>
         </div>
@@ -384,7 +384,7 @@ export function ExploreChannels({ search = "", onSearch = () => {} }: { search?:
           </div>
           {visible < filtered.length && (
             <div className="mt-8 flex justify-center">
-              <button onClick={() => setVisible((n) => n + 24)} className="border border-white/12 bg-white/[0.03] px-5 py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-white/[0.06]">
+              <button onClick={() => setVisible((n) => n + 24)} className="border border-black bg-white px-5 py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-white">
                 Load more ({fmt(filtered.length - visible)} left)
               </button>
             </div>

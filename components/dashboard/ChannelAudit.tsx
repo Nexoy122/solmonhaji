@@ -36,14 +36,14 @@ function fmtNum(n: number) {
 // overall is /100
 function overallHex(s: number) {
   if (s >= 75) return "#34d399";
-  if (s >= 60) return "#01D4FF";
+  if (s >= 60) return "#D02020";
   if (s >= 45) return "#e0b341";
   return "#f87171";
 }
 // category score is /10
 function catHex(s: number) {
   if (s >= 8) return "#34d399";
-  if (s >= 6) return "#01D4FF";
+  if (s >= 6) return "#D02020";
   if (s >= 4) return "#e0b341";
   return "#f87171";
 }
@@ -57,7 +57,7 @@ function ScoreRing({ score, size = 168 }: { score: number; size?: number }) {
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E0E0E0" strokeWidth={stroke} />
         <circle
           cx={size / 2} cy={size / 2} r={r} fill="none"
           stroke={overallHex(score)} strokeWidth={stroke} strokeDasharray={circ}
@@ -76,7 +76,7 @@ function ScoreRing({ score, size = 168 }: { score: number; size?: number }) {
 // Brand "Auditing" letter loader (shared Uiverse style, from globals.css).
 function AuditingLoader({ progress }: { progress: string }) {
   return (
-    <div className="flex min-h-[440px] flex-col items-center justify-center gap-6 rounded-none border border-white/10 bg-[#1B1D1F] p-10">
+    <div className="flex min-h-[440px] flex-col items-center justify-center gap-6 rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-10">
       <div className="loader-wrapper">
         {"Auditing".split("").map((ch, i) => <span key={i} className="loader-letter">{ch}</span>)}
         <div className="gloader" />
@@ -226,15 +226,15 @@ export function ChannelAudit() {
       {!running && !result && (
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {/* Deep audit — your own channel */}
-          <div className="flex flex-col rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+          <div className="flex flex-col rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
             <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-[#01D4FF]/10 text-[#01D4FF]">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-[#D02020]/10 text-[#D02020]">
                 <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={22} />
               </span>
               <div className="min-w-0">
                 <p className="flex items-center gap-2 text-[15px] font-bold text-on-surface">
                   Your own channel
-                  <span className="rounded-full bg-[#01D4FF]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#01D4FF]">Deep</span>
+                  <span className="rounded-full bg-[#D02020]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#D02020]">Deep</span>
                 </p>
                 <p className="text-[12px] text-on-surface-variant">Adds real private analytics</p>
               </div>
@@ -256,7 +256,7 @@ export function ChannelAudit() {
                       key={c.youtubeId}
                       onClick={() => setSelectedChannelId(c.youtubeId)}
                       className={`flex w-full items-center gap-2.5 rounded-none border p-2.5 text-left transition-all ${
-                        isSel ? "border-[#01D4FF]/60 bg-[#01D4FF]/10" : "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.08]"
+                        isSel ? "border-[#D02020]/60 bg-[#D02020]/10" : "border-black bg-white hover:border-black hover:bg-white"
                       }`}
                     >
                       {c.thumbnailUrl ? (
@@ -269,7 +269,7 @@ export function ChannelAudit() {
                         <p className="truncate text-[13px] font-semibold text-on-surface">{c.name}</p>
                         <p className="text-[11px] text-on-surface-variant">{fmtNum(c.subscriberCount)} subs</p>
                       </div>
-                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${isSel ? "border-[#01D4FF] bg-[#01D4FF] text-[#001014]" : "border-white/25"}`}>
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${isSel ? "border-[#D02020] bg-[#D02020] text-[#001014]" : "border-black"}`}>
                         {isSel && <Icon d="M20 6 9 17l-5-5" size={12} />}
                       </span>
                     </button>
@@ -291,9 +291,9 @@ export function ChannelAudit() {
           </div>
 
           {/* Public audit — any channel */}
-          <div className="flex flex-col rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+          <div className="flex flex-col rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
             <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-white/[0.05] text-white/70">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-white text-black/70">
                 <Icon d="M21 21l-4-4M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" size={22} />
               </span>
               <div className="min-w-0">
@@ -307,7 +307,7 @@ export function ChannelAudit() {
               onKeyDown={(e) => e.key === "Enter" && runAudit()}
               disabled={running}
               placeholder="@ZackDFilms  ·  or a channel URL"
-              className="mt-4 h-12 w-full rounded-none border border-white/10 bg-[#0f1113] px-4 text-[14px] text-on-surface outline-none transition-colors placeholder:text-on-surface-variant/60 focus:border-white/25 disabled:opacity-60"
+              className="mt-4 h-12 w-full rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 px-4 text-[14px] text-on-surface outline-none transition-colors placeholder:text-on-surface-variant/60 focus:border-black disabled:opacity-60"
             />
             <button onClick={runAudit} disabled={running || !channel.trim()} className="btn-donate mt-4 inline-flex w-full items-center justify-center gap-2 !rounded-none disabled:opacity-50">
               <Icon d="M21 21l-4-4M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" size={16} /> Run audit
@@ -327,7 +327,7 @@ function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset:
   return (
     <div className="space-y-6 overflow-x-hidden">
       {/* HERO — score on top */}
-      <div className="relative overflow-hidden rounded-none border border-white/10 bg-[#1B1D1F] px-6 py-10">
+      <div className="relative overflow-hidden rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 px-6 py-10">
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.12] blur-3xl" style={{ background: overallHex(r.overall) }} />
         <div className="relative flex flex-col items-center text-center">
           {/* channel identity */}
@@ -349,14 +349,14 @@ function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset:
               Grade {r.grade}
             </span>
             {deep && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#01D4FF]/12 px-3 py-1 text-[12px] font-bold text-[#01D4FF]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#D02020]/12 px-3 py-1 text-[12px] font-bold text-[#D02020]">
                 <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z" size={13} /> Deep · real analytics
               </span>
             )}
           </div>
           {r.summary && <p className="mt-4 max-w-[620px] text-[14px] leading-relaxed text-on-surface-variant">{r.summary}</p>}
           <div className="mt-6">
-            <button onClick={onReset} className="inline-flex items-center gap-2 rounded-none border border-white/15 px-5 py-2.5 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
+            <button onClick={onReset} className="inline-flex items-center gap-2 rounded-none border border-black px-5 py-2.5 text-[13px] font-bold text-black transition-colors hover:bg-white">
               <Icon d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.7 3M3 4v4h4" size={15} /> Audit another
             </button>
           </div>
@@ -368,12 +368,12 @@ function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset:
         <h3 className="mb-3 text-[15px] font-bold text-on-surface">Breakdown</h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {r.categories.map((c) => (
-            <div key={c.name} className="rounded-none border border-white/10 bg-[#1B1D1F] p-5">
+            <div key={c.name} className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-5">
               <div className="flex items-center justify-between">
                 <span className="text-[14px] font-bold text-on-surface">{c.name}</span>
                 <span className="text-[16px] font-extrabold tabular-nums" style={{ color: catHex(c.score) }}>{c.score}<span className="text-[12px] text-on-surface-variant">/10</span></span>
               </div>
-              <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
+              <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white">
                 <div className="h-full rounded-full" style={{ width: `${c.score * 10}%`, background: catHex(c.score) }} />
               </div>
               <p className="mt-3 text-[13px] leading-relaxed text-on-surface-variant">{c.note}</p>
@@ -385,7 +385,7 @@ function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset:
       {/* Strengths + Improvements side by side */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {r.strengths.length > 0 && (
-          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+          <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
             <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#34d399]">
               <Icon d="M20 6 9 17l-5-5" size={17} /> Strengths
             </h3>
@@ -400,7 +400,7 @@ function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset:
         )}
 
         {r.improvements.length > 0 && (
-          <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+          <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
             <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#e0b341]">
               <Icon d="M13 2L3 14h7l-1 8 10-12h-7z" size={17} /> Top improvements
             </h3>
@@ -418,9 +418,9 @@ function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset:
 
       {/* Coach review — wrapped in the animated AI border glow */}
       {r.coachReview && (
-        <BorderGlow borderRadius={0} backgroundColor="#1B1D1F" glowColor="0 0 100" glowIntensity={0.5} mesh>
+        <BorderGlow borderRadius={0} backgroundColor="#ffffff" glowColor="0 0 100" glowIntensity={0.5} mesh>
           <div className="p-6">
-            <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#01D4FF]">
+            <h3 className="flex items-center gap-2 text-[15px] font-bold text-[#D02020]">
               <Icon d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z" size={17} /> What NicheSpy AI thinks
             </h3>
             <div className="mt-4 space-y-3 text-[14px] leading-relaxed text-on-surface">

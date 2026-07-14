@@ -36,7 +36,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 const rs = (n: number) => Math.round(n);
 function scoreHex(s: number) {
   if (s >= 75) return "#34d399"; // soft green
-  if (s >= 60) return "#01D4FF"; // brand cyan
+  if (s >= 60) return "#D02020"; // brand cyan
   if (s >= 45) return "#e0b341"; // soft amber
   return "#f87171";              // soft red
 }
@@ -62,13 +62,13 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 // Skeleton shown while analyzing — mirrors the results layout so the page
 // doesn't jump, with the brand letter-loader front and centre.
 function Sk({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse bg-white/[0.06] ${className}`} />;
+  return <div className={`animate-pulse bg-white ${className}`} />;
 }
 function ResultsSkeleton() {
   return (
     <div className="space-y-5">
       {/* hero with the brand loader */}
-      <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+      <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
         <div className="flex flex-col items-center gap-5 py-4">
           <div className="loader-wrapper">
             {"Analyzing".split("").map((ch, i) => <span key={i} className="loader-letter">{ch}</span>)}
@@ -80,7 +80,7 @@ function ResultsSkeleton() {
       {/* stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="rounded-none border border-white/10 bg-[#1B1D1F] p-4">
+          <div key={i} className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-4">
             <Sk className="h-2.5 w-16" />
             <Sk className="mt-4 h-6 w-12" />
             <Sk className="mt-2 h-2 w-20" />
@@ -89,7 +89,7 @@ function ResultsSkeleton() {
       </div>
       {/* section blocks */}
       {[0, 1].map((i) => (
-        <div key={i} className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+        <div key={i} className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
           <Sk className="h-3 w-32" />
           <div className="mt-5 space-y-3">
             <Sk className="h-10 w-full" />
@@ -111,7 +111,7 @@ function ScoreRing({ score, size = 132 }: { score: number | null; size?: number 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="7" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E0E0E0" strokeWidth="7" />
         {score !== null && (
           <circle
             cx={size / 2} cy={size / 2} r={r} fill="none"
@@ -290,7 +290,7 @@ export function TrustScore() {
       )}
 
       {/* ───── TOP BAR — channel picker + window + actions ───── */}
-      <div className="mb-6 flex flex-col gap-3 border-b border-white/[0.08] pb-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-3 border-b border-black pb-6 sm:flex-row sm:items-center sm:justify-between">
         <ChannelSwitcher
           channels={channels}
           selected={ch}
@@ -304,7 +304,7 @@ export function TrustScore() {
           <div className="flex items-center gap-2.5">
             <Segmented value={String(days)} onChange={(v) => setDays(Number(v) as typeof days)} options={[{ v: "7", l: "7d" }, { v: "28", l: "28d" }, { v: "90", l: "90d" }]} />
             {result && (
-              <button onClick={() => setShareOpen(true)} className="inline-flex items-center gap-1.5 rounded-none border border-white/15 px-3.5 py-2 text-[13px] font-bold text-white/85 transition-colors hover:bg-white/[0.06]">
+              <button onClick={() => setShareOpen(true)} className="inline-flex items-center gap-1.5 rounded-none border border-black px-3.5 py-2 text-[13px] font-bold text-black transition-colors hover:bg-white">
                 <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" size={15} /> Share
               </button>
             )}
@@ -320,8 +320,8 @@ export function TrustScore() {
 
       {/* STATE 2 — no result yet */}
       {!analyzing && !result && (
-        <div className="flex min-h-[440px] flex-col items-center justify-center rounded-none border border-white/10 bg-[#1B1D1F] p-10 text-center">
-          <span className="flex h-16 w-16 items-center justify-center rounded-none bg-white/[0.04] text-white/70">
+        <div className="flex min-h-[440px] flex-col items-center justify-center rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-10 text-center">
+          <span className="flex h-16 w-16 items-center justify-center rounded-none bg-white text-black/70">
             <Icon d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z M9 12l2 2 4-4" size={30} />
           </span>
           <h3 className="mt-5 text-[20px] font-bold text-on-surface">
@@ -344,7 +344,7 @@ export function TrustScore() {
       {!analyzing && result && (
         <div className="space-y-6">
           {/* HERO — big centered score */}
-          <div className="relative overflow-hidden rounded-none border border-white/10 bg-[#1B1D1F] px-6 py-10">
+          <div className="relative overflow-hidden rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 px-6 py-10">
             {/* subtle score-colored glow behind the ring */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.12] blur-3xl" style={{ background: scoreHex(result.overall) }} />
             <div className="relative flex flex-col items-center text-center">
@@ -372,11 +372,11 @@ export function TrustScore() {
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
             {/* LEFT: focus + breakdown */}
             <div className="space-y-6">
-              <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+              <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
                 <Eyebrow>Focus this week</Eyebrow>
                 <FocusBlock result={result} />
               </div>
-              <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+              <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
                 <h3 className="text-[16px] font-bold text-on-surface">Score breakdown</h3>
                 <Breakdown result={result} openCat={openCat} setOpenCat={setOpenCat} />
               </div>
@@ -385,14 +385,14 @@ export function TrustScore() {
             {/* RIGHT: recommendations + full metric breakdown */}
             <div className="space-y-6">
               {result.recommendations?.length > 0 && (
-                <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+                <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
                   <h3 className="text-[16px] font-bold text-on-surface">Fine-tune accuracy</h3>
                   <p className="mt-1 text-[13px] text-on-surface-variant">What to improve to raise your Trust Score, ranked by impact.</p>
                   <div className="mt-4 space-y-3">
                     {result.recommendations.slice(0, 5).map((rec, i) => {
-                      const color = rec.level === "critical" ? "#f87171" : rec.level === "warning" ? "#e0b341" : "#01D4FF";
+                      const color = rec.level === "critical" ? "#f87171" : rec.level === "warning" ? "#e0b341" : "#D02020";
                       return (
-                        <div key={i} className="flex gap-3 rounded-none border border-white/10 bg-white/[0.03] p-4">
+                        <div key={i} className="flex gap-3 rounded-none border border-black bg-white p-4">
                           <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
@@ -456,22 +456,22 @@ function ConfirmModal({
   if (!mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onCancel}>
-      <div className="w-full max-w-[400px] rounded-2xl border border-white/10 bg-[#131417] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/70 p-4 backdrop-blur-sm" onClick={onCancel}>
+      <div className="w-full max-w-[400px] rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start gap-3.5">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error/15 text-error">
             <Icon d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6" size={19} />
           </span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[17px] font-extrabold text-white">{title}</h3>
+            <h3 className="text-[17px] font-extrabold text-black">{title}</h3>
             <p className="mt-1.5 text-[13.5px] leading-relaxed text-on-surface-variant">{message}</p>
           </div>
         </div>
         <div className="mt-5 flex justify-end gap-2.5">
-          <button onClick={onCancel} className="rounded-none border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white/85 transition-colors hover:bg-white/10">
+          <button onClick={onCancel} className="rounded-none border border-black px-4 py-2.5 text-[14px] font-bold text-black transition-colors hover:bg-white">
             Cancel
           </button>
-          <button onClick={onConfirm} className="rounded-none bg-error px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-error/85">
+          <button onClick={onConfirm} className="rounded-none bg-error px-4 py-2.5 text-[14px] font-bold text-black transition-colors hover:bg-error/85">
             {confirmLabel}
           </button>
         </div>
@@ -502,12 +502,12 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
   const cats: CategoryKey[] = ["engagement", "retention", "upload", "authority", "velocity"];
   const all = cats.flatMap((k) => (result[k] as CategoryScore).metrics ?? []);
   return (
-    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+    <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
       <h3 className="text-[16px] font-bold text-on-surface">Full breakdown</h3>
       <p className="mt-1 text-[12px] text-on-surface-variant">Every signal we measured, scored 0–100.</p>
       <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         {all.map((m) => (
-          <div key={m.key} className="flex items-center justify-between rounded-none bg-white/[0.03] px-4 py-3">
+          <div key={m.key} className="flex items-center justify-between rounded-none bg-white px-4 py-3">
             <span className="text-[13px] text-on-surface-variant">{m.name}</span>
             <span className="text-[15px] font-bold tabular-nums" style={{ color: scoreHex(m.score) }}>{rs(m.score)}</span>
           </div>
@@ -520,7 +520,7 @@ function FullBreakdown({ result }: { result: ScoreResult }) {
 // ── Sub-components ──
 function StatCard({ label, value, foot, up, muted }: { label: string; value: string | null; foot: string; up?: boolean; muted?: boolean }) {
   return (
-    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-4">
+    <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-4">
       <Eyebrow>{label}</Eyebrow>
       <p className={`mt-3 text-[22px] font-bold tracking-tight tabular-nums ${value === null ? "text-on-surface-variant/40" : "text-on-surface"}`}>
         {value ?? "—"}
@@ -557,7 +557,7 @@ function ChannelSwitcher({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-3 rounded-none border border-white/10 bg-[#1B1D1F] px-3 py-2 transition-colors hover:border-white/25"
+        className="flex items-center gap-3 rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 px-3 py-2 transition-colors hover:border-black"
       >
         {selected?.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -577,7 +577,7 @@ function ChannelSwitcher({
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-[calc(100%+6px)] z-50 w-[320px] rounded-none border border-white/10 bg-[#131417] p-2 shadow-2xl">
+          <div className="absolute left-0 top-[calc(100%+6px)] z-50 w-[320px] rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-2 shadow-2xl">
             <p className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Channels · {count}</p>
             <div className="max-h-[300px] space-y-1 overflow-y-auto">
               {channels.map((c) => {
@@ -587,7 +587,7 @@ function ChannelSwitcher({
                     key={c.youtubeId}
                     onClick={() => onSelect(c.youtubeId)}
                     className={`flex cursor-pointer items-center gap-3 rounded-none border p-2 transition-all ${
-                      isSel ? "border-[#01D4FF]/60 bg-[#01D4FF]/10" : "border-transparent hover:border-white/15 hover:bg-white/[0.06]"
+                      isSel ? "border-[#D02020]/60 bg-[#D02020]/10" : "border-transparent hover:border-black hover:bg-white"
                     }`}
                   >
                     {c.thumbnailUrl ? (
@@ -600,7 +600,7 @@ function ChannelSwitcher({
                       <p className="truncate text-[13px] font-semibold text-on-surface">{c.name}</p>
                       <p className="text-[11px] text-on-surface-variant">{fmtNum(c.subscriberCount)} subs</p>
                     </div>
-                    {isSel && <span className="shrink-0 text-[#01D4FF]"><Icon d="M20 6 9 17l-5-5" size={15} /></span>}
+                    {isSel && <span className="shrink-0 text-[#D02020]"><Icon d="M20 6 9 17l-5-5" size={15} /></span>}
                     <button
                       onClick={(e) => { e.stopPropagation(); onRemove(c); }}
                       title="Remove channel"
@@ -612,7 +612,7 @@ function ChannelSwitcher({
                 );
               })}
             </div>
-            <button onClick={onConnect} className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-none border border-dashed border-white/15 py-2.5 text-[13px] font-medium text-white/55 transition-colors hover:bg-white/[0.04] hover:text-white/80">
+            <button onClick={onConnect} className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-none border border-dashed border-black py-2.5 text-[13px] font-medium text-black/60 transition-colors hover:bg-white hover:text-black/80">
               <Icon d="M12 5v14M5 12h14" size={15} /> Add another channel
             </button>
           </div>
@@ -637,10 +637,10 @@ function ManualInputs({
   contentType: string; setContentType: (v: string) => void;
   onSave: () => void; busy: boolean; disabled: boolean;
 }) {
-  const fieldCls = "w-full rounded-none border border-white/10 bg-[#0f1113] px-3.5 py-2.5 text-[14px] text-on-surface outline-none transition-colors focus:border-white/25";
+  const fieldCls = "w-full rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 px-3.5 py-2.5 text-[14px] text-on-surface outline-none transition-colors focus:border-black";
   const strikeOpts = [0, 1, 2, 3];
   return (
-    <div className="rounded-none border border-white/10 bg-[#1B1D1F] p-6">
+    <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
       <p className="text-[13px] text-on-surface-variant">
         <span className="font-semibold text-[#e0b341]">Add data YouTube doesn&apos;t share via API</span> for a more accurate score.
       </p>
@@ -752,26 +752,26 @@ function ShareCard({ score, channelName, onClose }: { score: ScoreResult; channe
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-white/70 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="my-auto w-full max-w-[420px] rounded-2xl border border-white/10 bg-[#131417] p-6 shadow-2xl"
+        className="my-auto w-full max-w-[420px] rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-[18px] font-extrabold text-white">Share your Trust Score</h3>
-          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white">
+          <h3 className="text-[18px] font-extrabold text-black">Share your Trust Score</h3>
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-black/60 transition-colors hover:bg-white hover:text-black">
             <Icon d="M18 6 6 18M6 6l12 12" size={18} />
           </button>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={url} alt="Trust Score card" className="mt-4 w-full rounded-xl border border-white/10" />
+        <img src={url} alt="Trust Score card" className="mt-4 w-full rounded-xl border border-black" />
         <div className="mt-4 flex gap-2">
-          <button onClick={download} className="btn-donate flex-1 inline-flex items-center justify-center gap-2 !rounded-none !text-[14px] !font-bold">
+          <button onClick={download} className="inline-flex flex-1 items-center justify-center gap-2 rounded-none border-2 border-black bg-[#D02020] px-4 py-2.5 text-[14px] font-black uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#121212] transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">
             <Icon d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M8 12l4 4 4-4M12 2v14" size={16} /> Download
           </button>
-          <button onClick={copyImage} className="inline-flex flex-1 items-center justify-center gap-2 rounded-none border border-white/15 px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-white/10">
+          <button onClick={copyImage} className="inline-flex flex-1 items-center justify-center gap-2 rounded-none border border-black px-4 py-2.5 text-[14px] font-bold text-black transition-colors hover:bg-white">
             <Icon d={copied ? "M20 6 9 17l-5-5" : "M9 9V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-4M4 9h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"} size={16} />
             {copied ? "Copied!" : "Copy image"}
           </button>
@@ -806,7 +806,7 @@ function FocusBlock({ result }: { result: ScoreResult }) {
       </div>
       <p className="mt-3 text-[14px] leading-relaxed text-on-surface">{result.trustMeaning}</p>
       {top && (
-        <div className="mt-4 rounded-none bg-white/[0.03] p-4">
+        <div className="mt-4 rounded-none bg-white p-4">
           <p className="text-[14px] font-semibold text-on-surface">{top.title}</p>
           <p className="mt-1 text-[13px] leading-relaxed text-on-surface-variant">{top.description}</p>
         </div>
@@ -824,7 +824,7 @@ function Breakdown({ result, openCat, setOpenCat }: { result: ScoreResult; openC
         const meta = CATEGORY_META[key];
         const open = openCat === key;
         return (
-          <div key={key} className="rounded-none border border-white/10 bg-white/[0.03]">
+          <div key={key} className="rounded-none border border-black bg-white">
             <button onClick={() => setOpenCat(open ? null : key)} className="flex w-full items-center gap-3 p-4">
               <span className="text-on-surface-variant"><Icon d={meta.icon} size={17} /></span>
               <span className="text-[14px] font-semibold text-on-surface">{meta.label}</span>

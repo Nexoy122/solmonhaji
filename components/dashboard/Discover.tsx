@@ -108,14 +108,14 @@ function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void
   if (!mounted) return null;
 
   return createPortal(
-    <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onClick={onClose}>
+    <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-white/75 p-4 backdrop-blur-sm" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative flex max-h-[90vh] w-full max-w-[760px] flex-col overflow-hidden border border-white/10 bg-[#0F0F14] transition-all duration-200 ${show ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
+        className={`relative flex max-h-[90vh] w-full max-w-[760px] flex-col overflow-hidden border border-black bg-white transition-all duration-200 ${show ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
       >
         {/* Header */}
-        <div className="flex items-start gap-3 border-b border-white/[0.07] p-5">
-          <div className="size-14 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.05]">
+        <div className="flex items-start gap-3 border-b border-black p-5">
+          <div className="size-14 shrink-0 overflow-hidden rounded-full border border-black bg-white">
             {c.thumbnailUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={c.thumbnailUrl} alt="" className="size-full object-cover" />
@@ -124,16 +124,16 @@ function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[18px] font-bold text-white">{c.title}</p>
+            <p className="truncate text-[18px] font-bold text-black">{c.title}</p>
             {c.handle && <p className="truncate text-[13px] text-on-surface-variant">{c.handle}</p>}
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-on-surface-variant">
-              <span className="flex items-center gap-1"><Icon d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} /><span className="font-medium text-white">{fmt(c.subscriberCount)}</span> subs</span>
-              <span className="flex items-center gap-1"><Icon d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" size={13} /><span className="font-medium text-white">{fmt(c.avgShortsViews)}</span> avg/short</span>
-              <span className="flex items-center gap-1"><Icon d="M23 7l-7 5 7 5V7zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" size={13} /><span className="font-medium text-white">{c.shortsCount}</span> shorts</span>
-              {c.country && <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[11px]">{c.country}</span>}
+              <span className="flex items-center gap-1"><Icon d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} /><span className="font-medium text-black">{fmt(c.subscriberCount)}</span> subs</span>
+              <span className="flex items-center gap-1"><Icon d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" size={13} /><span className="font-medium text-black">{fmt(c.avgShortsViews)}</span> avg/short</span>
+              <span className="flex items-center gap-1"><Icon d="M23 7l-7 5 7 5V7zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" size={13} /><span className="font-medium text-black">{c.shortsCount}</span> shorts</span>
+              {c.country && <span className="rounded bg-white px-1.5 py-0.5 text-[11px]">{c.country}</span>}
             </div>
           </div>
-          <button onClick={onClose} className="flex size-8 shrink-0 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-white/[0.06] hover:text-white" aria-label="Close">
+          <button onClick={onClose} className="flex size-8 shrink-0 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-white hover:text-black" aria-label="Close">
             <Icon d="M18 6 6 18M6 6l12 12" size={16} />
           </button>
         </div>
@@ -144,15 +144,15 @@ function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void
           <div className="mb-4 flex flex-wrap items-center gap-1.5">
             {c.faceless && <span className="rounded-md bg-[#10b981]/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#34d399]">Faceless</span>}
             {c.nicheLabel && <NicheBadge niche={c.aiNiche ?? c.nicheLabel} label={c.nicheLabel} />}
-            {c.format && <span className="rounded-md border border-white/12 bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{FORMAT_LABELS[c.format] ?? c.format}</span>}
-            {lang && <span className="rounded-md border border-white/12 bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{lang}</span>}
+            {c.format && <span className="rounded-md border border-black bg-white px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{FORMAT_LABELS[c.format] ?? c.format}</span>}
+            {lang && <span className="rounded-md border border-black bg-white px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">{lang}</span>}
           </div>
 
           {/* Topics (hashtags) */}
           {topics.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-1.5">
               {topics.map((t) => (
-                <span key={t} className="rounded-full bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-on-surface-variant">#{t}</span>
+                <span key={t} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-on-surface-variant">#{t}</span>
               ))}
             </div>
           )}
@@ -172,14 +172,14 @@ function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void
           {/* Recent Shorts */}
           {shorts.length > 0 ? (
             <>
-              <p className="mb-2.5 text-[13px] font-semibold text-white">Recent Shorts</p>
+              <p className="mb-2.5 text-[13px] font-semibold text-black">Recent Shorts</p>
               <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
                 {shorts.map((v) => (
                   <a key={v.id} href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noreferrer" className="min-w-0">
-                    <div className="relative overflow-hidden border border-white/10">
+                    <div className="relative overflow-hidden border border-black">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={thumb(v.id)} alt="" loading="lazy" className="aspect-[9/16] w-full object-cover" />
-                      <span className="absolute bottom-1 left-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums text-white">{fmt(v.views)}</span>
+                      <span className="absolute bottom-1 left-1 rounded bg-white/70 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums text-black">{fmt(v.views)}</span>
                     </div>
                     {v.title && <p className="mt-1 line-clamp-2 text-[10px] leading-tight text-on-surface-variant">{v.title}</p>}
                   </a>
@@ -192,7 +192,7 @@ function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void
         </div>
 
         {/* Footer */}
-        <div className="border-t border-white/[0.07] p-4">
+        <div className="border-t border-black p-4">
           <a href={c.url} target="_blank" rel="noreferrer" className="flex h-10 w-full items-center justify-center gap-1.5 bg-primary text-[13.5px] font-semibold text-on-primary transition-colors hover:brightness-110">
             <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={15} /> Open channel on YouTube
           </a>
@@ -231,7 +231,7 @@ function DiscoverLoader() {
           <span></span><span></span><span></span><span></span>
         </div>
       </div>
-      <p className="mt-3 text-[15px] font-semibold text-white">Finding the best channels</p>
+      <p className="mt-3 text-[15px] font-semibold text-black">Finding the best channels</p>
       <p key={step} className="mt-1.5 text-[13px] text-on-surface-variant [animation:dash-fade-up_0.4s_ease-out]">{LOADER_STEPS[step]}</p>
     </div>
   );
@@ -241,15 +241,15 @@ function DiscoverLoader() {
 // capacity/quota issue instead of a raw error.
 function ToolUnavailable({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-none border border-white/[0.07] bg-white/[0.02] py-20 text-center">
-      <div className="mb-5 flex size-16 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] text-on-surface-variant">
+    <div className="flex flex-col items-center justify-center rounded-none border border-black bg-white py-20 text-center">
+      <div className="mb-5 flex size-16 items-center justify-center rounded-full border border-black bg-white text-on-surface-variant">
         <Icon d="M12 15a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 11V8a7 7 0 0 0-14 0v3M5 11h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z" size={26} />
       </div>
-      <p className="text-[16px] font-semibold text-white">Currently not available</p>
+      <p className="text-[16px] font-semibold text-black">Currently not available</p>
       <p className="mt-1.5 max-w-[420px] text-[13.5px] leading-relaxed text-on-surface-variant">
         This tool is temporarily unavailable due to high demand. It&apos;ll be back shortly — please try again in a little while.
       </p>
-      <button onClick={onRetry} className="mt-5 inline-flex items-center gap-1.5 rounded-none border border-white/12 bg-white/[0.03] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-white/[0.06]">
+      <button onClick={onRetry} className="mt-5 inline-flex items-center gap-1.5 rounded-none border border-black bg-white px-4 py-2 text-[13px] font-semibold text-black transition-colors hover:bg-white">
         <Icon d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" size={14} /> Try again
       </button>
     </div>
@@ -264,7 +264,7 @@ function ChannelCard({ c }: { c: DiscoveryChannel }) {
     try { await navigator.clipboard.writeText(c.url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* ignore */ }
   };
   return (
-    <div className="group/card flex flex-col overflow-hidden border border-white/[0.07] bg-white/[0.02] transition-colors duration-200 hover:border-white/25">
+    <div className="group/card flex flex-col overflow-hidden border border-black bg-white transition-colors duration-200 hover:border-black">
       {showModal && <ChannelModal c={c} onClose={() => setShowModal(false)} />}
       {/* Header: avatar + name (click → detail modal) + niche badge */}
       <div className="flex items-start gap-3 px-4 pt-4">
@@ -309,15 +309,15 @@ function ChannelCard({ c }: { c: DiscoveryChannel }) {
       <div className="mt-3 grid grid-cols-3 gap-2 px-4">
         {shorts.length > 0 ? shorts.map((v) => (
           <a key={v.id} href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noreferrer" className="min-w-0">
-            <div className="relative overflow-hidden rounded-none border border-white/10">
+            <div className="relative overflow-hidden rounded-none border border-black">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={thumb(v.id)} alt="" loading="lazy" className="aspect-[9/16] w-full object-cover" />
-              <span className="absolute bottom-1 left-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums text-white">{fmt(v.views)}</span>
+              <span className="absolute bottom-1 left-1 rounded bg-white/70 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums text-black">{fmt(v.views)}</span>
             </div>
             {v.title && <p className="mt-1 line-clamp-1 text-[10px] leading-tight text-on-surface-variant">{v.title}</p>}
           </a>
         )) : [0, 1, 2].map((i) => (
-          <div key={i} className="flex aspect-[9/16] items-center justify-center rounded-none border border-white/10 bg-white/[0.03] text-on-surface-variant/40">
+          <div key={i} className="flex aspect-[9/16] items-center justify-center rounded-none border border-black bg-white text-on-surface-variant/40">
             <Icon d="M23 7l-7 5 7 5V7zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" size={18} />
           </div>
         ))}
@@ -325,10 +325,10 @@ function ChannelCard({ c }: { c: DiscoveryChannel }) {
 
       {/* Actions */}
       <div className="mt-auto flex gap-2 px-4 pb-4 pt-3">
-        <a href={c.url} target="_blank" rel="noreferrer" className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-none border border-white/12 text-[11.5px] font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface">
+        <a href={c.url} target="_blank" rel="noreferrer" className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-none border border-black text-[11.5px] font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface">
           <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={12} /> Open channel
         </a>
-        <button onClick={copy} className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-none border border-white/12 text-[11.5px] font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface">
+        <button onClick={copy} className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-none border border-black text-[11.5px] font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface">
           <Icon d={copied ? "M20 6 9 17l-5-5" : "M9 9h10v10H9zM5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"} size={12} />
           {copied ? "Copied" : "Copy link"}
         </button>
@@ -457,7 +457,7 @@ export function Discover() {
         {/* Search — soft white border glow (same as the AI Analysis box) */}
         <BorderGlow borderRadius={10} glowRadius={20} glowColor="189 100 50" glowIntensity={0.6} className="w-full max-w-[440px]">
           <div className="relative flex items-center">
-            <span className="pointer-events-none absolute left-3.5 text-white/40">
+            <span className="pointer-events-none absolute left-3.5 text-black/40">
               <Icon d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3" size={16} />
             </span>
             <input
@@ -465,10 +465,10 @@ export function Discover() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by vibe — funny football, ranking, minecraft…"
-              className="h-11 w-full bg-transparent pl-11 pr-10 text-[14px] text-white outline-none placeholder:text-white/35"
+              className="h-11 w-full bg-transparent pl-11 pr-10 text-[14px] text-black outline-none placeholder:text-black/40"
             />
             {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 text-white/40 transition-colors hover:text-white" aria-label="Clear search">
+              <button onClick={() => setSearch("")} className="absolute right-3 text-black/40 transition-colors hover:text-black" aria-label="Clear search">
                 <Icon d="M18 6 6 18M6 6l12 12" size={16} />
               </button>
             )}
@@ -477,12 +477,12 @@ export function Discover() {
 
         {/* Sort */}
         <div className="relative" ref={sortRef}>
-          <button onClick={() => setSortMenu((o) => !o)} className="inline-flex items-center gap-2 rounded-none border border-white/12 bg-white/[0.03] px-4 py-2 text-[13.5px] font-medium text-on-surface transition-colors hover:bg-surface-container-high">
+          <button onClick={() => setSortMenu((o) => !o)} className="inline-flex items-center gap-2 rounded-none border border-black bg-white px-4 py-2 text-[13.5px] font-medium text-on-surface transition-colors hover:bg-surface-container-high">
             <span className="text-on-surface-variant">Sort:</span> {sortLabel}
             <Icon d="m6 9 6 6 6-6" size={14} />
           </button>
           {sortMenu && (
-            <div className="absolute left-0 z-30 mt-2 w-[170px] overflow-hidden rounded-none border border-white/12 bg-[#0c0c0f] py-1">
+            <div className="absolute left-0 z-30 mt-2 w-[170px] overflow-hidden rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 py-1">
               {SORTS.map(([val, lbl]) => (
                 <button key={val} onClick={() => { setSort(val); setSortTouched(true); setSortMenu(false); }} className={`flex w-full items-center px-4 py-2 text-left text-[13.5px] transition-colors hover:bg-surface-container-high ${effectiveSort === val ? "font-semibold text-primary" : "text-on-surface"}`}>{lbl}</button>
               ))}
@@ -497,7 +497,7 @@ export function Discover() {
           className={`inline-flex items-center gap-2 rounded-none border px-4 py-2 text-[13.5px] font-medium transition-colors ${
             showFilters || activeFilterCount > 0
               ? "border-primary/50 bg-primary/10 text-primary"
-              : "border-white/12 bg-white/[0.03] text-on-surface hover:bg-surface-container-high"
+              : "border-black bg-white text-on-surface hover:bg-surface-container-high"
           }`}
         >
           {/* Filter (funnel) icon */}
@@ -511,7 +511,7 @@ export function Discover() {
 
         {/* Clear (only when a filter is active) */}
         {activeFilterCount > 0 && (
-          <button onClick={clearFilters} className="inline-flex items-center gap-1.5 rounded-none border border-white/12 bg-white/[0.03] px-3.5 py-2 text-[13.5px] font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface">
+          <button onClick={clearFilters} className="inline-flex items-center gap-1.5 rounded-none border border-black bg-white px-3.5 py-2 text-[13.5px] font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface">
             <Icon d="M18 6 6 18M6 6l12 12" size={13} /> Clear
           </button>
         )}
@@ -519,11 +519,11 @@ export function Discover() {
 
       {/* Advanced filter MODAL (only when unlocked) */}
       {showFilters && filtersUnlocked && mounted && createPortal(
-        <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setShowFilters(false)}>
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[520px] overflow-hidden rounded-xl border border-white/15 bg-[#0a0a0c] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
+        <div className="dashboard-dark fixed inset-0 z-[100] flex items-center justify-center bg-white/70 p-4 backdrop-blur-sm" onClick={() => setShowFilters(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[520px] overflow-hidden rounded-xl border border-black bg-[#ffffff] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-black px-5 py-4">
               <p className="text-[15px] font-bold text-on-surface">Advanced Filters</p>
-              <button onClick={() => setShowFilters(false)} className="flex size-8 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-white/[0.06] hover:text-white"><Icon d="M18 6 6 18M6 6l12 12" size={16} /></button>
+              <button onClick={() => setShowFilters(false)} className="flex size-8 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-white hover:text-black"><Icon d="M18 6 6 18M6 6l12 12" size={16} /></button>
             </div>
             <div className="space-y-5 p-5">
               {/* Niche */}
@@ -531,7 +531,7 @@ export function Discover() {
                 <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Niche</label>
                 <div className="flex flex-wrap gap-1.5">
                   {[["all", "All"], ...NICHE_OPTS].map(([val, lbl]) => (
-                    <button key={val} onClick={() => setFNiche(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fNiche === val ? "border-[#01D4FF] bg-[#01D4FF]/15 text-[#01D4FF]" : "border-white/12 text-on-surface-variant hover:bg-white/[0.05]"}`}>{lbl}</button>
+                    <button key={val} onClick={() => setFNiche(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fNiche === val ? "border-[#D02020] bg-[#D02020]/15 text-[#D02020]" : "border-black text-on-surface-variant hover:bg-white"}`}>{lbl}</button>
                   ))}
                 </div>
               </div>
@@ -540,7 +540,7 @@ export function Discover() {
                 <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Min subscribers</label>
                 <div className="flex flex-wrap gap-1.5">
                   {SUB_OPTS.map(([val, lbl]) => (
-                    <button key={val} onClick={() => setFMinSubs(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fMinSubs === val ? "border-[#01D4FF] bg-[#01D4FF]/15 text-[#01D4FF]" : "border-white/12 text-on-surface-variant hover:bg-white/[0.05]"}`}>{lbl}</button>
+                    <button key={val} onClick={() => setFMinSubs(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fMinSubs === val ? "border-[#D02020] bg-[#D02020]/15 text-[#D02020]" : "border-black text-on-surface-variant hover:bg-white"}`}>{lbl}</button>
                   ))}
                 </div>
               </div>
@@ -549,23 +549,23 @@ export function Discover() {
                 <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Language</label>
                 <div className="flex flex-wrap gap-1.5">
                   {[["", "Any"], ...LANG_OPTS].map(([val, lbl]) => (
-                    <button key={val || "any"} onClick={() => setFLang(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fLang === val ? "border-[#01D4FF] bg-[#01D4FF]/15 text-[#01D4FF]" : "border-white/12 text-on-surface-variant hover:bg-white/[0.05]"}`}>{lbl}</button>
+                    <button key={val || "any"} onClick={() => setFLang(val)} className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${fLang === val ? "border-[#D02020] bg-[#D02020]/15 text-[#D02020]" : "border-black text-on-surface-variant hover:bg-white"}`}>{lbl}</button>
                   ))}
                 </div>
               </div>
               {/* Faceless */}
               <div>
                 <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant">Style</label>
-                <button onClick={() => setFFaceless((v) => !v)} className={`inline-flex items-center gap-2 rounded-md border px-3.5 py-2 text-[12.5px] font-medium transition-colors ${fFaceless ? "border-[#10b981]/60 bg-[#10b981]/15 text-[#34d399]" : "border-white/12 text-on-surface-variant hover:bg-white/[0.05]"}`}>
-                  <span className={`flex size-4 items-center justify-center rounded border ${fFaceless ? "border-[#10b981] bg-[#10b981] text-black" : "border-white/30"}`}>
+                <button onClick={() => setFFaceless((v) => !v)} className={`inline-flex items-center gap-2 rounded-md border px-3.5 py-2 text-[12.5px] font-medium transition-colors ${fFaceless ? "border-[#10b981]/60 bg-[#10b981]/15 text-[#34d399]" : "border-black text-on-surface-variant hover:bg-white"}`}>
+                  <span className={`flex size-4 items-center justify-center rounded border ${fFaceless ? "border-[#10b981] bg-[#10b981] text-black" : "border-black"}`}>
                     {fFaceless && <Icon d="M20 6 9 17l-5-5" size={11} />}
                   </span>
                   Faceless only
                 </button>
               </div>
             </div>
-            <div className="flex items-center justify-between gap-3 border-t border-white/[0.08] px-5 py-4">
-              <button onClick={() => { clearFilters(); }} className="text-[13px] font-medium text-on-surface-variant transition-colors hover:text-white">Reset</button>
+            <div className="flex items-center justify-between gap-3 border-t border-black px-5 py-4">
+              <button onClick={() => { clearFilters(); }} className="text-[13px] font-medium text-on-surface-variant transition-colors hover:text-black">Reset</button>
               <button onClick={() => setShowFilters(false)} className="btn-donate px-6 text-[13.5px]">Apply</button>
             </div>
           </div>
@@ -595,14 +595,14 @@ export function Discover() {
       ) : loading ? (
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-none border border-white/8 bg-white/[0.02] p-4">
+            <div key={i} className="rounded-none border border-black bg-white p-4">
               <div className="flex items-center gap-3"><div className="size-11 animate-pulse rounded-full bg-surface-container-high" /><div className="flex-1 space-y-2"><div className="h-3 w-2/3 animate-pulse rounded bg-surface-container-high" /><div className="h-2.5 w-1/3 animate-pulse rounded bg-surface-container-high" /></div></div>
-              <div className="mt-3 grid grid-cols-3 gap-2">{[0, 1, 2].map((j) => <div key={j} className="aspect-[9/16] animate-pulse rounded-none bg-white/[0.05]" />)}</div>
+              <div className="mt-3 grid grid-cols-3 gap-2">{[0, 1, 2].map((j) => <div key={j} className="aspect-[9/16] animate-pulse rounded-none bg-white" />)}</div>
             </div>
           ))}
         </div>
       ) : channels.length === 0 ? (
-        <div className="rounded-none border border-dashed border-white/12 py-16 text-center">
+        <div className="rounded-none border border-dashed border-black py-16 text-center">
           <p className="text-[15px] font-semibold text-on-surface">{query ? "No channels found" : "No channels yet"}</p>
           <p className="mt-1 text-[14px] text-on-surface-variant">
             {query ? "Try a different search or clear your filters." : meta?.lastCrawl ? "Turn off a filter to see more." : "The discovery crawler hasn't run yet. Channels will appear here after the first crawl."}
@@ -635,8 +635,8 @@ function FiltersUpsell({ onClose }: { onClose: () => void }) {
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-[420px] rounded-none border border-white/12 bg-[#08080a] p-6 text-center" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/60 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-[420px] rounded-none border border-black bg-white p-6 text-center" onClick={(e) => e.stopPropagation()}>
         <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary">
           <Icon d="M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z" size={22} />
         </div>
@@ -644,7 +644,7 @@ function FiltersUpsell({ onClose }: { onClose: () => void }) {
         <p className="mt-2 text-[13.5px] leading-relaxed text-on-surface-variant">
           Filter the entire discovery index by niche, subscriber size, language, and faceless style — pinpoint exactly the channels you want to model.
         </p>
-        <button onClick={onClose} className="mt-5 w-full rounded-none border border-white/12 bg-white/[0.03] py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-surface-container-high">
+        <button onClick={onClose} className="mt-5 w-full rounded-none border border-black bg-white py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-surface-container-high">
           Got it
         </button>
       </div>

@@ -8,11 +8,12 @@ import path from "path";
 // back to a thin fallback font.
 export const runtime = "nodejs";
 
+// Bauhaus score colors — green / blue / yellow / red.
 function scoreHex(s: number) {
-  if (s >= 75) return "#34d399";
-  if (s >= 60) return "#01D4FF";
-  if (s >= 45) return "#e0b341";
-  return "#f87171";
+  if (s >= 75) return "#118A3E";
+  if (s >= 60) return "#1040C0";
+  if (s >= 45) return "#F0C020";
+  return "#D02020";
 }
 function scoreLabel(s: number) {
   if (s >= 90) return "Exceptional";
@@ -77,55 +78,59 @@ export async function GET(req: NextRequest) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          padding: "80px 56px",
-          background: "#0a0a0c",
+          padding: "64px 56px",
+          background: "#F0F0F0",
+          backgroundImage: "radial-gradient(#12121233 2px, transparent 2px)",
+          backgroundSize: "26px 26px",
           position: "relative",
           overflow: "hidden",
           fontFamily: "Anton, sans-serif",
+          border: "12px solid #121212",
         }}
       >
-        {/* gradient glow — brand cyan (left) → violet (right), pooled at the bottom */}
-        <div style={{ position: "absolute", bottom: -260, left: -180, width: 720, height: 720, background: "radial-gradient(circle, rgba(1,212,255,0.6), transparent 66%)", display: "flex" }} />
-        <div style={{ position: "absolute", bottom: -260, right: -180, width: 720, height: 720, background: "radial-gradient(circle, rgba(139,92,246,0.65), transparent 66%)", display: "flex" }} />
-        <div style={{ position: "absolute", top: -160, left: "50%", marginLeft: -260, width: 520, height: 420, background: "radial-gradient(circle, rgba(255,255,255,0.05), transparent 70%)", display: "flex" }} />
+        {/* Bauhaus corner shapes */}
+        <div style={{ position: "absolute", top: 44, left: 44, width: 72, height: 72, borderRadius: 999, border: "6px solid #121212", background: "#F0C020", display: "flex" }} />
+        <div style={{ position: "absolute", top: 44, right: 44, width: 72, height: 72, border: "6px solid #121212", background: "#1040C0", transform: "rotate(45deg)", display: "flex" }} />
 
         {/* header */}
-        <div style={{ display: "flex", fontSize: 30, fontWeight: 900, letterSpacing: 6, color: "#8b8f98" }}>TRUSTSCORE</div>
-        <div style={{ display: "flex", fontSize: 60, fontWeight: 900, color: "#ffffff", marginTop: 16 }}>{name}</div>
+        <div style={{ display: "flex", fontSize: 32, letterSpacing: 8, color: "#121212", marginTop: 12 }}>TRUSTSCORE</div>
+        <div style={{ display: "flex", fontSize: 68, color: "#121212", marginTop: 8, textTransform: "uppercase" }}>{name}</div>
 
-        {/* ring */}
-        <div style={{ display: "flex", position: "relative", marginTop: 88, width: size, height: size }}>
-          <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-            <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth={stroke} />
-            <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={`${dash} ${circ}`} />
-          </svg>
-          <div style={{ position: "absolute", top: 0, left: 0, width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ display: "flex", fontSize: 152, fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{score}</div>
+        {/* ring in a hard-bordered white block */}
+        <div style={{ display: "flex", position: "relative", marginTop: 56, width: size + 64, height: size + 64, alignItems: "center", justifyContent: "center", background: "#ffffff", border: "6px solid #121212", boxShadow: "12px 12px 0 0 #121212" }}>
+          <div style={{ display: "flex", position: "relative", width: size, height: size }}>
+            <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+              <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E0E0E0" strokeWidth={stroke} />
+              <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeDasharray={`${dash} ${circ}`} />
+            </svg>
+            <div style={{ position: "absolute", top: 0, left: 0, width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ display: "flex", fontSize: 152, color: "#121212", lineHeight: 1 }}>{score}</div>
+            </div>
           </div>
         </div>
 
-        {/* label pill — our touch, Satura doesn't have this */}
+        {/* label — solid block, thick border, hard shadow */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            marginTop: 44,
-            padding: "14px 34px",
-            borderRadius: 999,
-            fontSize: 34,
-            fontWeight: 900,
-            color,
-            background: `${color}22`,
-            border: `2px solid ${color}55`,
+            marginTop: 48,
+            padding: "14px 40px",
+            fontSize: 40,
+            color: "#ffffff",
+            background: color,
+            border: "5px solid #121212",
+            boxShadow: "8px 8px 0 0 #121212",
+            textTransform: "uppercase",
           }}
         >
           {label}
         </div>
 
         {/* footer */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: "auto", fontSize: 30, fontWeight: 900, color: "#ffffff" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: "auto", fontSize: 34, color: "#121212", textTransform: "uppercase" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoSrc} width={44} height={44} style={{ borderRadius: 11 }} alt="" />
+          <img src={logoSrc} width={44} height={44} style={{ border: "3px solid #121212" }} alt="" />
           NicheSpy
         </div>
       </div>

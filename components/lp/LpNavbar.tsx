@@ -9,8 +9,9 @@ import { LpButton } from "./LpButton";
 // Sign In + Sign Up. Distinct from the light waitlist TopBar. Goes solid on scroll.
 const LINKS = [
   { label: "Tools", href: "#tools" },
-  { label: "How it works", href: "#how" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Reviews", href: "#reviews" },
+  { label: "Partners", href: "#partners" },
+  { label: "Pricing", href: "#pricing" },
 ];
 
 export function LpNavbar() {
@@ -26,18 +27,20 @@ export function LpNavbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-[110] transition-colors duration-300 ${
-        scrolled ? "border-b border-white/[0.07] bg-[#0f1420]/90 backdrop-blur-xl" : "border-b border-transparent"
+      className={`fixed inset-x-0 top-0 z-[110] border-b bg-[#0A0D15] transition-colors duration-300 ${
+        scrolled ? "border-white/[0.08]" : "border-white/[0.04]"
       }`}
     >
-      <nav className="mx-auto flex h-16 max-w-[1240px] items-center justify-between px-5 md:px-8">
-        <Link href="/lp" className="flex items-center gap-2.5 font-heading text-[19px] font-bold text-white">
+      <nav className="relative flex h-16 items-center justify-between px-5 md:px-8">
+        {/* LOGO — left */}
+        <Link href="/" className="flex items-center gap-2.5 font-heading text-[19px] font-bold text-white">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/favicon.webp" alt="" width={30} height={30} className="rounded-lg" />
           NicheSpy
         </Link>
 
-        <div className="hidden items-center gap-8 lg:flex">
+        {/* ITEMS — centered */}
+        <div className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-8 lg:flex">
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} className="text-[15px] font-medium text-white/60 transition-colors hover:text-white">
               {l.label}

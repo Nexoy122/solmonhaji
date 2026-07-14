@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequest, adminDb } from "@/lib/firebaseAdmin";
 import { fetchYouTubeAnalytics, refreshAccessToken } from "@/lib/youtube/analytics";
+import { chargeCredits } from "@/lib/requireCredits";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -69,6 +70,10 @@ export async function POST(req: NextRequest) {
     console.warn("[audit/connected] analytics fetch failed:", (err as Error).message);
     // Continue without analytics — still runs the video-ML audit.
   }
+
+  // Charge before starting the (expensive) audit job.
+  const charge = await chargeCredits(uid, "channelAudit");
+  if (!charge.ok) return charge.response;
 
   try {
     const res = await fetch(`${WORKER_URL}/audit`, {
