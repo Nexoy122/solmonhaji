@@ -671,3 +671,16 @@ html:has(.dashboard-dark) body::-webkit-scrollbar-thumb:hover { background: #33d
   .loader-wrapper .gloader::after, .loader-letter { animation: none; }
   .loader-letter { opacity: 0.9; }
 }
+
+/* ============================================================================
+   LANDING PAGE (/) — vidIQ-style, scoped to .lp-root so the dashboard/auth
+   pages keep their own fonts. (Merged from the tatti landing.)
+   ============================================================================ */
+.lp-root {
+  font-family: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.lp-root .font-heading,
+.lp-root h1, .lp-root h2, .lp-root h3, .lp-root h4 {
+  font-family: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: -0.02em;
+}
