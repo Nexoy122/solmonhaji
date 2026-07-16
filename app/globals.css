@@ -939,3 +939,15 @@ html:has(.lp-root) { scrollbar-color: var(--sb-fg) var(--sb-bg); }
 }
 .dashboard-dark .border-glow-card > .edge-light.dashboard-dark .border-glow-card::before.dashboard-dark .border-glow-card::after { display: none !important; }
 .dashboard-dark .border-glow-inner { background: transparent !important; }
+
+/* Cookie consent popup: pops in on entry rather than sliding up from the edge. */
+@keyframes cc-pop-in {
+  from { opacity: 0; transform: scale(0.9) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes cc-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.cc-pop  { animation: cc-pop-in 0.32s cubic-bezier(0.22, 1.4, 0.36, 1) both; }
+.cc-fade { animation: cc-fade-in 0.25s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .cc-pop, .cc-fade { animation: none; }
+}

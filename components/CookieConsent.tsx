@@ -66,37 +66,57 @@ export function CookieConsent() {
         </>
       )}
 
+      {/* Centered popup on entry, styled to match the Bauhaus UI. Deliberately
+          not dismissible by clicking away: a choice must be an actual choice. */}
       {showBanner && (
-        <div className="fixed inset-x-0 bottom-0 z-[200] border-t border-outline-variant bg-surface-container-lowest shadow-[0_-8px_30px_rgba(23,28,31,0.10)]">
-          <div className="mx-auto flex max-w-[1180px] flex-col items-center gap-4 px-5 py-4 md:flex-row md:px-8">
-            <div className="flex items-start gap-3 md:items-center">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-container text-on-primary-container">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <div className="lp-root fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] cc-fade" />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cc-title"
+            className="cc-pop relative w-full max-w-[440px] border-4 border-black bg-white shadow-[10px_10px_0px_0px_#121212]"
+          >
+            {/* header block */}
+            <div className="flex items-center gap-3 border-b-4 border-black bg-[#F0C020] px-5 py-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-black bg-white text-black shadow-[2px_2px_0px_0px_#121212]">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5Z" /><circle cx="9" cy="11" r="1" /><circle cx="14" cy="15" r="1" /><circle cx="15" cy="9" r="1" />
                 </svg>
-              </div>
-              <div>
-                <p className="text-[15px] font-semibold text-on-surface">We use cookies</p>
-                <p className="mt-0.5 text-[14px] leading-relaxed text-on-surface-variant">
-                  We use analytics cookies to understand where our visitors come from and improve
-                  NicheSpy. You can decline without affecting the site.
-                </p>
-              </div>
+              </span>
+              <h2 id="cc-title" className="text-[19px] font-black uppercase tracking-tight text-black">
+                We use cookies
+              </h2>
             </div>
 
-            <div className="flex w-full shrink-0 gap-2 md:ml-auto md:w-auto">
-              <button
-                onClick={() => choose("denied")}
-                className="m3-btn-tonal flex-1 !h-11 !px-6 !text-[14px] md:flex-none"
-              >
-                Decline
-              </button>
-              <button
-                onClick={() => choose("granted")}
-                className="m3-btn-filled flex-1 !h-11 !px-8 !text-[14px] md:flex-none"
-              >
-                Accept
-              </button>
+            <div className="px-5 py-5">
+              <p className="text-[14.5px] font-medium leading-relaxed text-black/75">
+                We use analytics cookies to understand where our visitors come from and
+                improve NicheSpy. Decline and nothing changes, the whole site still works.
+              </p>
+
+              <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
+                <button
+                  onClick={() => choose("granted")}
+                  className="flex flex-1 items-center justify-center border-2 border-black bg-[#FF0033] px-5 py-3 text-[13.5px] font-black uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() => choose("denied")}
+                  className="flex flex-1 items-center justify-center border-2 border-black bg-white px-5 py-3 text-[13.5px] font-black uppercase tracking-wider text-black shadow-[4px_4px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                >
+                  Decline
+                </button>
+              </div>
+
+              <p className="mt-4 text-center text-[12px] font-medium text-black/45">
+                Read our{" "}
+                <a href="/privacy" className="font-bold text-black underline underline-offset-2">
+                  Privacy Policy
+                </a>
+                .
+              </p>
             </div>
           </div>
         </div>

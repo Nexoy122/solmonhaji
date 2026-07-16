@@ -16,8 +16,15 @@ export const AUTH_DARK = {
   accent: "#D02020",
 };
 
-// Split-screen auth: bold blue color-block panel (geometric composition) + a
-// hard-bordered white form card on an off-white dot-grid canvas.
+// Real Shorts footage for the left panel, mirroring the landing hero's deck.
+const AUTH_DECK = [
+  { video: "/niches/edits.mp4", poster: "/niches/edits.jpg", outlier: "47×", views: "12M", rotate: -5 },
+  { video: "/niches/memes.mp4", poster: "/niches/memes.jpg", outlier: "12×", views: "4.2M", rotate: 3 },
+  { video: "/niches/gaming.mp4", poster: "/niches/gaming.jpg", outlier: "8×", views: "890K", rotate: -2 },
+];
+
+// Split-screen auth: an outlier Shorts feed on the left, a hard-bordered white
+// form card on an off-white dot-grid canvas on the right.
 export function AuthShell({
   title,
   subtitle,
@@ -31,23 +38,56 @@ export function AuthShell({
 }) {
   return (
     <main className="lp-root relative flex min-h-screen bg-[#F0F0F0] text-[#121212]">
-      {/* Left: blue color-block panel with geometric composition */}
-      <aside className="relative hidden w-[46%] overflow-hidden border-r-4 border-black bg-[#1040C0] bh-dots-light lg:flex lg:flex-col lg:justify-between lg:p-10">
-        <Link href="/" className="flex items-center gap-2.5">
+      {/* Left: an outlier Shorts feed, the same motif as the landing hero, so the
+          page reads as a YouTube tool rather than an abstract design exercise. */}
+      <aside className="relative hidden w-[46%] overflow-hidden border-r-4 border-black bg-[#0F0F0F] bh-dots-light lg:flex lg:flex-col lg:justify-between lg:p-10">
+        <Link href="/" className="relative z-10 flex items-center gap-2.5">
           <BhLogoMark size={30} />
           <span className="text-[22px] font-black uppercase tracking-tighter text-white">NicheSpy</span>
         </Link>
 
-        {/* overlapping shapes */}
-        <div className="relative flex flex-1 items-center justify-center">
-          <span className="absolute left-6 top-8 h-40 w-40 rounded-full border-4 border-black bg-[#F0C020]" />
-          <span className="absolute bottom-8 right-8 h-36 w-36 rotate-45 border-4 border-black bg-[#D02020]" />
-          <span className="relative flex h-48 w-48 items-center justify-center border-4 border-black bg-white shadow-[8px_8px_0px_0px_#121212]">
-            <span className="h-24 w-24 bh-triangle bg-[#1040C0]" />
+        {/* "found outliers" chip, sells that this is a live product */}
+        <div className="relative z-10 mt-8 inline-flex w-fit items-center gap-2 border-2 border-black bg-[#F0C020] px-3 py-1.5 shadow-[3px_3px_0_0_#000]">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-[#FF0033]" />
+          <span className="text-[11.5px] font-black uppercase tracking-wide text-black">
+            3 outliers found this week
           </span>
         </div>
 
-        <p className="max-w-xs text-[16px] font-bold uppercase leading-tight tracking-tight text-white">
+        {/* fanned deck of real Shorts */}
+        <div className="relative z-10 flex flex-1 items-center justify-center gap-3">
+          {AUTH_DECK.map((s, i) => (
+            <div key={s.video} className={i === 1 ? "w-[34%] -translate-y-5" : "w-[30%]"}>
+              <div
+                className="relative border-2 border-black bg-[#161616] shadow-[6px_6px_0px_0px_#000]"
+                style={{ transform: `rotate(${s.rotate}deg)` }}
+              >
+                <div className="relative aspect-[9/16] overflow-hidden border-b-2 border-black">
+                  <video
+                    src={s.video}
+                    poster={s.poster}
+                    muted
+                    loop
+                    autoPlay
+                    playsInline
+                    preload="none"
+                    aria-hidden
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                  <span className="absolute inset-0 bg-black/20" />
+                  <span className="absolute left-1.5 top-1.5 border-2 border-black bg-[#F0C020] px-1.5 py-0.5 text-[9.5px] font-black uppercase leading-none tracking-wide text-black">
+                    {s.outlier}
+                  </span>
+                  <span className="absolute bottom-1.5 left-1.5 bg-black/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white">
+                    ▶ {s.views}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="relative z-10 max-w-xs text-[16px] font-bold uppercase leading-tight tracking-tight text-white">
           Spy on what actually works, grow your Shorts faster.
         </p>
       </aside>
