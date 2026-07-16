@@ -15,10 +15,59 @@ export const config = {
   matcher: ["/((?!_next/static|_next/image|api|favicon|logo|niches|tools|.*\\..*).*)"],
 };
 
+// Lets you (and anyone you share the link with) browse the real site while the
+// public still sees the countdown.
+//
+//   visit  /?preview=<PREVIEW_SECRET>  once -> sets a cookie -> browse normally
+//   visit  /?preview=off               to drop it again
+//
+// Why a secret and not the admin role: middleware runs at the edge and cannot
+// verify a Firebase ID token (the session lives in localStorage, not a cookie).
+// This gate only hides the marketing page, so a shared secret is the right
+// weight here. It grants NO product access: /dashboard and /admin are still
+// protected by real auth on every request.
+const PREVIEW_COOKIE = "ns_preview";
+
+function previewSecret(): string {
+  return (process.env.PREVIEW_SECRET ?? "").trim();
+}
+
 export function middleware(req: NextRequest) {
   if (hasLaunched()) return NextResponse.next();
 
   const { pathname } = req.nextUrl;
+  const secret = previewSecret();
+  const param = req.nextUrl.searchParams.get("preview");
+
+  // Turn preview off again.
+  if (param === "off") {
+    const url = req.nextUrl.clone();
+    url.searchParams.delete("preview");
+    const res = NextResponse.redirect(url);
+    res.cookies.delete(PREVIEW_COOKIE);
+    return res;
+  }
+
+  // Claim preview access. Only ever true when PREVIEW_SECRET is actually set,
+  // so an unset/empty env var can't hand the site to everyone.
+  if (secret && param === secret) {
+    const url = req.nextUrl.clone();
+    url.searchParams.delete("preview");
+    const res = NextResponse.redirect(url);
+    res.cookies.set(PREVIEW_COOKIE, secret, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: req.nextUrl.protocol === "https:",
+      path: "/",
+      maxAge: 60 * 60 * 24, // a day is plenty; the gate lifts tonight anyway
+    });
+    return res;
+  }
+
+  // Already holding a valid preview cookie.
+  if (secret && req.cookies.get(PREVIEW_COOKIE)?.value === secret) {
+    return NextResponse.next();
+  }
 
   // Always reachable while the countdown runs:
   //   /soon                 the countdown itself
