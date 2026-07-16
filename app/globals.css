@@ -951,3 +951,22 @@ html:has(.lp-root) { scrollbar-color: var(--sb-fg) var(--sb-bg); }
 @media (prefers-reduced-motion: reduce) {
   .cc-pop, .cc-fade { animation: none; }
 }
+
+/* Launch countdown: confetti burst + celebration pop when the timer hits zero. */
+@keyframes cd-confetti-fall {
+  0%   { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(var(--cd-rot, 360deg)); opacity: 0.9; }
+}
+.cd-confetti { animation: cd-confetti-fall linear forwards; }
+
+@keyframes cd-pop-in {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.cd-pop { animation: cd-pop-in 0.6s cubic-bezier(0.22, 1.4, 0.36, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cd-confetti { display: none; }
+  .cd-pop { animation: none; }
+}
