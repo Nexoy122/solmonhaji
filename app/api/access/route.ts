@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequest, adminAuth } from "@/lib/firebaseAdmin";
 import { getAccess, WAITLIST_ENABLED } from "@/lib/access";
-import { roleFor } from "@/lib/admin";
+import { resolveRole } from "@/lib/admin";
 import { sendWaitlistEmail } from "@/lib/emails";
 
 export const runtime = "nodejs";
@@ -36,11 +36,11 @@ export async function GET(req: NextRequest) {
       status: row.status,
       position: row.position,
       waitlistEnabled: WAITLIST_ENABLED,
-      role: roleFor(uid),
+      role: await resolveRole(uid),
     });
   } catch (err) {
     console.error("[access] read failed:", err);
     // Fail open: a DB hiccup must not lock people out of a product they paid for.
-    return NextResponse.json({ status: "active", position: null, waitlistEnabled: WAITLIST_ENABLED, role: roleFor(uid) });
+    return NextResponse.json({ status: "active", position: null, waitlistEnabled: WAITLIST_ENABLED, role: await resolveRole(uid) });
   }
 }

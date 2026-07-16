@@ -68,6 +68,72 @@ export async function sendWaitlistEmail(uid: string, position: number | null): P
   });
 }
 
+// "You've been hired" style invite for a team role (tester/staff/admin).
+// Sent to an email address, so it can't use emailFor(uid): the person may not
+// even have an account yet.
+export async function sendRoleInviteEmail(opts: {
+  email: string;
+  role: string;
+  roleLabel: string;
+  roleBlurb: string;
+  token: string;
+  note?: string | null;
+}): Promise<void> {
+  if (!resend) return;
+  const link = `${SITE_URL}/invite?token=${encodeURIComponent(opts.token)}`;
+  const isTester = opts.role === "tester";
+
+  await resend.emails.send({
+    from: FROM,
+    to: opts.email,
+    subject: isTester
+      ? "You're invited to test NicheSpy 🎉"
+      : `You've been invited to the NicheSpy team as ${opts.roleLabel}`,
+    html: shell(
+      isTester ? "You're on the team" : "Congratulations",
+      `<p style="margin:0 0 14px;">You've been invited to join <strong style="color:${INK};">NicheSpy</strong> as
+         <strong style="color:${RED};">${opts.roleLabel}</strong>.</p>
+       <div style="margin:0 0 16px;padding:14px 16px;background:#F0F0F0;border:3px solid ${INK};">
+         <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:#8A8A8A;">Your role</div>
+         <div style="margin-top:4px;font-size:15px;font-weight:700;color:${INK};">${opts.roleLabel}</div>
+         <div style="margin-top:4px;font-size:13.5px;line-height:1.55;color:#5A5A5A;">${opts.roleBlurb}</div>
+       </div>
+       ${opts.note ? `<p style="margin:0 0 14px;padding:12px 14px;background:#FFF9DB;border-left:4px solid ${"#F0C020"};font-size:14px;">${opts.note}</p>` : ""}
+       ${isTester
+          ? `<p style="margin:0 0 14px;">You'll get full access to every tool. Break things, find bugs, and tell us what's wrong, that's exactly what we need.</p>`
+          : `<p style="margin:0 0 14px;">Accept below to activate your access.</p>`}
+       <p style="margin:0;color:#8A8A8A;font-size:13px;">This invite is for <strong>${opts.email}</strong> and expires in 14 days.
+         Sign in with that address to accept it.</p>`,
+      { label: isTester ? "Accept & start testing" : "Accept invite", href: link }
+    ),
+  });
+}
+
+// Invite a specific person straight into early access, skipping the waitlist.
+export async function sendEarlyAccessInviteEmail(opts: {
+  email: string;
+  token: string;
+  note?: string | null;
+}): Promise<void> {
+  if (!resend) return;
+  const link = `${SITE_URL}/invite?token=${encodeURIComponent(opts.token)}`;
+  await resend.emails.send({
+    from: FROM,
+    to: opts.email,
+    subject: "You're invited to NicheSpy early access 🚀",
+    html: shell(
+      "You're in",
+      `<p style="margin:0 0 14px;">You've been personally invited to <strong style="color:${INK};">NicheSpy</strong> early access,
+         which means you skip the waitlist entirely.</p>
+       ${opts.note ? `<p style="margin:0 0 14px;padding:12px 14px;background:#FFF9DB;border-left:4px solid #F0C020;font-size:14px;">${opts.note}</p>` : ""}
+       <p style="margin:0 0 14px;">Find the Shorts pulling 10 to 100 times a channel's average, break down why they popped,
+         and turn them into your next script. You start with <strong style="color:${INK};">100 free credits</strong>, no card needed.</p>
+       <p style="margin:0;color:#8A8A8A;font-size:13px;">This invite is for <strong>${opts.email}</strong> and expires in 14 days.</p>`,
+      { label: "Claim my access", href: link }
+    ),
+  });
+}
+
 // The invite. Contains the one-time activation link.
 export async function sendInviteEmail(uid: string, token: string): Promise<void> {
   if (!resend) return;

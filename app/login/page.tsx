@@ -17,6 +17,16 @@ import { TURNSTILE_SITE_KEY } from "@/lib/turnstile";
 import { useRef } from "react";
 
 export default function LoginPage() {
+  // Honour ?next=, so an invite link survives the sign-in detour. Read from
+  // window rather than useSearchParams(), which would force this page to be
+  // client-rendered behind a Suspense boundary just for one query param.
+  // Only relative paths are accepted: an absolute URL here would be an open
+  // redirect straight out of our own login form.
+  const [dest, setDest] = useState("/dashboard");
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get("next") ?? "";
+    if (raw.startsWith("/") && !raw.startsWith("//")) setDest(raw);
+  }, []);
   const router = useRouter();
   const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
@@ -28,7 +38,7 @@ export default function LoginPage() {
   const captchaRef = useRef<CaptchaHandle>(null);
 
   useEffect(() => {
-    if (!loading && user) router.replace("/dashboard");
+    if (!loading && user) router.replace(dest);
   }, [user, loading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -54,7 +64,7 @@ export default function LoginPage() {
         }
       }
       await signInWithEmailAndPassword(auth, email.trim(), password);
-      router.replace("/dashboard");
+      router.replace(dest);
     } catch (err) {
       setError(authErrorMessage((err as { code?: string })?.code ?? ""));
       captchaRef.current?.reset(); setCaptchaToken("");
@@ -69,7 +79,7 @@ export default function LoginPage() {
       const cred = await signInWithPopup(auth, googleProvider);
       // First-time Google users get a welcome email (server dedupes repeat logins).
       void sendGoogleWelcome(() => cred.user.getIdToken());
-      router.replace("/dashboard");
+      router.replace(dest);
     } catch (err) {
       setError(authErrorMessage((err as { code?: string })?.code ?? ""));
       setBusy(false);

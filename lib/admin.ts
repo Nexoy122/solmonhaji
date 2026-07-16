@@ -10,27 +10,19 @@ import { query, dbConfigured } from "@/lib/db";
 // SECURITY: every admin route must call requireAdmin() server-side. Hiding a nav
 // link is not access control (admin-panel spec, section 3).
 
-export type PlatformRole = "user" | "staff" | "admin" | "super_admin";
-const ROLE_RANK: Record<PlatformRole, number> = { user: 0, staff: 1, admin: 2, super_admin: 3 };
+// Roles now live in lib/roles.ts (env is the root of trust, the DB adds
+// invite-granted roles on top). Re-exported here so existing imports keep working.
+export { ROLE_RANK, envRole, resolveRole, type PlatformRole } from "@/lib/roles";
+import { ROLE_RANK, envRole, resolveRole, type PlatformRole } from "@/lib/roles";
 
-function envUids(name: string): string[] {
-  return (process.env[name] ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-}
-
-// Note the deliberate difference from the old inline checks: an EMPTY env var
-// grants nobody admin, rather than everybody.
-export function roleFor(uid: string): PlatformRole {
-  if (envUids("SUPER_ADMIN_UIDS").includes(uid)) return "super_admin";
-  if (envUids("ADMIN_UIDS").includes(uid)) return "admin";
-  if (envUids("STAFF_UIDS").includes(uid)) return "staff";
-  return "user";
-}
-
+// Synchronous, env-only check. Use this where a DB round-trip isn't wanted
+// (e.g. cheap guards on non-admin routes). It cannot see invited roles.
 export function hasRole(uid: string, min: PlatformRole): boolean {
-  return ROLE_RANK[roleFor(uid)] >= ROLE_RANK[min];
+  return ROLE_RANK[envRole(uid)] >= ROLE_RANK[min];
 }
 
-// Guard for admin API routes. Returns the caller's role, or a 403 response.
+// Guard for admin API routes. Returns the caller's effective role, or a 403.
+// Async because invited roles are stored in the database.
 export async function requireAdmin(
   uid: string | null,
   min: PlatformRole = "staff"
@@ -38,11 +30,12 @@ export async function requireAdmin(
   if (!uid) {
     return { ok: false, response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   }
-  if (!hasRole(uid, min)) {
+  const role = await resolveRole(uid);
+  if (ROLE_RANK[role] < ROLE_RANK[min]) {
     // Deliberately identical to a missing route: don't confirm /admin exists.
     return { ok: false, response: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   }
-  return { ok: true, role: roleFor(uid) };
+  return { ok: true, role };
 }
 
 let schemaReady = false;

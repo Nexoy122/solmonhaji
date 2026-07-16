@@ -19,7 +19,21 @@ export function middleware(req: NextRequest) {
   if (hasLaunched()) return NextResponse.next();
 
   const { pathname } = req.nextUrl;
-  if (pathname === "/soon") return NextResponse.next();
+
+  // Always reachable while the countdown runs:
+  //   /soon                 the countdown itself
+  //   /invite, /activate    invited testers must be able to accept early, that's
+  //                         the entire point of inviting them before launch
+  //   /login, /signup       they need to sign in to accept
+  //   /dashboard, /admin    what they were invited to actually use
+  //
+  // The product itself stays protected by its own auth: a stranger reaching
+  // /dashboard is bounced to /login exactly as always. This gate hides the
+  // MARKETING site, it was never the thing securing the app.
+  const ALLOW = ["/soon", "/invite", "/activate", "/login", "/signup", "/dashboard", "/admin", "/onboarding", "/waitlist"];
+  if (ALLOW.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+    return NextResponse.next();
+  }
 
   const url = req.nextUrl.clone();
   url.pathname = "/soon";

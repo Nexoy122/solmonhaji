@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { Logo } from "@/components/Logo";
 import { Check, X, Search, ShieldAlert } from "lucide-react";
+import { TeamTab } from "@/components/admin/TeamTab";
 
-type Tab = "queue" | "users" | "audit";
+type Tab = "queue" | "users" | "team" | "audit";
 type Status = "pending" | "invited" | "active" | "rejected" | "banned";
 
 interface AccessUser {
@@ -170,7 +171,7 @@ export function AdminPanel() {
 
         {/* Tabs */}
         <div className="mt-7 flex flex-wrap gap-2">
-          {([["queue", "Approvals"], ["users", "All users"], ["audit", "Audit log"]] as [Tab, string][]).map(([id, label]) => (
+          {([["queue", "Approvals"], ["users", "All users"], ["team", "Team"], ["audit", "Audit log"]] as [Tab, string][]).map(([id, label]) => (
             <button
               key={id}
               onClick={() => { setTab(id); if (id === "queue") setFilter("pending"); if (id === "users") setFilter("all"); }}
@@ -183,7 +184,9 @@ export function AdminPanel() {
           ))}
         </div>
 
-        {tab === "audit" ? (
+        {tab === "team" ? (
+          <TeamTab authHeader={authHeader} canInviteTeam={role === "super_admin"} />
+        ) : tab === "audit" ? (
           <div className="mt-5 border-2 bh-border bh-surface bh-sh-4">
             <div className="border-b-2 bh-border px-5 py-3">
               <h2 className="text-[14px] font-black uppercase tracking-wide">Audit log</h2>

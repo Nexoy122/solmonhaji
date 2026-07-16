@@ -12,6 +12,16 @@ import { Captcha, CaptchaHandle } from "@/components/auth/Captcha";
 import { TURNSTILE_SITE_KEY } from "@/lib/turnstile";
 
 export default function SignupPage() {
+  // Honour ?next=, so an invite link survives the sign-in detour. Read from
+  // window rather than useSearchParams(), which would force this page to be
+  // client-rendered behind a Suspense boundary just for one query param.
+  // Only relative paths are accepted: an absolute URL here would be an open
+  // redirect straight out of our own login form.
+  const [dest, setDest] = useState("/onboarding");
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get("next") ?? "";
+    if (raw.startsWith("/") && !raw.startsWith("//")) setDest(raw);
+  }, []);
   const router = useRouter();
   const { user, loading } = useAuth();
 
@@ -97,7 +107,7 @@ export default function SignupPage() {
       if (data.token) {
         await signInWithCustomToken(auth, data.token);
       }
-      router.replace("/onboarding");
+      router.replace(dest);
     } catch {
       setError("Network error. Please try again.");
       setBusy(false);
@@ -111,7 +121,7 @@ export default function SignupPage() {
     try {
       const cred = await signInWithPopup(auth, googleProvider);
       void sendGoogleWelcome(() => cred.user.getIdToken());
-      router.replace("/onboarding");
+      router.replace(dest);
     } catch (err) {
       setError(authErrorMessage((err as { code?: string })?.code ?? ""));
       setBusy(false);
