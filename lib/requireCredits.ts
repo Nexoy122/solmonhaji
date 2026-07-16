@@ -63,7 +63,7 @@ export async function readBalance(uid: string) {
 
 const PAID_PLANS = new Set(["starter", "creator", "plus"]);
 
-// Read a user's plan (from the credits ledger — the same source the client
+// Read a user's plan (from the credits ledger, the same source the client
 // derives isPaid from). Falls back to "free" on any error.
 export async function readPlan(uid: string): Promise<string> {
   if (!creditsConfigured()) return "free";

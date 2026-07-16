@@ -39,7 +39,7 @@ export const TRUST_DEMO: ClickDemoConfig = {
   after: "/lp-shots/trust-score.png",
   label: "Trust Score",
   btnX: "51%", // "Analyze channel" button is roughly centered
-  btnY: "68%", // sits on the button (was 77% — landed too low)
+  btnY: "68%", // sits on the button (was 77%, landed too low)
   revealTop: "22%", // reveal starts just below the channel/header row
   workingLabel: "Analyzing…",
   restX: "34%",
@@ -145,7 +145,7 @@ export function LpClickDemo({
           {/* BEFORE (fallback if the file isn't dropped in yet) */}
           {beforeOk ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={before} alt={`${label} — start`} className="block h-full w-full object-cover object-top" onError={() => setBeforeOk(false)} />
+            <img src={before} alt={`${label}, start`} className="block h-full w-full object-cover object-top" onError={() => setBeforeOk(false)} />
           ) : (
             <div className="flex h-full items-center justify-center bg-[#141a26] text-center">
               <div>
@@ -155,14 +155,14 @@ export function LpClickDemo({
             </div>
           )}
 
-          {/* AFTER — registered on top; result "prints in" via clip-path so only
+          {/* AFTER, registered on top; result "prints in" via clip-path so only
               the changed region animates (no whole-image flicker). */}
           {showResult && (
             <motion.img
               key="after"
               // eslint-disable-next-line @next/next/no-img-element
               src={after}
-              alt={`${label} — result`}
+              alt={`${label}, result`}
               className="absolute inset-0 block h-full w-full object-cover object-top"
               initial={{ clipPath: `inset(${revealTop} 0% ${100 - parseFloat(revealTop)}% 0%)` }}
               animate={{ clipPath: `inset(${revealTop} 0% 0% 0%)` }}

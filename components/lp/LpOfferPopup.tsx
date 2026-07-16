@@ -11,7 +11,7 @@ import { LpButton, TONES } from "./LpButton";
 //   3. it arrives at the bottom-right corner and the offer card "docks"
 //   4. the card grows and the copy fills in
 // The flight uses CSS offset-path so the comet follows the curve in ONE
-// continuous tween — no waypoints, no stutter — and offset-rotate:auto keeps its
+// continuous tween, no waypoints, no stutter, and offset-rotate:auto keeps its
 // tail trailing along the path. The overlay is pointer-events-none (click-through).
 const SHOW_DELAY_MS = 2500;
 const FLIGHT_MS = 3600;
@@ -56,7 +56,7 @@ function Comet({ size = 66, className = "" }: { size?: number; className?: strin
           <stop offset="1" stopColor="#0FA5E9" />
         </radialGradient>
       </defs>
-      {/* tail — narrow wedge fading out to the left */}
+      {/* tail, narrow wedge fading out to the left */}
       <path d="M82 30 L6 22 Q0 30 6 38 Z" fill="url(#cometTail)" />
       {/* soft glow behind the head */}
       <circle cx="82" cy="30" r="16" fill="#01D4FF" opacity="0.35" />
@@ -91,7 +91,7 @@ export function LpOfferPopup() {
   };
 
   useEffect(() => {
-    // The comet flies on EVERY page load — no dismiss gate, so a refresh
+    // The comet flies on EVERY page load, no dismiss gate, so a refresh
     // always replays the animation.
     const t = setTimeout(launch, SHOW_DELAY_MS);
     return () => clearTimeout(t);
@@ -191,8 +191,7 @@ export function LpOfferPopup() {
               <h3 className="mt-2 text-[17px] font-bold text-white">Get 50% off at launch</h3>
               <p className="mt-1.5 text-[13px] leading-relaxed text-white/60">
                 Sign up now and lock in{" "}
-                <strong className="font-semibold text-white">50% off</strong> for life —
-                exclusively for our first beta users.
+                <strong className="font-semibold text-white">50% off</strong> for life, exclusively for our first beta users.
               </p>
 
               <LpButton
@@ -208,7 +207,7 @@ export function LpOfferPopup() {
       </AnimatePresence>
 
       {/* ── Minimized re-open pill ── shown after the user dismisses the card,
-          so the offer is never fully gone — a tap re-opens it instantly. */}
+          so the offer is never fully gone, a tap re-opens it instantly. */}
       <AnimatePresence>
         {phase === "minimized" && (
           <motion.button
@@ -225,7 +224,7 @@ export function LpOfferPopup() {
               <span className="h-2 w-2 rounded-full bg-[#01D4FF] animate-pulse-dot" />
             </span>
             <span className="text-[#01D4FF]">50% off</span>
-            <span className="hidden text-white/70 sm:inline">— beta offer</span>
+            <span className="hidden text-white/70 sm:inline">, beta offer</span>
           </motion.button>
         )}
       </AnimatePresence>

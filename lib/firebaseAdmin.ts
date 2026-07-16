@@ -12,14 +12,14 @@ import { getFirestore } from "firebase-admin/firestore";
 //
 // Get them from: Firebase Console → Project Settings → Service Accounts →
 // "Generate new private key". The downloaded JSON has project_id, client_email,
-// and private_key — copy those three values into the env vars above.
+// and private_key, copy those three values into the env vars above.
 
 function buildApp(): App {
   if (getApps().length) return getApp();
 
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID?.trim();
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL?.trim();
-  // Private keys in env files often have literal "\n" — convert to real newlines.
+  // Private keys in env files often have literal "\n", convert to real newlines.
   const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
   if (!projectId || !clientEmail || !privateKey) {

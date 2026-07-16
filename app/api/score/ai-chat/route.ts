@@ -21,7 +21,7 @@ function fmtMetric(m: Metric): string {
   const v = Number.isInteger(m.value) ? m.value : Math.round(m.value * 100) / 100;
   const unit = m.unit ? ` ${m.unit}` : "";
   const bench = m.benchmark !== undefined ? ` (target: ${m.benchmark}${m.unit ? " " + m.unit : ""})` : "";
-  return `${m.name}: ${v}${unit} — score ${Math.round(m.score)}/100${bench}`;
+  return `${m.name}: ${v}${unit}, score ${Math.round(m.score)}/100${bench}`;
 }
 
 // Build a COMPLETE, readable snapshot of the user's Trust Score for the model,
@@ -48,7 +48,7 @@ function buildScoreContext(
   if (meta?.videoCount !== undefined) lines.push(`Total videos: ${meta.videoCount}`);
   lines.push(`Analysis: Shorts only${meta?.windowDays ? `, last ${meta.windowDays} days` : ""}`);
   lines.push("");
-  lines.push(`OVERALL TRUST SCORE: ${r(s.overall)}/100 — ${s.label} (grade ${s.grade}, tier ${s.trustTier ?? "?"}${s.percentile ? `, ${s.percentile}` : ""})`);
+  lines.push(`OVERALL TRUST SCORE: ${r(s.overall)}/100, ${s.label} (grade ${s.grade}, tier ${s.trustTier ?? "?"}${s.percentile ? `, ${s.percentile}` : ""})`);
   if (s.trustMeaning) lines.push(`What it means: ${s.trustMeaning}`);
   if (s.insights?.length) {
     lines.push("Key insights:");
@@ -65,7 +65,7 @@ function buildScoreContext(
   for (const [label, cat] of cats) {
     if (!cat) continue;
     lines.push("");
-    lines.push(`${label} — ${r(cat.score)}/100${cat.grade ? ` (${cat.grade})` : ""}`);
+    lines.push(`${label}, ${r(cat.score)}/100${cat.grade ? ` (${cat.grade})` : ""}`);
     if (cat.summary) lines.push(`  Summary: ${cat.summary}`);
     if (cat.metrics?.length) {
       cat.metrics.forEach((m) => lines.push(`  - ${fmtMetric(m)}`));
@@ -83,16 +83,16 @@ function buildScoreContext(
   return lines.join("\n");
 }
 
-const SYSTEM_PROMPT = `You are the NicheSpy AI coach for YouTube creators. You help them understand their "Trust Score" — a 0-100 health score reflecting how much the YouTube algorithm trusts and distributes their channel. The score analyzes their whole channel.
+const SYSTEM_PROMPT = `You are the NicheSpy AI coach for YouTube creators. You help them understand their "Trust Score", a 0-100 health score reflecting how much the YouTube algorithm trusts and distributes their channel. The score analyzes their whole channel.
 
 Rules:
 - BE BRIEF. Default to 2-4 short sentences or a few bullets. Only go longer if explicitly asked for detail. Don't repeat the question back or add filler.
 - Explain things in SIMPLE, plain English. No jargon unless you immediately explain it.
 - You may use **bold** for key terms and "- " bullets; keep formatting minimal.
-- You are given the user's FULL Trust Score data below: the overall score, all 5 category scores, and EVERY individual metric (with its exact value, unit, and benchmark) — e.g. "Upload Recency" shows days since last upload, "Like Rate" shows the like %. ALWAYS look through the metrics for the specific number the user asks about before saying you don't have it.
+- You are given the user's FULL Trust Score data below: the overall score, all 5 category scores, and EVERY individual metric (with its exact value, unit, and benchmark), e.g. "Upload Recency" shows days since last upload, "Like Rate" shows the like %. ALWAYS look through the metrics for the specific number the user asks about before saying you don't have it.
 - Base every answer ONLY on this data. Never invent numbers.
-- IMPORTANT — what we CANNOT measure: YouTube's API does NOT expose impressions, click-through rate (CTR), or "swipe rate/swipe ratio" (views ÷ impressions). If asked about swipe rate / CTR / impressions, explain plainly that YouTube doesn't share that data through its API (it's only visible inside YouTube Studio), then redirect them to the engagement signals we DO have — Like Rate, Comment Rate, Share Rate, Saves Rate. Do not pretend a swipe rate number exists.
-- When giving advice, be specific and actionable: a strong hook in the first 1-2 seconds, retention, consistency, and frequent uploads. Consistent (ideally daily) posting is a strong trust signal — YouTube rewards regular uploaders and pulls back when creators go quiet.
+- IMPORTANT, what we CANNOT measure: YouTube's API does NOT expose impressions, click-through rate (CTR), or "swipe rate/swipe ratio" (views ÷ impressions). If asked about swipe rate / CTR / impressions, explain plainly that YouTube doesn't share that data through its API (it's only visible inside YouTube Studio), then redirect them to the engagement signals we DO have, Like Rate, Comment Rate, Share Rate, Saves Rate. Do not pretend a swipe rate number exists.
+- When giving advice, be specific and actionable: a strong hook in the first 1-2 seconds, retention, consistency, and frequent uploads. Consistent (ideally daily) posting is a strong trust signal, YouTube rewards regular uploaders and pulls back when creators go quiet.
 - "View jail" = the algorithm isn't pushing their content (low trust). High trust = YouTube pushes their videos to new viewers.
 - If asked something unrelated to their channel/Shorts growth, gently steer back.
 - Keep responses focused; don't dump everything at once.`;

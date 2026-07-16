@@ -7,7 +7,7 @@ import { queryFeed, getLastRefresh, REFRESH_INTERVAL_MS, FeedQuery } from "@/lib
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-// GET /api/explore — paginated Explore feed from Postgres.
+// GET /api/explore, paginated Explore feed from Postgres.
 //   ?niche=ranking|all  ?sort=views|outlier|velocity|recent
 //   ?minViews= &minSubs= &maxSubs= &minDuration= &maxDuration= &publishedAfter=
 //   ?limit=60 &offset=0

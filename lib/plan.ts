@@ -1,7 +1,7 @@
 // ── Plan / feature gating ─────────────────────────────────────────────────────
 // Central place that decides what a user can access. Today everything is
 // UNLOCKED (PAYWALL_ENABLED = false). When we add a payment/credits system,
-// flip PAYWALL_ENABLED to true and wire real tiers — the UI + APIs already
+// flip PAYWALL_ENABLED to true and wire real tiers, the UI + APIs already
 // consult these helpers, so gating becomes a one-line switch, not a rewrite.
 
 export type Tier = "free" | "creator" | "pro";

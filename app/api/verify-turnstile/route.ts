@@ -10,7 +10,7 @@ const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
  * The browser must pass a valid token before its waitlist signup is allowed.
  */
 export async function POST(req: NextRequest) {
-  // If Turnstile isn't configured, don't block signups — just pass through.
+  // If Turnstile isn't configured, don't block signups, just pass through.
   if (!SECRET) {
     return NextResponse.json({ ok: true, skipped: true });
   }

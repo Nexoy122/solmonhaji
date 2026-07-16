@@ -13,7 +13,7 @@ export function authErrorMessage(code: string): string {
     case "auth/email-already-in-use":
       return "An account with this email already exists. Try logging in.";
     case "auth/weak-password":
-      return "Password is too weak — use at least 6 characters.";
+      return "Password is too weak, use at least 6 characters.";
     case "auth/popup-closed-by-user":
       return "Sign-in was cancelled.";
     case "auth/popup-blocked":
@@ -39,7 +39,7 @@ export async function sendGoogleWelcome(getIdToken: () => Promise<string>): Prom
       headers: { Authorization: `Bearer ${token}` },
     });
   } catch {
-    /* ignore — welcome email is non-critical */
+    /* ignore, welcome email is non-critical */
   }
 }
 

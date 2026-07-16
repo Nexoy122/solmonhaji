@@ -23,7 +23,7 @@ export function nextRefreshAt(from: number = Date.now()): number {
   return next.getTime();
 }
 
-// The most recent Monday 04:00 UTC at or before `from` — the "current" slot.
+// The most recent Monday 04:00 UTC at or before `from`, the "current" slot.
 export function currentRefreshSlot(from: number = Date.now()): number {
   return nextRefreshAt(from) - 7 * 86_400_000;
 }

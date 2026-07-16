@@ -18,7 +18,7 @@ async function syncFromSubscription(payload: { data: SubscriptionEventData; type
   const sub = payload.data;
   const uid = sub.customer.externalId;
   if (!uid) {
-    console.warn("Polar webhook: subscription has no externalId — skipping", sub.id);
+    console.warn("Polar webhook: subscription has no externalId, skipping", sub.id);
     return;
   }
 
@@ -30,7 +30,7 @@ async function syncFromSubscription(payload: { data: SubscriptionEventData; type
 
   const isActive = sub.status === "active";
 
-  // 1) Firestore — subscription status (for UI / access checks).
+  // 1) Firestore, subscription status (for UI / access checks).
   await setUserSubscription(uid, {
     plan: isActive ? planId : "free",
     status: sub.status,
@@ -40,7 +40,7 @@ async function syncFromSubscription(payload: { data: SubscriptionEventData; type
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
   });
 
-  // 2) Postgres ledger — grant the monthly credit allotment on active/renewal.
+  // 2) Postgres ledger, grant the monthly credit allotment on active/renewal.
   // Reference the current period end so each billing cycle credits once.
   try {
     const periodRef = `${sub.id}:${sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toISOString() : "na"}`;
@@ -56,7 +56,7 @@ async function syncFromSubscription(payload: { data: SubscriptionEventData; type
     await markWebhookProcessed(eventKey);
   } catch (e) {
     console.error("[polar webhook] credit ledger update failed:", (e as Error).message);
-    // Don't throw — Firestore status already updated; Polar will retry.
+    // Don't throw, Firestore status already updated; Polar will retry.
   }
 }
 

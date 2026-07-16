@@ -2,7 +2,7 @@ import { LegalLayout } from "@/components/LegalLayout";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — NicheSpy",
+  title: "Terms of Service, NicheSpy",
   description: "The terms that govern your use of NicheSpy.",
 };
 
@@ -21,8 +21,7 @@ export default function TermsPage() {
       <h2>1. The Service</h2>
       <p>
         NicheSpy is a competitor-intelligence tool for YouTube creators. It helps you discover competitor
-        channels, identify over-performing (outlier) videos, find content gaps, and monitor your niche —
-        using publicly available information. The Service is currently in a pre-launch / waitlist phase, and
+        channels, identify over-performing (outlier) videos, find content gaps, and monitor your niche, using publicly available information. The Service is currently in a pre-launch / waitlist phase, and
         features described on the site may change before release.
       </p>
 

@@ -1,6 +1,6 @@
 import { Reveal } from "../Reveal";
 
-// "Partners / integrations" strip. Placeholder cards (no real logos) — swap for
+// "Partners / integrations" strip. Placeholder cards (no real logos), swap for
 // real partner/integration logos later.
 const PARTNERS = ["YouTube", "Groq AI", "Discord", "Polar", "Cloudflare", "Firebase"];
 

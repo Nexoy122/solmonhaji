@@ -15,7 +15,7 @@ interface ExploreVideo {
 }
 type SortKey = "views" | "outlier" | "velocity" | "recent";
 // "Performance" sorts surface the best-performing videos (all-time hits, fastest
-// growers) — not just the recent ones. Gated by `performance_sorting` in future.
+// growers), not just the recent ones. Gated by `performance_sorting` in future.
 const SORT_OPTS: [SortKey, string][] = [
   ["views", "Best Performing (Most Views)"],
   ["outlier", "Biggest Outliers"],
@@ -54,7 +54,7 @@ const TIME_FILTERS: FilterOpt[] = [
 // Shorts-only tool: duration is a draggable min–max range within 0–3 min (180s),
 // the max Shorts length.
 const DUR_MIN = 0;
-const DUR_MAX = 180; // 3 minutes — the Shorts cap
+const DUR_MAX = 180; // 3 minutes, the Shorts cap
 
 // Server-side pagination page size, and threshold maps that turn filter indices
 // into the numeric query params the API expects.
@@ -152,7 +152,7 @@ function FilterDropdown({ title, icon, options, value, onChange }: {
   );
 }
 
-// Generic labeled select dropdown (for Sort by / Niche) — always shows the
+// Generic labeled select dropdown (for Sort by / Niche), always shows the
 // current choice; no "any/active" styling.
 function SelectDropdown({ title, icon, options, value, onChange }: {
   title: string; icon: string; options: string[]; value: number; onChange: (i: number) => void;

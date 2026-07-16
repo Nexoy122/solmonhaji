@@ -14,7 +14,7 @@ import { LpParallax } from "./LpScrollFx";
 type Tool = {
   eyebrow: string;
   name: string;
-  tagline: string; // one short punchy line — no walls of text
+  tagline: string; // one short punchy line, no walls of text
   img: string; // e.g. "/lp-shots/discover.png"
   demo?: "script" | "trust" | "transcript"; // special interactive click→result demo instead of a static shot
 };
@@ -23,7 +23,7 @@ const TOOLS: Tool[] = [
   {
     eyebrow: "RESEARCH",
     name: "Discover winning channels",
-    tagline: "An auto-growing index of faceless Shorts channels — filter to the ones worth copying.",
+    tagline: "An auto-growing index of faceless Shorts channels, filter to the ones worth copying.",
     img: "/lp-shots/discover.png",
   },
   {
@@ -35,7 +35,7 @@ const TOOLS: Tool[] = [
   {
     eyebrow: "RESEARCH",
     name: "Map any niche in seconds",
-    tagline: "Top channels, breakout topics, and the gaps nobody has covered yet — all in one view.",
+    tagline: "Top channels, breakout topics, and the gaps nobody has covered yet, all in one view.",
     img: "/lp-shots/niche-researcher.png",
   },
   {
@@ -59,13 +59,13 @@ const TOOLS: Tool[] = [
     img: "/lp-shots/shorts-transcript.png",
     demo: "transcript",
   },
-  // More tools are added here as they ship — each just needs an eyebrow, a
+  // More tools are added here as they ship, each just needs an eyebrow, a
   // punchy name, one short tagline, and a screenshot in /public/lp-shots/.
 ];
 
 // Screenshot with a graceful fallback: if the PNG isn't there yet, show a
 // labeled placeholder frame instead of a broken image.
-// Coming-soon tools — mirrors the dimmed "Soon" items in the dashboard sidebar
+// Coming-soon tools, mirrors the dimmed "Soon" items in the dashboard sidebar
 // (same Material Symbol icons). Shown as a compact grid so the roadmap is visible
 // without needing a screenshot for a tool that doesn't exist yet.
 const SOON_TOOLS: { name: string; icon: string }[] = [
@@ -84,7 +84,7 @@ const SOON_TOOLS: { name: string; icon: string }[] = [
 ];
 
 // Animated pointer that drifts across the screenshot on a loop and pulses a
-// "click" ripple at each stop — makes a static image feel like a live product.
+// "click" ripple at each stop, makes a static image feel like a live product.
 // The path is varied by `seed` so adjacent shots don't move in lockstep.
 function LiveCursor({ seed }: { seed: number }) {
   // three "stops" the cursor visits (percent of the frame), rotated by seed
@@ -103,7 +103,7 @@ function LiveCursor({ seed }: { seed: number }) {
       animate={{ left: xs, top: ys }}
       transition={{ duration: 9, ease: "easeInOut", times: [0, 0.25, 0.4, 0.6, 0.75, 1], repeat: Infinity, delay: seed * 0.7 }}
     >
-      {/* click ripple — fires when the cursor is "resting" on a stop */}
+      {/* click ripple, fires when the cursor is "resting" on a stop */}
       <motion.span
         className="absolute -left-3 -top-3 h-8 w-8 rounded-full border border-[#01D4FF]"
         animate={{ scale: [0.2, 1.4], opacity: [0.7, 0] }}
@@ -177,7 +177,7 @@ export function LpToolShowcase() {
           const reverse = i % 2 === 1;
           return (
             <div key={tool.name} className="grid grid-cols-1 items-center gap-8 md:grid-cols-[0.82fr_1.18fr] md:gap-14">
-              {/* Copy — deliberately short */}
+              {/* Copy, deliberately short */}
               <Reveal className={reverse ? "md:order-2" : ""}>
                 <div>
                   <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] font-bold tracking-[0.12em] text-white/60">
@@ -192,7 +192,7 @@ export function LpToolShowcase() {
                 </div>
               </Reveal>
 
-              {/* Screenshot — or the interactive click→result demo. Wrapped in
+              {/* Screenshot, or the interactive click→result demo. Wrapped in
                   parallax so it drifts slightly as the row scrolls through view. */}
               <Reveal delay={0.1} className={reverse ? "md:order-1" : ""}>
                 <LpParallax amount={34}>
@@ -225,7 +225,7 @@ export function LpToolShowcase() {
               And {SOON_TOOLS.length} more tools on the way
             </h3>
             <p className="mx-auto mt-4 max-w-[540px] text-[16px] leading-relaxed text-white/55">
-              Voiceovers, an editor, a clipper, and more — everything a faceless creator needs,
+              Voiceovers, an editor, a clipper, and more, everything a faceless creator needs,
               rolling out to beta users first.
             </p>
           </div>

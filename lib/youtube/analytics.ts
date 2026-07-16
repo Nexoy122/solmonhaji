@@ -31,7 +31,7 @@ export interface YouTubeAnalyticsData {
   savesPerVideo: number;         // raw saves per analyzed video count (filled by bridge)
   // Traffic-source mix (% of views)
   browsePct: number;             // SUBSCRIBER + YT_CHANNEL home/browse feed share
-  suggestedPct: number;          // RELATED_VIDEO (suggested) share — algorithmic push
+  suggestedPct: number;          // RELATED_VIDEO (suggested) share, algorithmic push
   searchPct: number;             // YT_SEARCH share
   externalPct: number;           // EXT_URL + EXTERNAL_APP share (off-platform reach)
   shortsFeedPct: number;         // SHORTS feed share
@@ -71,7 +71,7 @@ async function fetchReport(
   const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
 
   if (!res.ok) {
-    // Don't throw — some metric groups / filters aren't available for every channel.
+    // Don't throw, some metric groups / filters aren't available for every channel.
     // Log and return null so callers can degrade gracefully.
     const errText = await res.text().catch(() => "");
     console.warn(`[analytics] report failed (${metrics}):`, errText.slice(0, 300));
@@ -179,7 +179,7 @@ export async function fetchYouTubeAnalytics(
   const shareRate = views > 0 ? (shares / views) * 100 : 0;
   const commentRate = views > 0 ? (comments / views) * 100 : 0;
   // Sentiment (like-to-dislike). When there's NO like/dislike data at all, don't
-  // fabricate a perfect 100% — flag it so the engine scores sentiment as neutral
+  // fabricate a perfect 100%, flag it so the engine scores sentiment as neutral
   // (unknown) instead of inflating the score.
   const hasDislikeData = likes + dislikes > 0;
   const likeToDislikeRatio =

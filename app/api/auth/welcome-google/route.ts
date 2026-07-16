@@ -9,7 +9,7 @@ const apiKey = process.env.RESEND_API_KEY;
 const FROM = process.env.EMAIL_FROM?.trim() || "NicheSpy <onboarding@resend.dev>";
 const resend = apiKey ? new Resend(apiKey) : null;
 
-// Fires the welcome email for a Google sign-in — but only ONCE per user.
+// Fires the welcome email for a Google sign-in, but only ONCE per user.
 // Google auth happens client-side (signInWithPopup) and never touches the
 // email/password signup flow, so those users otherwise never get welcomed.
 // Idempotency: we record a marker in `welcomed_users/{uid}` and only send if
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
   const marker = adminDb().collection("welcomed_users").doc(uid);
 
-  // Atomically claim the "welcomed" marker — if it already exists, this user has
+  // Atomically claim the "welcomed" marker, if it already exists, this user has
   // been welcomed before, so we do nothing (prevents duplicate emails on relogin
   // and across concurrent requests).
   try {

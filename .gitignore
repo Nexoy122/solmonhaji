@@ -19,3 +19,8 @@ _original-design.html.bak
 # large source data (not for deploy)
 pdf data/
 transcripts/
+
+# Raw source recordings (~200MB). The compressed, trimmed loops the landing page
+# actually serves live in public/tools/ + public/niches/ and ARE committed.
+TOOLS VIDEOS/
+NICHES VIDEOS/

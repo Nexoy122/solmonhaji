@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (joinRes.status === 204) {
-      // already a member — ensure they still get the role
+      // already a member, ensure they still get the role
       if (discordConfig.roleId) {
         await fetch(
           `${API}/guilds/${discordConfig.guildId}/members/${user.id}/roles/${discordConfig.roleId}`,

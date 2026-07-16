@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// A static masonry grid of Shorts that autoplay-loop SILENTLY like GIFs — no
+// A static masonry grid of Shorts that autoplay-loop SILENTLY like GIFs, no
 // controls, no play button, no loading UI (that's why these are local .mp4s, not
 // YouTube embeds). Drop the files in /public/lp-shorts/ as 1.mp4 … 9.mp4.
 // Each <video> is muted + loop + playsinline + autoplay, so browsers play it
@@ -45,7 +45,7 @@ function ShortCard({ src }: { src: string }) {
           playsInline
           autoPlay
           preload="metadata"
-          // No controls — this is intentional; it plays like a GIF.
+          // No controls, this is intentional; it plays like a GIF.
           onError={() => setOk(false)}
         />
       ) : (

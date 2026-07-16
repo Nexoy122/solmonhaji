@@ -20,7 +20,7 @@ function NicheBadge({ niche, label, className = "" }: { niche: string; label: st
   );
 }
 
-// Niche filter options (mirrors lib/nicheResearch NICHES — client-safe copy).
+// Niche filter options (mirrors lib/nicheResearch NICHES, client-safe copy).
 const NICHE_OPTS: [string, string][] = [
   ["commentary", "Commentary"], ["ranking", "Ranking"], ["animation", "Animation"],
   ["gaming", "Gaming"], ["captions_only", "Captions Only"], ["edits_montages", "Edits/Montages"],
@@ -75,7 +75,7 @@ function Icon({ d, size = 14 }: { d: string; size?: number }) {
   );
 }
 function fmt(n: number | null | undefined): string {
-  if (n == null) return "—";
+  if (n == null) return ",";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
   return String(n);
@@ -89,7 +89,7 @@ const LANG_NAMES: Record<string, string> = {
   tl: "Tagalog", ur: "Urdu", bn: "Bengali",
 };
 
-// Channel detail modal — opens when the avatar/name is clicked.
+// Channel detail modal, opens when the avatar/name is clicked.
 function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void }) {
   const [show, setShow] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -203,7 +203,7 @@ function ChannelModal({ c, onClose }: { c: DiscoveryChannel; onClose: () => void
   );
 }
 
-// Centered discovery loader — pulsing search ring + cycling status text.
+// Centered discovery loader, pulsing search ring + cycling status text.
 const LOADER_STEPS = [
   "Understanding your search…",
   "Scanning channels across every niche…",
@@ -237,7 +237,7 @@ function DiscoverLoader() {
   );
 }
 
-// Graceful "temporarily unavailable" state — shown when the tool hits a
+// Graceful "temporarily unavailable" state, shown when the tool hits a
 // capacity/quota issue instead of a raw error.
 function ToolUnavailable({ onRetry }: { onRetry: () => void }) {
   return (
@@ -247,7 +247,7 @@ function ToolUnavailable({ onRetry }: { onRetry: () => void }) {
       </div>
       <p className="text-[16px] font-semibold text-black">Currently not available</p>
       <p className="mt-1.5 max-w-[420px] text-[13.5px] leading-relaxed text-on-surface-variant">
-        This tool is temporarily unavailable due to high demand. It&apos;ll be back shortly — please try again in a little while.
+        This tool is temporarily unavailable due to high demand. It&apos;ll be back shortly, please try again in a little while.
       </p>
       <button onClick={onRetry} className="mt-5 inline-flex items-center gap-1.5 rounded-none border border-black bg-white px-4 py-2 text-[13px] font-semibold text-black transition-colors hover:bg-white">
         <Icon d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" size={14} /> Try again
@@ -356,7 +356,7 @@ export function Discover() {
   const [sortMenu, setSortMenu] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
 
-  // ── Advanced filters (premium later — gated via canUse('advanced_filters')) ──
+  // ── Advanced filters (premium later, gated via canUse('advanced_filters')) ──
   const [showFilters, setShowFilters] = useState(false);
   const [showUpsell, setShowUpsell] = useState(false); // shown when locked + clicked
   const [fNiche, setFNiche] = useState("all");        // niche id or "all"
@@ -381,13 +381,32 @@ export function Discover() {
   // Searching defaults to Best match until the user explicitly picks a sort.
   const effectiveSort: Sort = query && !sortTouched ? "relevance" : sort;
 
-  const load = useCallback(async () => {
+  // The niches the user picked during onboarding. We default the feed to their
+  // first pick and surface the rest as quick tabs, so Discover opens on
+  // something relevant instead of "all".
+  const [myNiches, setMyNiches] = useState<string[]>([]);
+  const [nichesLoaded, setNichesLoaded] = useState(false);
+  useEffect(() => {
     if (!user) return;
+    (async () => {
+      try {
+        const res = await fetch("/api/onboarding", { headers: await authHeader() });
+        const data = await res.json();
+        const picked: string[] = Array.isArray(data.niches) ? data.niches : [];
+        setMyNiches(picked);
+        if (picked.length > 0) setFNiche((cur) => (cur === "all" ? picked[0] : cur));
+      } catch { /* fall back to all */ }
+      setNichesLoaded(true);
+    })();
+  }, [user, authHeader]);
+
+  const load = useCallback(async () => {
+    if (!user || !nichesLoaded) return; // wait so we don't fetch "all" then refetch
     setLoading(true); setError(""); setUnavailable(false);
     try {
       const params = new URLSearchParams({ niche: fNiche, sort: effectiveSort, limit: "90" });
       if (query) params.set("q", query);
-      // Advanced filters (only sent when unlocked — free tier ignores them).
+      // Advanced filters (only sent when unlocked, free tier ignores them).
       if (filtersUnlocked) {
         if (fMinSubs > 0) params.set("minSubs", String(fMinSubs));
         if (fFaceless) params.set("faceless", "1");
@@ -404,7 +423,7 @@ export function Discover() {
       }
     } catch { setError("Network error."); }
     setLoading(false);
-  }, [user, authHeader, query, effectiveSort, fNiche, fMinSubs, fFaceless, fLang, filtersUnlocked]);
+  }, [user, nichesLoaded, authHeader, query, effectiveSort, fNiche, fMinSubs, fFaceless, fLang, filtersUnlocked]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -418,14 +437,14 @@ export function Discover() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [expanding]);
 
-  // "Discover more channels" — force a deeper background expansion for this search.
+  // "Discover more channels", force a deeper background expansion for this search.
   const discoverMore = useCallback(async () => {
     if (!user || !query) return;
     setExpanding(true);
     try {
       const params = new URLSearchParams({ niche: "all", sort: effectiveSort, limit: "90", q: query, expand: "1" });
       await fetch(`/api/discovery?${params}`, { headers: await authHeader() });
-    } catch { /* background — errors surface on the next reload */ }
+    } catch { /* background, errors surface on the next reload */ }
   }, [user, query, effectiveSort, authHeader]);
 
   useEffect(() => {
@@ -438,11 +457,11 @@ export function Discover() {
 
   const sortLabel = SORTS.find((s) => s[0] === effectiveSort)?.[1] ?? "Blowing up";
 
-  // Tool temporarily unavailable (quota/capacity) — show a clean locked state.
+  // Tool temporarily unavailable (quota/capacity), show a clean locked state.
   if (unavailable) {
     return (
       <div className="dash-fade-up w-full">
-        <p className="mb-5 text-[14px] text-on-surface-variant">Channels blowing up across every niche — auto-discovered and updated daily.</p>
+        <p className="mb-5 text-[14px] text-on-surface-variant">Channels blowing up across every niche, auto-discovered and updated daily.</p>
         <ToolUnavailable onRetry={() => load()} />
       </div>
     );
@@ -451,11 +470,42 @@ export function Discover() {
   return (
     <div className="dash-fade-up w-full">
       {/* Subtitle */}
-      <p className="mb-4 text-[14px] text-on-surface-variant">Channels blowing up across every niche — auto-discovered and updated daily. Each card shows that channel&apos;s own Shorts.</p>
+      <p className="mb-4 text-[14px] text-on-surface-variant">Channels blowing up across every niche, auto-discovered and updated daily. Each card shows that channel&apos;s own Shorts.</p>
+
+      {/* Your niches, picked during onboarding. Quick tabs so the feed opens on
+          something relevant, plus an escape hatch to browse everything. */}
+      {myNiches.length > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">Your niches</span>
+          {myNiches.map((id) => {
+            const label = NICHE_OPTS.find(([val]) => val === id)?.[1] ?? id;
+            const on = fNiche === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setFNiche(id)}
+                className={`rounded-none border-2 px-3 py-1.5 text-[12.5px] font-bold uppercase tracking-wide transition-all ${
+                  on ? "border-black bg-[#D02020] text-white shadow-[3px_3px_0px_0px_#121212]" : "border-black bg-white text-black hover:-translate-y-0.5"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+          <button
+            onClick={() => setFNiche("all")}
+            className={`rounded-none border-2 px-3 py-1.5 text-[12.5px] font-bold uppercase tracking-wide transition-all ${
+              fNiche === "all" ? "border-black bg-[#D02020] text-white shadow-[3px_3px_0px_0px_#121212]" : "border-black bg-white text-black hover:-translate-y-0.5"
+            }`}
+          >
+            All
+          </button>
+        </div>
+      )}
 
       {/* Controls */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        {/* Search — soft white border glow (same as the AI Analysis box) */}
+        {/* Search, soft white border glow (same as the AI Analysis box) */}
         <BorderGlow borderRadius={10} glowRadius={20} glowColor="189 100 50" glowIntensity={0.6} className="w-full max-w-[440px]">
           <div className="relative flex items-center">
             <span className="pointer-events-none absolute left-3.5 text-black/40">
@@ -465,7 +515,7 @@ export function Discover() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by vibe — funny football, ranking, minecraft…"
+              placeholder="Search by vibe, funny football, ranking, minecraft…"
               className="h-11 w-full bg-transparent pl-11 pr-10 text-[14px] text-black outline-none placeholder:text-black/40"
             />
             {search && (
@@ -491,7 +541,7 @@ export function Discover() {
           )}
         </div>
 
-        {/* Advanced Filters (premium later — locked shows a padlock + upsell) */}
+        {/* Advanced Filters (premium later, locked shows a padlock + upsell) */}
         <button
           onClick={() => filtersUnlocked ? setShowFilters((o) => !o) : setShowUpsell(true)}
           title={filtersUnlocked ? "Filter by niche, size, language & style" : "Advanced filters are a premium feature"}
@@ -627,7 +677,7 @@ export function Discover() {
         </>
       )}
 
-      {/* Premium upsell — shown only when advanced filters are locked + clicked */}
+      {/* Premium upsell, shown only when advanced filters are locked + clicked */}
       {showUpsell && <FiltersUpsell onClose={() => setShowUpsell(false)} />}
     </div>
   );
@@ -646,7 +696,7 @@ function FiltersUpsell({ onClose }: { onClose: () => void }) {
         </div>
         <h3 className="text-[17px] font-bold text-on-surface">Advanced Filters is a premium feature</h3>
         <p className="mt-2 text-[13.5px] leading-relaxed text-on-surface-variant">
-          Filter the entire discovery index by niche, subscriber size, language, and faceless style — pinpoint exactly the channels you want to model.
+          Filter the entire discovery index by niche, subscriber size, language, and faceless style, pinpoint exactly the channels you want to model.
         </p>
         <button onClick={onClose} className="mt-5 w-full rounded-none border border-black bg-white py-2.5 text-[13.5px] font-semibold text-on-surface transition-colors hover:bg-surface-container-high">
           Got it

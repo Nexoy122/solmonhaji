@@ -2,7 +2,7 @@ import { LegalLayout } from "@/components/LegalLayout";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — NicheSpy",
+  title: "Privacy Policy, NicheSpy",
   description: "How NicheSpy collects, uses, and protects your information.",
 };
 
@@ -21,9 +21,9 @@ export default function PrivacyPage() {
       <h2>1. Information we collect</h2>
       <p>We keep data collection to the minimum needed to run the waitlist and improve the product:</p>
       <ul>
-        <li><strong>Email address</strong> — when you join the waitlist, so we can notify you about early access and updates.</li>
-        <li><strong>Optional details</strong> — such as your niche or how you found us, if you choose to provide them.</li>
-        <li><strong>Basic technical data</strong> — referrer and standard request metadata your browser sends, used for security and analytics.</li>
+        <li><strong>Email address</strong>, when you join the waitlist, so we can notify you about early access and updates.</li>
+        <li><strong>Optional details</strong>, such as your niche or how you found us, if you choose to provide them.</li>
+        <li><strong>Basic technical data</strong>, referrer and standard request metadata your browser sends, used for security and analytics.</li>
       </ul>
       <p>
         NicheSpy analyzes <strong>publicly available</strong> YouTube channel and video information for its

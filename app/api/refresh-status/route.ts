@@ -14,7 +14,7 @@ export async function GET() {
     try {
       // Prefer the unified stamp; fall back to the Explore crawl stamp.
       last = (await getMeta("refresh_all")) || (await getLastRefresh());
-    } catch { /* db down — still return the schedule */ }
+    } catch { /* db down, still return the schedule */ }
   }
   return NextResponse.json({ lastRefresh: last, nextRefresh: nextRefreshAt() });
 }

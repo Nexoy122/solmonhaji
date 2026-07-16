@@ -8,7 +8,7 @@ const MESSAGES: Record<string, { title: string; body: string; ok: boolean }> = {
   },
   exists: {
     title: "Welcome back!",
-    body: "You're already in the NicheSpy server — your role has been refreshed. See you inside.",
+    body: "You're already in the NicheSpy server, your role has been refreshed. See you inside.",
     ok: true,
   },
   error: {

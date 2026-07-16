@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { BhLogoMark } from "@/components/lp/bauhaus/BhKit";
 
-// ── Bauhaus auth theme — constructivist, geometric, primary colors, hard
+// ── Bauhaus auth theme, constructivist, geometric, primary colors, hard
 //    offset shadows, Outfit typeface. Scoped via .lp-root on the page shell. ──
 export const AUTH_DARK = {
   page: "#F0F0F0",
@@ -48,7 +48,7 @@ export function AuthShell({
         </div>
 
         <p className="max-w-xs text-[16px] font-bold uppercase leading-tight tracking-tight text-white">
-          Spy on what actually works — grow your Shorts faster.
+          Spy on what actually works, grow your Shorts faster.
         </p>
       </aside>
 
@@ -61,7 +61,7 @@ export function AuthShell({
             <span className="text-[22px] font-black uppercase tracking-tighter text-black">NicheSpy</span>
           </Link>
 
-          {/* form card — hard border + offset shadow */}
+          {/* form card, hard border + offset shadow */}
           <div className="border-2 border-black bg-white p-7 shadow-[8px_8px_0px_0px_#121212] sm:p-8 md:border-4">
             <span className="inline-block h-6 w-6 border-2 border-black bg-[#D02020]" />
             <h1 className="mt-4 text-[30px] font-black uppercase leading-[0.95] tracking-tighter text-black sm:text-[34px]">{title}</h1>

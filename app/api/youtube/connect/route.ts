@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     }
   } catch (err) {
     console.error("[youtube/connect] channel-limit check failed:", err);
-    // Fail open — don't block connecting over a Firestore hiccup.
+    // Fail open, don't block connecting over a Firestore hiccup.
   }
 
   const redirectUri = `${APP_URL}/api/youtube/callback`;

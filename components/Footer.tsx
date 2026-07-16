@@ -6,7 +6,7 @@ const DISCORD_INVITE = "https://discord.gg/7AYW4693XQ";
 const INSTAGRAM = "https://www.instagram.com/nichespy.live/";
 // Opens Gmail compose if the user uses Gmail in-browser; falls back to mailto.
 const GMAIL_COMPOSE = `https://mail.google.com/mail/?view=cm&fs=1&to=${SUPPORT_EMAIL}&su=${encodeURIComponent(
-  "NicheSpy — Support"
+  "NicheSpy, Support"
 )}`;
 
 const PRODUCT = [
@@ -37,7 +37,7 @@ export function Footer() {
             </div>
             <p className="mt-4 max-w-[300px] text-body-medium text-on-surface-variant">
               The competitor-intelligence workspace for YouTube creators. Spy on your niche,
-              find what works, and grow faster — without the spreadsheet grind.
+              find what works, and grow faster, without the spreadsheet grind.
             </p>
             <div className="mt-5 flex items-center gap-2.5">
               <a
@@ -119,7 +119,7 @@ export function Footer() {
         {/* bottom bar */}
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-outline-variant pt-7 text-center md:flex-row md:text-left">
           <p className="text-[14px] text-on-surface-variant">
-            © {new Date().getFullYear()} NicheSpy — Built for creators who want the edge.
+            © {new Date().getFullYear()} NicheSpy, Built for creators who want the edge.
           </p>
           <div className="flex items-center gap-6 text-[14px] text-on-surface-variant">
             <Link href="/privacy" className="transition-colors hover:text-primary">Privacy</Link>

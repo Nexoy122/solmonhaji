@@ -4,11 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 
-// Shared landing-page button — same shape, stacked soft shadow, gradient-fill +
+// Shared landing-page button, same shape, stacked soft shadow, gradient-fill +
 // gradient-border, hover-brighten and active-press as LpSignupButton (the "Get
 // Started Free" button), but color-parameterized so each button keeps its own
 // color. The gradients are applied via inline `style` (not arbitrary Tailwind
-// classes) so runtime-chosen colors always render — Tailwind's JIT only sees
+// classes) so runtime-chosen colors always render, Tailwind's JIT only sees
 // static class strings, so dynamic arbitrary values would be dropped.
 type Size = "sm" | "md" | "lg";
 
@@ -30,7 +30,7 @@ export type Tone = {
 };
 
 export const TONES: Record<string, Tone> = {
-  // Neutral dark "glass" — for secondary buttons (See the tools, Sign In).
+  // Neutral dark "glass", for secondary buttons (See the tools, Sign In).
   slate: {
     fill: "#1a2130",
     borderTop: "#3a465c",
@@ -39,7 +39,7 @@ export const TONES: Record<string, Tone> = {
     hoverTop: "#4a566f",
     text: "#f2f5fa",
   },
-  // Brand cyan — for the offer "Claim" button etc.
+  // Brand cyan, for the offer "Claim" button etc.
   cyan: {
     fill: "#0FA5E9",
     borderTop: "#7de3ff",
@@ -86,8 +86,7 @@ export function LpButton({
       tone.fill,
       hover ? tone.hoverTop : tone.borderTop,
       tone.borderBase,
-      tone.borderMid,
-    ),
+      tone.borderMid),
   };
 
   const hoverProps = {

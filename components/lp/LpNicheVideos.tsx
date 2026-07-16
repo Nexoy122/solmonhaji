@@ -1,7 +1,7 @@
 "use client";
 
-// A continuously-scrolling marquee of niche example Shorts — muted, autoplaying,
-// looping YouTube embeds — so visitors instantly see the kind of content
+// A continuously-scrolling marquee of niche example Shorts, muted, autoplaying,
+// looping YouTube embeds, so visitors instantly see the kind of content
 // NicheSpy is built for. The row auto-scrolls and loops seamlessly.
 const VIDEOS: { id: string; niche: string }[] = [
   { id: "_18Y3wDSJ6A", niche: "Commentary" },
@@ -53,7 +53,7 @@ export function LpNicheVideos() {
     <section className="px-4 md:px-8 pb-14">
       <div className="mx-auto max-w-[1320px]">
         <p className="mb-4 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-white/40">
-          Real Shorts our users study — across every niche
+          Real Shorts our users study, across every niche
         </p>
 
         {/* marquee: masked edges + continuous auto-scroll, pauses on hover */}

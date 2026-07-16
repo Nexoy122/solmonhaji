@@ -146,7 +146,7 @@ async function fetchChannelVideos(ch: ChannelInfo): Promise<ExploreVideo[]> {
     } catch { /* skip batch */ }
   }
   // Keep this channel's TOP videos by views (its all-time best), so the feed
-  // surfaces proven hits — not just whatever it happened to post recently.
+  // surfaces proven hits, not just whatever it happened to post recently.
   videos.sort((a, b) => b.views - a.views);
   return videos.slice(0, TOP_PER_CHANNEL);
 }
@@ -182,7 +182,7 @@ export async function getNicheFeed(niche: NicheId): Promise<ExploreFeed> {
   return buildNicheFeed(niche);
 }
 
-// "All Niches" — merge every niche's cached feed (build any that are missing/stale).
+// "All Niches", merge every niche's cached feed (build any that are missing/stale).
 export async function getAllFeed(): Promise<ExploreFeed> {
   const feeds = await Promise.all(NICHES.map((n) => getNicheFeed(n.id)));
   const merged: ExploreVideo[] = [];

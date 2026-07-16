@@ -28,12 +28,12 @@ export function LpTrustedBy() {
           </p>
         </Reveal>
 
-        {/* Row 1 — masonry of Shorts, all looping silently like GIFs */}
+        {/* Row 1, masonry of Shorts, all looping silently like GIFs */}
         <div className="mx-auto mt-10 max-w-[760px]">
           <LpShortsStrip />
         </div>
 
-        {/* Row 2 — niche chips (marquee) */}
+        {/* Row 2, niche chips (marquee) */}
         <div className="relative mt-9 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)]">
           <div className="flex w-max animate-ticker gap-3.5">
             {[...NICHES, ...NICHES].map((n, i) => (

@@ -6,7 +6,7 @@ import { MSym } from "../dashboard/NavIcons";
 import { LpClickDemo, SCRIPT_DEMO, TRUST_DEMO, TRANSCRIPT_DEMO } from "./LpScriptDemo";
 
 // Bento-style tools grid: each card has a compact preview panel on top and an
-// icon + name + one line below. Cards vary in width — wide cards span 4 of 6
+// icon + name + one line below. Cards vary in width, wide cards span 4 of 6
 // columns, normal cards span 2. Three live tools have a before→click→after demo
 // (LpClickDemo, chrome-less inside the card); the rest show a screenshot from
 // /public/lp-shots (icon-panel fallback if the PNG is missing). "Soon" tools are
@@ -15,35 +15,35 @@ type Tool = {
   name: string;
   icon: string;
   desc: string;
-  img?: string; // /lp-shots/<name>.png — omit to show an icon panel
+  img?: string; // /lp-shots/<name>.png, omit to show an icon panel
   demo?: "script" | "trust" | "transcript"; // live before→after click demo
   span: 2 | 3 | 4; // columns out of a 6-col grid
   soon?: boolean;
 };
 
-// Live tools — a fully-balanced bento: three rows of two equal 3-col cards, so
+// Live tools, a fully-balanced bento: three rows of two equal 3-col cards, so
 // every row fills the whole 6-col width with no empty gap. Paired cards share a
 // width → same preview height → the cards line up cleanly with no dead space.
 const TOOLS: Tool[] = [
   {
     name: "Discover Winning Channels",
     icon: "travel_explore",
-    desc: "An auto-growing index of faceless Shorts channels — filter by niche, subs, views, and momentum to find creators worth studying.",
-    // img omitted — placeholder icon panel
+    desc: "An auto-growing index of faceless Shorts channels, filter by niche, subs, views, and momentum to find creators worth studying.",
+    // img omitted, placeholder icon panel
     span: 3,
   },
   {
     name: "Find Viral Outliers",
     icon: "trending_up",
-    desc: "Every Short from the creators you track, sorted by exactly how hard it beat the average — see the exact videos winning right now.",
-    // img omitted — placeholder icon panel
+    desc: "Every Short from the creators you track, sorted by exactly how hard it beat the average, see the exact videos winning right now.",
+    // img omitted, placeholder icon panel
     span: 3,
   },
   {
     name: "Map Any Niche",
     icon: "hub",
-    desc: "Top channels, breakout topics, and the untapped gaps nobody has covered yet — map a whole niche end to end.",
-    // img omitted — placeholder icon panel
+    desc: "Top channels, breakout topics, and the untapped gaps nobody has covered yet, map a whole niche end to end.",
+    // img omitted, placeholder icon panel
     span: 3,
   },
   {
@@ -56,20 +56,20 @@ const TOOLS: Tool[] = [
   {
     name: "Grab Transcripts",
     icon: "article",
-    desc: "Pull a clean, copy-ready transcript from any Short in seconds — for research, scripting, or repurposing.",
+    desc: "Pull a clean, copy-ready transcript from any Short in seconds, for research, scripting, or repurposing.",
     demo: "transcript",
     span: 3,
   },
   {
     name: "Score Any Channel 0–100",
     icon: "verified",
-    desc: "Trust Score reads real signals — engagement, retention, consistency, authority, growth — so you can tell genuinely strong channels from inflated ones.",
+    desc: "Trust Score reads real signals, engagement, retention, consistency, authority, growth, so you can tell genuinely strong channels from inflated ones.",
     demo: "trust",
     span: 3,
   },
 ];
 
-// Roadmap tools — in the dashboard but not live yet. Shown as compact icon cards
+// Roadmap tools, in the dashboard but not live yet. Shown as compact icon cards
 // (span 2 each = three per row) with a Soon badge.
 const SOON_TOOLS: Tool[] = [
   { name: "Study Channels", icon: "travel_explore", desc: "Deep-dive any channel's full upload history and patterns.", span: 2, soon: true },
@@ -187,7 +187,7 @@ export function LpToolsBento() {
             </span>
           </h2>
           <p className="mx-auto mt-5 max-w-[600px] text-[17px] leading-relaxed text-white/60">
-            One workspace for the whole faceless-creator workflow — from finding competitors to
+            One workspace for the whole faceless-creator workflow, from finding competitors to
             shipping the script. Everything that&apos;s live today, plus what&apos;s next.
           </p>
         </div>

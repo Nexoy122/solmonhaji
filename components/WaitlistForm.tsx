@@ -46,7 +46,7 @@ export function WaitlistForm({
     setState("loading");
     try {
       // Run bot-check and duplicate-check IN PARALLEL (they don't depend on each
-      // other) — this roughly halves the wait before showing success.
+      // other), this roughly halves the wait before showing success.
       const turnstilePromise = (async (): Promise<"ok" | "bot"> => {
         // FAIL-OPEN: only block if Turnstile explicitly rejects a real token.
         try {
@@ -99,7 +99,7 @@ export function WaitlistForm({
       // GA conversion event with the traffic source attached.
       trackEvent("waitlist_signup", { source: attr.source, medium: attr.medium, form: source });
 
-      // Fire the welcome email + Discord notification (best-effort — never blocks).
+      // Fire the welcome email + Discord notification (best-effort, never blocks).
       fetch("/api/send-welcome", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -125,7 +125,7 @@ export function WaitlistForm({
       <div className={`mx-auto w-full ${maxW}`}>
         <div className="flex items-center gap-3 rounded-2xl bg-primary-container px-5 py-4 text-body-medium font-medium text-on-primary-container">
           <span className="text-lg">✓</span>
-          You&apos;re already on the waitlist — we&apos;ll email you when your spot opens.
+          You&apos;re already on the waitlist, we&apos;ll email you when your spot opens.
         </div>
       </div>
     );
@@ -136,7 +136,7 @@ export function WaitlistForm({
       <div className={`mx-auto w-full ${maxW}`}>
         <div className="flex items-center gap-3 rounded-2xl bg-primary-container px-5 py-4 text-body-medium font-medium text-on-primary-container">
           <span className="text-lg">✓</span>
-          You&apos;re on the list — watch your inbox for early access.
+          You&apos;re on the list, watch your inbox for early access.
         </div>
       </div>
     );

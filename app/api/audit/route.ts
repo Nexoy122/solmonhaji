@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   const channel = (body?.channel ?? "").toString().trim();
   if (!channel) return NextResponse.json({ error: "Enter a channel (@handle, URL, or ID)." }, { status: 400 });
 
-  // Channel Audit is our most expensive action — charge before starting the job.
+  // Channel Audit is our most expensive action, charge before starting the job.
   const charge = await chargeCredits(uid, "channelAudit");
   if (!charge.ok) return charge.response;
 

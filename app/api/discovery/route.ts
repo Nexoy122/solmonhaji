@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { verifyRequest } from "@/lib/firebaseAdmin";
+import { hasRole } from "@/lib/admin";
 import { hasAnyKey } from "@/lib/youtubeKeys";
 import { NICHES, NicheId } from "@/lib/nicheResearch";
 import { queryChannels, getCrawlMeta, deleteChannel, startQueryExpansion, expandQuery, DiscoveryQuery } from "@/lib/discovery";
@@ -8,7 +9,6 @@ export const runtime = "nodejs";
 export const maxDuration = 300; // headroom for post-response query expansion (after())
 
 // Admin UIDs allowed to delete channels (empty in dev = any logged-in user).
-const ADMIN_UIDS = (process.env.ADMIN_UIDS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 
 // GET /api/discovery?niche=all&sort=blowing_up&minSubs=&faceless=
 export async function GET(req: NextRequest) {
@@ -35,8 +35,7 @@ export async function GET(req: NextRequest) {
   };
 
   try {
-    // A new search query live-discovers more channels in the background —
-    // every unique search grows the index (deduped per query for 7 days).
+    // A new search query live-discovers more channels in the background, // every unique search grows the index (deduped per query for 7 days).
     // `expand=1` ("Discover more" button) forces a deeper pass, bypassing the TTL.
     // `after()` keeps the work alive past the response (Vercel-safe).
     let expanding = false;
@@ -65,11 +64,11 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// DELETE /api/discovery?channelId=UC...  → remove from index + blocklist it.
+// DELETE /api/discovery?channelId=UC, ...  → remove from index + blocklist it.
 export async function DELETE(req: NextRequest) {
   const uid = await verifyRequest(req.headers.get("authorization"));
   if (!uid) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (ADMIN_UIDS.length > 0 && !ADMIN_UIDS.includes(uid)) {
+  if (!hasRole(uid, "admin")) {
     return NextResponse.json({ error: "Admin only." }, { status: 403 });
   }
 

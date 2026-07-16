@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Channel Audit isn't configured yet." }, { status: 503 });
   }
 
-  // Resolve which connected channel to audit — a specific one if requested,
+  // Resolve which connected channel to audit, a specific one if requested,
   // else the oldest-synced (default).
   const body = await req.json().catch(() => ({}));
   const channelId: string | undefined = typeof body.channelId === "string" ? body.channelId : undefined;
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
   try {
     const a = await fetchYouTubeAnalytics(accessToken, ytId, "ALL", 90);
     const lines: string[] = [
-      `Avg view duration: ${Math.round(a.avgViewDuration)}s (${a.avgViewPercentage.toFixed(0)}% of video watched — RETENTION)`,
+      `Avg view duration: ${Math.round(a.avgViewDuration)}s (${a.avgViewPercentage.toFixed(0)}% of video watched, RETENTION)`,
       `Engagement: like rate ${a.likeRate.toFixed(1)}%, comment rate ${a.commentRate.toFixed(2)}%, share rate ${a.shareRate.toFixed(2)}%, saves ${a.savesRate.toFixed(2)}%`,
       `Subscriber conversion: ${a.subsPerThousandViews.toFixed(1)} net subs per 1,000 views (gained ${a.subscribersGained}, lost ${a.subscribersLost})`,
       `Traffic sources: ${a.browsePct.toFixed(0)}% browse/home, ${a.suggestedPct.toFixed(0)}% suggested, ${a.searchPct.toFixed(0)}% search, ${a.externalPct.toFixed(0)}% external`,
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     analyticsContext = lines.join("\n");
   } catch (err) {
     console.warn("[audit/connected] analytics fetch failed:", (err as Error).message);
-    // Continue without analytics — still runs the video-ML audit.
+    // Continue without analytics, still runs the video-ML audit.
   }
 
   // Charge before starting the (expensive) audit job.

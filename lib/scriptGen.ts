@@ -21,7 +21,7 @@ SCRIPT STRUCTURE
 
 1. HOOK (0-3 sec)
 The first sentence is everything. It MUST instantly stop scrolling.
-Good hooks often begin with: Did you know... / Imagine if... / Here's why... / The truth is... / Scientists discovered... / Nobody talks about... / This should be impossible... / This changed history forever... / You would never survive... / The craziest part is...
+Good hooks often begin with: Did you know, ... / Imagine if, ... / Here's why, ... / The truth is, ... / Scientists discovered, ... / Nobody talks about, ... / This should be impossible, ... / This changed history forever, ... / You would never survive, ... / The craziest part is, ...
 Avoid generic openings.
 
 2. BUILD CURIOSITY
@@ -113,15 +113,15 @@ export async function generateFromIdeaWithReference(opts: {
   withTimestamps?: boolean;
 }): Promise<{ script: string; warning?: string }> {
   const ref = await resolveReference(opts);
-  // A reference is OPTIONAL — if a URL was given but couldn't be read, generate
+  // A reference is OPTIONAL, if a URL was given but couldn't be read, generate
   // anyway and just warn (don't block the user's idea).
   const warning = opts.youtubeUrl && !ref.text
-    ? "The reference video couldn't be read (YouTube blocked it) — generated without it. Paste a transcript to copy a style."
+    ? "The reference video couldn't be read (YouTube blocked it), generated without it. Paste a transcript to copy a style."
     : undefined;
 
   let content = `The creator's video idea/topic:\n"${opts.idea}"\n\n`;
   if (ref.text) {
-    content += `Here is a REFERENCE SCRIPT. Copy its STYLE precisely — the hook structure, sentence length, rhythm, tone, and how it escalates curiosity. Do NOT copy its topic or facts, only its writing style:\n"${ref.text}"\n\nMirror this reference's hook pattern and pacing as closely as possible.\n\n`;
+    content += `Here is a REFERENCE SCRIPT. Copy its STYLE precisely, the hook structure, sentence length, rhythm, tone, and how it escalates curiosity. Do NOT copy its topic or facts, only its writing style:\n"${ref.text}"\n\nMirror this reference's hook pattern and pacing as closely as possible.\n\n`;
   }
   content += ref.text
     ? `Now write a NEW original YouTube Shorts script about the creator's idea above, written in the EXACT style/pacing of the reference.`
@@ -138,7 +138,7 @@ export type ImproveOption =
 
 const IMPROVE_LABELS: Record<ImproveOption, string> = {
   better_hook: "a stronger, scroll-stopping hook in the first line",
-  tighter_pacing: "tighter pacing — cut filler, shorten sentences",
+  tighter_pacing: "tighter pacing, cut filler, shorten sentences",
   stronger_cta: "a stronger call-to-action at the end",
   more_engaging: "more engaging, higher-curiosity phrasing throughout",
   shorter: "make it noticeably shorter and punchier",
@@ -172,7 +172,7 @@ export async function generateFromVideo(opts: {
   transcript?: string | null; // reference for style
   withTimestamps?: boolean;
 }): Promise<string> {
-  // 1) Understand the source video — speech AND/OR visuals (works even silent).
+  // 1) Understand the source video, speech AND/OR visuals (works even silent).
   let source = "";
   let lastErr = "";
   if (opts.videoBuffer) {
@@ -188,7 +188,7 @@ export async function generateFromVideo(opts: {
   // 2) Optional style reference (separate transcript).
   const ref = await resolveReference({ transcript: opts.transcript });
 
-  let content = `Below is an analysis of the creator's video (its spoken audio and/or on-screen visuals & text):\n${source}\n\nANALYZE this video: identify its core topic, the key message/story, the most interesting facts, and its emotional angle. Then write a POLISHED, punchier YouTube Shorts script that delivers the same idea far more effectively — a stronger hook, tighter pacing, and a share-worthy ending. Do NOT just copy it; improve and restructure it.`;
+  let content = `Below is an analysis of the creator's video (its spoken audio and/or on-screen visuals & text):\n${source}\n\nANALYZE this video: identify its core topic, the key message/story, the most interesting facts, and its emotional angle. Then write a POLISHED, punchier YouTube Shorts script that delivers the same idea far more effectively, a stronger hook, tighter pacing, and a share-worthy ending. Do NOT just copy it; improve and restructure it.`;
   if (ref.text) content += `\n\nWrite it in the STYLE/pacing of this reference (do not copy its content):\n"${ref.text}"`;
   content += timestampRule(opts.withTimestamps ?? false);
   content += `\n\nOnly output the final script.`;
@@ -240,7 +240,7 @@ export async function generateScriptFromStyle(opts: {
 Now write a NEW original script on the SAME topic or a closely related one.`;
 
   if (manualHook) {
-    context += `\n\nCRITICAL RULE — HOOK: You MUST start the script with this EXACT hook, word for word:\n"${manualHook}"\nDo not change a single word of the hook. Copy it exactly as the very first line.`;
+    context += `\n\nCRITICAL RULE, HOOK: You MUST start the script with this EXACT hook, word for word:\n"${manualHook}"\nDo not change a single word of the hook. Copy it exactly as the very first line.`;
   }
 
   context += `\n\nAfter the hook, continue with a completely new original script in the same style and pacing.

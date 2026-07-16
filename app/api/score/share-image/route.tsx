@@ -3,12 +3,11 @@ import { NextRequest } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
 
-// Node runtime (not edge) so we can read the font + logo straight from disk —
-// no same-origin HTTP fetch that can silently fail behind nginx and drop us
+// Node runtime (not edge) so we can read the font + logo straight from disk, // no same-origin HTTP fetch that can silently fail behind nginx and drop us
 // back to a thin fallback font.
 export const runtime = "nodejs";
 
-// Bauhaus score colors — green / blue / yellow / red.
+// Bauhaus score colors, green / blue / yellow / red.
 function scoreHex(s: number) {
   if (s >= 75) return "#118A3E";
   if (s >= 60) return "#1040C0";
@@ -24,8 +23,8 @@ function scoreLabel(s: number) {
   return "Poor";
 }
 
-// Public, shareable Trust Score card (PNG). The canvas IS the card — no
-// surrounding background — so it drops cleanly into any post/story.
+// Public, shareable Trust Score card (PNG). The canvas IS the card, no
+// surrounding background, so it drops cleanly into any post/story.
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const score = Math.max(0, Math.min(100, parseInt(searchParams.get("score") ?? "0", 10) || 0));
@@ -109,7 +108,7 @@ export async function GET(req: NextRequest) {
           </div>
         </div>
 
-        {/* label — solid block, thick border, hard shadow */}
+        {/* label, solid block, thick border, hard shadow */}
         <div
           style={{
             display: "flex",

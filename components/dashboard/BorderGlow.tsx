@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, type ReactNode, type CSSProperties } from "react";
 
-// React Bits "BorderGlow" — adapted to TypeScript and to run WITHOUT hover.
+// React Bits "BorderGlow", adapted to TypeScript and to run WITHOUT hover.
 // A continuous animation sweeps the glow cone around the border so the card
 // always shows a soft, premium moving glow (used for AI sections site-wide).
 
@@ -97,9 +97,7 @@ export default function BorderGlow({
     "--border-radius": `${borderRadius}px`,
     "--glow-padding": `${glowRadius}px`,
     "--cone-spread": 25,
-    "--fill-opacity": 0.5,
-    ...buildGlowVars(glowColor, glowIntensity),
-    ...(mesh ? buildGradientVars(colors) : {}),
+    "--fill-opacity": 0.5, ...buildGlowVars(glowColor, glowIntensity), ...(mesh ? buildGradientVars(colors) : {}),
   } as CSSProperties;
 
   return (

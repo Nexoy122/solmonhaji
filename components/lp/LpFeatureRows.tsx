@@ -85,7 +85,7 @@ function ScriptPanel() {
 const ROWS: Row[] = [
   {
     eyebrow: "COMPETITOR INTELLIGENCE",
-    title: "See exactly what's working — before you hit record",
+    title: "See exactly what's working, before you hit record",
     body: "Type any niche and NicheSpy surfaces every competitor and the outlier videos crushing their average. No more guessing which formats the algorithm rewards.",
     bullets: [
       "Every competitor channel, ranked by momentum",
@@ -108,7 +108,7 @@ const ROWS: Row[] = [
   {
     eyebrow: "AI THAT DOES THE WORK",
     title: "Turn any winning idea into a ready-to-film script",
-    body: "Feed NicheSpy a topic or a competitor's video and get a hook-first Shorts script back in seconds — structured the way outliers in your niche are actually built.",
+    body: "Feed NicheSpy a topic or a competitor's video and get a hook-first Shorts script back in seconds, structured the way outliers in your niche are actually built.",
     bullets: [
       "Hook-first scripts modeled on proven outliers",
       "Generate straight from a competitor's video",
@@ -128,7 +128,7 @@ export function LpFeatureRows() {
     <section id="features" className="mx-auto max-w-[1180px] px-5 md:px-8 py-24 md:py-32">
       <Reveal>
         <h2 className="font-heading text-[clamp(30px,4vw,46px)] font-bold tracking-[-0.01em] text-white max-w-[840px]">
-          Everything you need to grow —{" "}
+          Everything you need to grow ,{" "}
           <span className="bg-gradient-to-r from-[#0FA5E9] to-[#01D4FF] bg-clip-text text-transparent">without the spreadsheet grind</span>
         </h2>
       </Reveal>

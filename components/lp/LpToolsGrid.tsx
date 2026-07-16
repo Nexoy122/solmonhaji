@@ -11,7 +11,7 @@ const GROUPS: Group[] = [
     heading: "Research",
     blurb: "Find who you're up against and what's winning.",
     tools: [
-      { name: "Discover", icon: "explore", desc: "An auto-growing index of faceless Shorts channels — filter by niche, subs, views, and momentum to find creators worth studying." },
+      { name: "Discover", icon: "explore", desc: "An auto-growing index of faceless Shorts channels, filter by niche, subs, views, and momentum to find creators worth studying." },
       { name: "Explore", icon: "search", desc: "Every Short from the creators you track, sortable by outlier multiple and velocity. See the exact videos beating the baseline right now." },
       { name: "Niche Researcher", icon: "query_stats", desc: "Map a niche end-to-end: top channels, breakout topics, and the untapped gaps nobody has covered yet." },
     ],
@@ -20,16 +20,16 @@ const GROUPS: Group[] = [
     heading: "Create",
     blurb: "Turn a winning idea into something you can film.",
     tools: [
-      { name: "Script Generator", icon: "edit_note", desc: "Generate a hook-first Shorts script from a topic or straight from a competitor's video — structured the way outliers in your niche are built." },
+      { name: "Script Generator", icon: "edit_note", desc: "Generate a hook-first Shorts script from a topic or straight from a competitor's video, structured the way outliers in your niche are built." },
     ],
   },
   {
     heading: "Analyze",
     blurb: "Judge any channel or video with real signals.",
     tools: [
-      { name: "Trust Score", icon: "verified_user", desc: "Score any channel 0–100 on engagement, retention, consistency, authority, and growth — tell genuinely strong channels from inflated ones." },
-      { name: "Channel Audit", icon: "fact_check", desc: "A full performance breakdown of a channel — what's working, what's dragging, and where the easy wins are." },
-      { name: "Shorts Transcript", icon: "description", desc: "Pull a clean, copy-ready transcript from any Short in seconds — for research, scripting, or repurposing." },
+      { name: "Trust Score", icon: "verified_user", desc: "Score any channel 0–100 on engagement, retention, consistency, authority, and growth, tell genuinely strong channels from inflated ones." },
+      { name: "Channel Audit", icon: "fact_check", desc: "A full performance breakdown of a channel, what's working, what's dragging, and where the easy wins are." },
+      { name: "Shorts Transcript", icon: "description", desc: "Pull a clean, copy-ready transcript from any Short in seconds, for research, scripting, or repurposing." },
     ],
   },
 ];
@@ -59,7 +59,7 @@ export function LpToolsGrid() {
           <span className="bg-gradient-to-r from-[#0FA5E9] to-[#01D4FF] bg-clip-text text-transparent">research, create, and analyze</span>
         </h2>
         <p className="mt-5 text-[18px] leading-relaxed text-white/60 max-w-[620px]">
-          One workspace for the whole faceless-creator workflow — from finding competitors to
+          One workspace for the whole faceless-creator workflow, from finding competitors to
           shipping the script. Here&apos;s everything that&apos;s live today.
         </p>
       </Reveal>

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 
 // ── Referral code modal ─────────────────────────────────────────────────────
 // Marketing illusion: makes the waitlist feel invite-driven / exclusive.
-// No code is ever valid — it always responds "Enter a valid referral code."
+// No code is ever valid, it always responds "Enter a valid referral code."
 //
 // Open it from anywhere with:  window.dispatchEvent(new Event("open-referral"))
 

@@ -6,8 +6,8 @@ export const runtime = "nodejs";
 export const maxDuration = 300; // crawling many channels takes time
 
 // GET /api/discovery/crawl?secret=CRON_SECRET[&perNiche=15&maxEnrich=120]
-// The daily job: (1) discovery crawl — find + enrich new channels, then
-// (2) full-index refresh — re-measure every stale channel's stats so the
+// The daily job: (1) discovery crawl, find + enrich new channels, then
+// (2) full-index refresh, re-measure every stale channel's stats so the
 // Blowing-up ranking stays honest (runs post-response via after()).
 // ?refresh=1 runs ONLY the index refresh. ?seed=1 runs only re-seeding.
 // Protected by CRON_SECRET (Vercel cron sends x-vercel-cron).

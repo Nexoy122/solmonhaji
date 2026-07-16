@@ -40,7 +40,7 @@ function loadScript(): Promise<void> {
 
 /**
  * Pre-load the Turnstile script early (call on page mount) so the challenge is
- * fast when the user actually clicks Join — avoids the cold-start delay.
+ * fast when the user actually clicks Join, avoids the cold-start delay.
  */
 export function preloadTurnstile(): void {
   if (!TURNSTILE_SITE_KEY) return;

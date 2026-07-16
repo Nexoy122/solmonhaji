@@ -9,7 +9,7 @@ export interface NicheColor {
   /* translucent border  */ border: string;
 }
 
-// Distinct, legible-on-dark hues — one per niche.
+// Distinct, legible-on-dark hues, one per niche.
 const BY_ID: Record<string, NicheColor> = {
   commentary:     { c: "#60a5fa", bg: "rgba(96,165,250,0.14)",  border: "rgba(96,165,250,0.35)" },  // blue
   ranking:        { c: "#fbbf24", bg: "rgba(251,191,36,0.14)",  border: "rgba(251,191,36,0.35)" },  // amber

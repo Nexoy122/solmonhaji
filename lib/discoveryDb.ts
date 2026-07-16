@@ -3,7 +3,7 @@ import { query } from "@/lib/db";
 import type { DiscoveryChannel, DiscoveryQuery, DiscoveryShort } from "@/lib/discovery";
 import type { NicheId } from "@/lib/nicheResearch";
 
-// ── Discover channel index — Postgres data access ────────────────────────────
+// ── Discover channel index, Postgres data access ────────────────────────────
 // The Discover page's channel index lives in `discovery_channels`. This module
 // is the only place that talks SQL for it. discovery.ts calls these; the API
 // routes + UI are unchanged (same DiscoveryChannel shape in/out).
@@ -118,7 +118,7 @@ export async function existingIds(ids: string[]): Promise<Set<string>> {
   return new Set(rows.map((r) => r.channel_id));
 }
 
-// Recently-enriched (updated_at within staleMs) — crawl skips these.
+// Recently-enriched (updated_at within staleMs), crawl skips these.
 export async function freshIds(ids: string[], now: number, staleMs: number): Promise<Set<string>> {
   if (ids.length === 0) return new Set();
   const rows = await query<{ channel_id: string }>(
@@ -187,7 +187,7 @@ export async function queryChannelsDb(
 
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
 
-  // Total (for the "X channels" — Discover hides the count now, but the API
+  // Total (for the "X channels", Discover hides the count now, but the API
   // still returns it and the Explore Channels tab uses the same shape).
   const totalRows = await query<{ c: string }>(
     `SELECT COUNT(*)::text AS c FROM discovery_channels ${whereSql}`,

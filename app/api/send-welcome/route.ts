@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
   // Fire the Discord notification regardless of email config (best-effort).
   await notifyDiscordBot({ email, source, medium, campaign });
 
-  // Email is optional — if Resend isn't configured, the signup still succeeded.
+  // Email is optional, if Resend isn't configured, the signup still succeeded.
   if (!resend) {
     return NextResponse.json({ ok: true, emailed: false, reason: "not_configured" });
   }
@@ -83,21 +83,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, emailed: true });
   } catch (err) {
     console.error("[send-welcome] failed:", err);
-    // Don't surface a hard error — the signup already succeeded in Firestore.
+    // Don't surface a hard error, the signup already succeeded in Firestore.
     return NextResponse.json({ ok: true, emailed: false, reason: "send_failed" });
   }
 }
 
 const WELCOME_TEXT = `You're on the NicheSpy waitlist
 
-Thanks for joining NicheSpy — the tool that turns hours of YouTube competitor
+Thanks for joining NicheSpy, the tool that turns hours of YouTube competitor
 research into a single 60-second scan. No more tab-hopping, no more spreadsheets.
 
 Here's what NicheSpy does:
-- Competitor Finder — every rival channel in your niche, instantly
-- Outlier Detector — the videos the algorithm is rewarding right now
-- Gap Finder — trending topics nobody has covered yet
-- Viral Alerts — know the moment a competitor starts gaining traction
+- Competitor Finder, every rival channel in your niche, instantly
+- Outlier Detector, the videos the algorithm is rewarding right now
+- Gap Finder, trending topics nobody has covered yet
+- Viral Alerts, know the moment a competitor starts gaining traction
 
 What happens next:
 We're rolling out early access in batches. You'll get an email the moment your
@@ -105,7 +105,7 @@ spot opens, and waitlist members get the best launch pricing.
 
 Want updates sooner? Join the community on Discord: https://discord.gg/7AYW4693XQ
 
-NicheSpy — built for creators who want the edge.`;
+NicheSpy, built for creators who want the edge.`;
 
 // Inline SVG icons (email-safe). Stroke uses the brand blue.
 const BLUE = "#0FA5E9";
@@ -117,7 +117,7 @@ const FEATURES = [
   { t: "Outlier Detector", d: "The videos the algorithm is rewarding right now", icon: ic('<path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/>') },
   { t: "Gap Finder", d: "Trending topics nobody has covered yet", icon: ic('<path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/>') },
   { t: "Viral Alerts", d: "Know the moment a competitor gains traction", icon: ic('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/>') },
-  { t: "Trust Score", d: "A 0–100 health score for any channel — coming soon", icon: ic('<path d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/>') },
+  { t: "Trust Score", d: "A 0–100 health score for any channel, coming soon", icon: ic('<path d="M12 2l8 4v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/>') },
 ];
 
 // Discord glyph for the CTA button
@@ -128,7 +128,7 @@ const WELCOME_HTML = `
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#0a0b10;">
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">You're on the NicheSpy waitlist — here's what it does and what happens next.</div>
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">You're on the NicheSpy waitlist, here's what it does and what happens next.</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0b10;padding:0;font-family:Arial,Helvetica,sans-serif;">
     <tr><td align="center" style="padding:48px 16px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#101218;border:1px solid #1e212b;border-radius:18px;overflow:hidden;">
@@ -180,7 +180,7 @@ const WELCOME_HTML = `
         <tr><td style="padding:32px 40px 0;">
           <div style="border-top:1px solid #1e212b;padding-top:28px;">
             <p style="font-size:14px;line-height:1.7;color:#9aa0ad;margin:0;">
-              We're rolling out early access in batches — you'll get an email the moment your
+              We're rolling out early access in batches, you'll get an email the moment your
               spot opens, and waitlist members lock in the best launch pricing.
             </p>
           </div>
@@ -192,7 +192,7 @@ const WELCOME_HTML = `
             Join the community on Discord
           </a>
           <p style="font-size:13px;color:#6b7280;margin:16px 0 0;">
-            We share progress and answer questions there — come say hi.
+            We share progress and answer questions there, come say hi.
           </p>
         </td></tr>
 
@@ -200,7 +200,7 @@ const WELCOME_HTML = `
         <tr><td align="center" style="padding:36px 40px 44px;">
           <div style="font-size:12px;color:#5b606c;line-height:1.7;">
             You're receiving this because you joined the NicheSpy waitlist.<br>
-            NicheSpy — built for creators who want the edge.
+            NicheSpy, built for creators who want the edge.
           </div>
         </td></tr>
 

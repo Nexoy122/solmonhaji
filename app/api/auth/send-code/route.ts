@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
     }
   } catch (err) {
     console.error("[send-code] ip limit check failed:", err);
-    // non-fatal — continue
+    // non-fatal, continue
   }
 
   // ── Per-email rate limit + resend cooldown ──
@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
 
   // ── Email the code ──
   if (!resend) {
-    console.warn("[send-code] Resend not configured — code:", code);
+    console.warn("[send-code] Resend not configured, code:", code);
     return NextResponse.json({ ok: true, emailed: false, reason: "not_configured" });
   }
   try {

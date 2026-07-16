@@ -6,7 +6,7 @@ import { Reveal } from "../Reveal";
 const FAQS = [
   {
     q: "What exactly does NicheSpy do?",
-    a: "You pick a niche, and NicheSpy automatically finds every relevant competitor channel, surfaces their outlier (over-performing) videos, spots content gaps nobody has covered, and turns winning ideas into ready-to-film scripts — all the research you'd normally do by hand, done in about a minute.",
+    a: "You pick a niche, and NicheSpy automatically finds every relevant competitor channel, surfaces their outlier (over-performing) videos, spots content gaps nobody has covered, and turns winning ideas into ready-to-film scripts, all the research you'd normally do by hand, done in about a minute.",
   },
   {
     q: "Who is it for?",
@@ -14,7 +14,7 @@ const FAQS = [
   },
   {
     q: "How is this different from just using YouTube search?",
-    a: "YouTube search shows you videos. NicheSpy gives you intelligence — it ranks competitors by momentum, detects which videos beat a channel's own average, finds untouched topics, and scores channel health. It's the difference between browsing and analyzing.",
+    a: "YouTube search shows you videos. NicheSpy gives you intelligence, it ranks competitors by momentum, detects which videos beat a channel's own average, finds untouched topics, and scores channel health. It's the difference between browsing and analyzing.",
   },
   {
     q: "Which tools are live right now?",
@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     q: "How much does it cost?",
-    a: "Sign up is free, and beta users get Creator-tier tools unlocked at no cost during early access — plus 50% off for life when paid plans launch. No credit card required to start.",
+    a: "Sign up is free, and beta users get Creator-tier tools unlocked at no cost during early access, plus 50% off for life when paid plans launch. No credit card required to start.",
   },
 ];
 

@@ -47,7 +47,7 @@ function shell(opts: { hero: string; body: string; preheader: string }): string 
         <tr><td align="center" style="padding:26px 32px 30px;border-top:1px solid #1A1D26;">
           <p style="font-size:12px;color:#5A5F6B;margin:0;line-height:1.7;">
             © ${new Date().getFullYear()} NicheSpy · YouTube Shorts intelligence<br>
-            This is an automated message — please don't reply.
+            This is an automated message, please don't reply.
           </p>
         </td></tr>
 
@@ -61,15 +61,13 @@ function shell(opts: { hero: string; body: string; preheader: string }): string 
 // ── Verification code email ───────────────────────────────────────────────────
 export function verificationCodeEmail(code: string, expiryMinutes: number) {
   const subject = `${code} is your NicheSpy verification code`;
-  const preheader = `Your code is ${code} — expires in ${expiryMinutes} minutes.`;
+  const preheader = `Your code is ${code}, expires in ${expiryMinutes} minutes.`;
 
   const text = `Your NicheSpy verification code is: ${code}
 
 Enter this code to finish creating your account. It expires in ${expiryMinutes} minutes.
 
-If you didn't request this, you can safely ignore this email.
-
-— NicheSpy`;
+If you didn't request this, you can safely ignore this email., NicheSpy`;
 
   const hero = `
     <tr><td style="padding:0;">
@@ -97,7 +95,7 @@ If you didn't request this, you can safely ignore this email.
 export function welcomeEmail(name?: string) {
   const greeting = name ? `Welcome, ${name}!` : "Welcome to NicheSpy!";
   const subject = "Welcome to NicheSpy 🎉";
-  const preheader = "Your account is ready — here's what you can do.";
+  const preheader = "Your account is ready, here's what you can do.";
   const dashUrl = SITE_URL ? `${SITE_URL}/dashboard` : "https://nichespy.app/dashboard";
 
   const features = [
@@ -112,11 +110,9 @@ export function welcomeEmail(name?: string) {
 Your account is ready. NicheSpy turns hours of YouTube research into a single dashboard.
 
 What you can do:
-${features.map(([t, d]) => `- ${t} — ${d}`).join("\n")}
+${features.map(([t, d]) => `- ${t}, ${d}`).join("\n")}
 
-Open your dashboard: ${dashUrl}
-
-— The NicheSpy team`;
+Open your dashboard: ${dashUrl}, The NicheSpy team`;
 
   const hero = `
     <tr><td style="padding:0;">
@@ -139,7 +135,7 @@ Open your dashboard: ${dashUrl}
                 <span style="color:${BLUE};font-size:11px;font-weight:700;line-height:16px;">✓</span>
               </td></tr></table>
             </td>
-            <td style="vertical-align:top;font-size:14px;color:#CDD1D9;line-height:1.55;"><strong style="color:#ffffff;">${t}</strong> — ${d}</td>
+            <td style="vertical-align:top;font-size:14px;color:#CDD1D9;line-height:1.55;"><strong style="color:#ffffff;">${t}</strong>, ${d}</td>
           </tr></table>
         </td></tr>`
           )

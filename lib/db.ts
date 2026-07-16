@@ -3,7 +3,7 @@ import { Pool } from "pg";
 
 // ── Postgres connection pool ──────────────────────────────────────────────────
 // The Explore video index lives in Postgres (on the same server as the app) so
-// it can hold unlimited videos with no read caps — unlike Firestore's free tier.
+// it can hold unlimited videos with no read caps, unlike Firestore's free tier.
 // Set DATABASE_URL in .env, e.g.:
 //   DATABASE_URL="postgres://nichespy_user:PASSWORD@localhost:5432/nichespy"
 //

@@ -2,7 +2,7 @@ import { Reveal } from "../Reveal";
 
 const STEPS = [
   { n: "01", title: "Pick your niche", body: "Tell NicheSpy what you make. It instantly maps every competitor and their best-performing videos." },
-  { n: "02", title: "Spot what's working", body: "Outliers, topic gaps, and viral videos surface automatically — ranked by how hard they beat the average." },
+  { n: "02", title: "Spot what's working", body: "Outliers, topic gaps, and viral videos surface automatically, ranked by how hard they beat the average." },
   { n: "03", title: "Make it yours", body: "Turn any winning idea into a hook-first script and hit record. You're first to the topic, every time." },
 ];
 

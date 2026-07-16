@@ -60,7 +60,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">{children}</p>;
 }
 
-// Skeleton shown while analyzing — mirrors the results layout so the page
+// Skeleton shown while analyzing, mirrors the results layout so the page
 // doesn't jump, with the brand letter-loader front and centre.
 function Sk({ className = "" }: { className?: string }) {
   return <div className={`animate-pulse bg-white ${className}`} />;
@@ -124,7 +124,7 @@ function ScoreRing({ score, size = 132 }: { score: number | null; size?: number 
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         {score === null ? (
-          <span className="text-[13px] text-on-surface-variant">—</span>
+          <span className="text-[13px] text-on-surface-variant">,</span>
         ) : (
           <>
             <span className="text-[34px] font-bold leading-none tracking-tight tabular-nums text-on-surface">{rs(score)}</span>
@@ -288,7 +288,7 @@ export function TrustScore() {
           </div>
         </div>
       )}
-      {/* Header — page title lives in the fixed topbar */}
+      {/* Header, page title lives in the fixed topbar */}
       <div className="mb-5">
         <p className="text-[14px] text-on-surface-variant">Connect your channel for a full Trust Score across 5 growth signals.</p>
       </div>
@@ -310,7 +310,7 @@ export function TrustScore() {
         </div>
       )}
 
-      {/* ───── TOP BAR — channel picker + window + actions ───── */}
+      {/* ───── TOP BAR, channel picker + window + actions ───── */}
       <div className="mb-6 flex flex-col gap-3 border-b border-black pb-6 sm:flex-row sm:items-center sm:justify-between">
         <ChannelSwitcher
           channels={channels}
@@ -337,10 +337,10 @@ export function TrustScore() {
         )}
       </div>
 
-      {/* STATE 1 — analyzing */}
+      {/* STATE 1, analyzing */}
       {analyzing && <ResultsSkeleton />}
 
-      {/* STATE 2 — no result yet */}
+      {/* STATE 2, no result yet */}
       {!analyzing && !result && (
         <div className="flex min-h-[440px] flex-col items-center justify-center rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-10 text-center">
           <span className="flex h-16 w-16 items-center justify-center rounded-none bg-white text-black/70">
@@ -352,7 +352,7 @@ export function TrustScore() {
           <p className="mt-2 max-w-[380px] text-[14px] leading-relaxed text-on-surface-variant">
             {connected
               ? "We'll read your private YouTube Analytics and score your channel across 5 growth signals."
-              : "Securely connect your YouTube channel — read-only access to your Analytics."}
+              : "Securely connect your YouTube channel, read-only access to your Analytics."}
           </p>
           <button onClick={connected ? analyze : connect} className="btn-donate mt-6 inline-flex items-center justify-center gap-2 !rounded-none">
             {connected
@@ -362,10 +362,10 @@ export function TrustScore() {
         </div>
       )}
 
-      {/* STATE 3 — results: full-width, score on top */}
+      {/* STATE 3, results: full-width, score on top */}
       {!analyzing && result && (
         <div className="space-y-6">
-          {/* HERO — big centered score */}
+          {/* HERO, big centered score */}
           <div className="relative overflow-hidden rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 px-6 py-10">
             {/* subtle score-colored glow behind the ring */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.12] blur-3xl" style={{ background: scoreHex(result.overall) }} />
@@ -433,7 +433,7 @@ export function TrustScore() {
             </div>
           </div>
 
-          {/* Manual inputs — full width at the end */}
+          {/* Manual inputs, full width at the end */}
           <ManualInputs
             swipeRate={swipeRate} setSwipeRate={setSwipeRate}
             communityStrikes={communityStrikes} setCommunityStrikes={setCommunityStrikes}
@@ -463,7 +463,7 @@ export function TrustScore() {
   );
 }
 
-// In-app confirm dialog — portaled to <body> so the dashboard zoom transform
+// In-app confirm dialog, portaled to <body> so the dashboard zoom transform
 // doesn't push it off-screen. Replaces the native window.confirm().
 function ConfirmModal({
   title, message, confirmLabel = "Confirm", onConfirm, onCancel,
@@ -519,7 +519,7 @@ function ConfidenceBadge({ level }: { level: "high" | "medium" | "low" }) {
   );
 }
 
-// Full breakdown — every individual metric across all categories in a grid.
+// Full breakdown, every individual metric across all categories in a grid.
 function FullBreakdown({ result }: { result: ScoreResult }) {
   const cats: CategoryKey[] = ["engagement", "retention", "upload", "authority", "velocity"];
   const all = cats.flatMap((k) => (result[k] as CategoryScore).metrics ?? []);
@@ -545,14 +545,14 @@ function StatCard({ label, value, foot, up, muted }: { label: string; value: str
     <div className="rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-4">
       <Eyebrow>{label}</Eyebrow>
       <p className={`mt-3 text-[22px] font-bold tracking-tight tabular-nums ${value === null ? "text-on-surface-variant/40" : "text-on-surface"}`}>
-        {value ?? "—"}
+        {value ?? ","}
       </p>
       <p className={`mt-1 text-[11px] font-medium ${muted ? "text-on-surface-variant" : up ? "text-[#34d399]" : "text-on-surface-variant"}`}>{foot}</p>
     </div>
   );
 }
 
-// Compact channel picker for the top bar — shows the active channel and opens a
+// Compact channel picker for the top bar, shows the active channel and opens a
 // dropdown to switch, remove, or add a channel.
 function ChannelSwitcher({
   channels, selected, open, setOpen, onSelect, onConnect, onRemove,
@@ -644,7 +644,7 @@ function ChannelSwitcher({
   );
 }
 
-// Manual inputs the YouTube API can't provide — the creator reads these from
+// Manual inputs the YouTube API can't provide, the creator reads these from
 // YouTube Studio. Feeds swipe rate + strikes + content type into the score.
 function ManualInputs({
   swipeRate, setSwipeRate,
@@ -674,7 +674,7 @@ function ManualInputs({
             <input
               type="number" min={0} max={100} inputMode="decimal"
               value={swipeRate} onChange={(e) => setSwipeRate(e.target.value)}
-              placeholder="—"
+              placeholder=","
               className={`${fieldCls} pr-8 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none`}
             />
             <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[13px] text-on-surface-variant">%</span>
@@ -684,7 +684,7 @@ function ManualInputs({
         <label className="block">
           <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Community strikes</span>
           <select value={communityStrikes} onChange={(e) => setCommunityStrikes(e.target.value)} className={fieldCls}>
-            <option value="">—</option>
+            <option value="">,</option>
             {strikeOpts.map((n) => <option key={n} value={n}>{n}</option>)}
           </select>
         </label>
@@ -692,7 +692,7 @@ function ManualInputs({
         <label className="block">
           <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Copyright strikes</span>
           <select value={copyrightStrikes} onChange={(e) => setCopyrightStrikes(e.target.value)} className={fieldCls}>
-            <option value="">—</option>
+            <option value="">,</option>
             {strikeOpts.map((n) => <option key={n} value={n}>{n}</option>)}
           </select>
         </label>
@@ -700,7 +700,7 @@ function ManualInputs({
         <label className="block">
           <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant/70">Content type</span>
           <select value={contentType} onChange={(e) => setContentType(e.target.value)} className={fieldCls}>
-            <option value="">—</option>
+            <option value="">,</option>
             <option value="shorts">Shorts</option>
             <option value="long">Long-form</option>
             <option value="mixed">Mixed</option>

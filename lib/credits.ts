@@ -6,7 +6,7 @@ import { db, query, dbConfigured } from "@/lib/db";
 // ledger row; balance changes are race-safe (row locks). Credits are only ever
 // GRANTED by the webhook (purchases/renewals) or the weekly free refresh, and
 // only ever SPENT server-side via spendCredits(). The frontend never mutates
-// balances — it only reads them.
+// balances, it only reads them.
 //
 // Keyed by Firebase UID (the app's user id), so no separate users table needed.
 
@@ -86,7 +86,7 @@ async function ensureUser(uid: string): Promise<void> {
 }
 
 // Weekly free refresh: FREE plan users get topped up to FREE_WEEKLY_CREDITS once
-// per 7 days (only if their balance is below that — never reduce a paid balance).
+// per 7 days (only if their balance is below that, never reduce a paid balance).
 async function maybeWeeklyRefresh(uid: string): Promise<void> {
   const rows = await query<CreditRow>(
     `SELECT balance, plan, last_free_refresh FROM user_credits WHERE uid = $1`,
@@ -235,7 +235,7 @@ export class InsufficientCreditsError extends Error {
   }
 }
 
-// Spend credits — RACE-SAFE. Locks the user's row, checks the balance, and
+// Spend credits, RACE-SAFE. Locks the user's row, checks the balance, and
 // deducts atomically so two concurrent requests can't push the balance negative.
 // Throws InsufficientCreditsError if the user can't afford it. Returns the new
 // balance. Call this SERVER-SIDE right before running a paid action.

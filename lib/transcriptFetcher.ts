@@ -38,8 +38,7 @@ export async function analyzeVideoFramesFromFile(videoPath: string): Promise<str
         messages: [{
           role: "user",
           content: [
-            { type: "text", text: "These are sequential frames from a short vertical video that may have NO voiceover. Describe what is happening across the video (the subject, action, story, mood) and transcribe ALL on-screen text exactly. Write it as a clear paragraph a scriptwriter can use to understand the video's message." },
-            ...images,
+            { type: "text", text: "These are sequential frames from a short vertical video that may have NO voiceover. Describe what is happening across the video (the subject, action, story, mood) and transcribe ALL on-screen text exactly. Write it as a clear paragraph a scriptwriter can use to understand the video's message." }, ...images,
           ],
         }],
       }),
@@ -71,7 +70,7 @@ async function fetchViaWhisper(url: string): Promise<string> {
   const outPath = path.join(os.tmpdir(), `yt_audio_${Date.now()}.mp3`);
 
   // Flags that help get past YouTube's bot checks on VPS IPs. If a cookies file
-  // is provided (YT_DLP_COOKIES env → path), use it — most reliable bypass.
+  // is provided (YT_DLP_COOKIES env → path), use it, most reliable bypass.
   const args = [
     "-x", "--audio-format", "mp3", "--audio-quality", "5",
     "--no-playlist", "--no-warnings", "--retries", "3",
@@ -100,7 +99,7 @@ async function fetchViaWhisper(url: string): Promise<string> {
 }
 
 // Send an audio file to Groq Whisper using NATIVE Web FormData + Blob (so Node's
-// global fetch produces a valid multipart body — the form-data stream truncates).
+// global fetch produces a valid multipart body, the form-data stream truncates).
 async function whisperTranscribeFile(filePath: string): Promise<string> {
   const buf = fs.readFileSync(filePath);
   const form = new globalThis.FormData();

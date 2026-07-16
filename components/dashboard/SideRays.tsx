@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Renderer, Program, Triangle, Mesh } from "ogl";
 
-// React Bits "SideRays" — animated WebGL light-ray glow from a corner.
+// React Bits "SideRays", animated WebGL light-ray glow from a corner.
 // Adapted to TypeScript; CSS is inlined on the container (no side CSS file).
 
 type Origin = "top-right" | "top-left" | "bottom-right" | "bottom-left";

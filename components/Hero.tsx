@@ -35,7 +35,7 @@ export function Hero() {
 
         <motion.p custom={2} variants={fadeUp} initial="hidden" animate="show" className="text-body-large mx-auto mt-7 max-w-[640px] text-on-surface-variant">
           NicheSpy is the competitor-intelligence workspace for YouTube creators. Find every
-          competitor, spot their winning videos, and uncover untapped topics —{" "}
+          competitor, spot their winning videos, and uncover untapped topics ,{" "}
           <strong className="font-semibold text-on-surface">without the spreadsheet grind.</strong>
         </motion.p>
 
@@ -44,7 +44,7 @@ export function Hero() {
             <WaitlistForm source="hero" buttonLabel="Join the Waitlist" />
           </div>
 
-          {/* Waitlist perk — single clear callout */}
+          {/* Waitlist perk, single clear callout */}
           <div className="mt-5 inline-flex max-w-[560px] flex-col items-center rounded-2xl border border-primary/30 bg-primary-container/40 px-6 py-4 text-center">
             <span className="flex items-center gap-2 text-[15px] font-semibold text-on-surface md:text-[16px]">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
@@ -53,7 +53,7 @@ export function Hero() {
               Join the waitlist &amp; get exclusive early access at launch
             </span>
             <span className="mt-1.5 text-[14px] text-on-surface-variant">
-              Plus 1 week of our premium tools — completely free.
+              Plus 1 week of our premium tools, completely free.
             </span>
             <span className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1 text-[14px] font-bold text-on-primary md:text-[15px]">
               <span className="h-2 w-2 rounded-full bg-on-primary animate-pulse-dot" />

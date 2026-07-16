@@ -18,10 +18,10 @@ import {
 // KEY GUARANTEE: each channel doc holds ONLY that channel's own recent Shorts.
 // We never mix videos from other channels into a card.
 
-// Channels + blocklist now live in Postgres (see lib/discoveryDb.ts) — unlimited
+// Channels + blocklist now live in Postgres (see lib/discoveryDb.ts), unlimited
 // rows, no Firestore read cap, SQL filter/sort. These two stay tiny in Firestore.
 const META = "discovery_meta";         // doc "state" → { lastCrawl, ... }
-const EXPANSIONS = "discovery_expansions"; // doc per search query → { at } — dedupe live expansion
+const EXPANSIONS = "discovery_expansions"; // doc per search query → { at }, dedupe live expansion
 
 const SHORTS_MAX_SEC = 180;   // Shorts cap (3 min)
 const RECENT_ON_CARD = 3;     // how many of the channel's own Shorts to store for the card
@@ -74,7 +74,7 @@ export interface DiscoveryChannel {
   nicheLabel: string | null;
   format: Format | null;
   faceless: boolean;
-  primaryLanguage: string | null; // ISO code (en, hi, es…) — for language filtering
+  primaryLanguage: string | null; // ISO code (en, hi, es…), for language filtering
   description: string | null;      // channel's About description (trimmed)
   aiTopics: string[];              // AI-extracted topic hashtags (3-8)
   // ── the channel's OWN recent Shorts (never mixed) ──
@@ -269,7 +269,7 @@ async function aiTag(raw: RawChannel, sampleTitles: string[]): Promise<{ niche: 
 Description: ${raw.description.slice(0, 300) || "(none)"}
 Recent Shorts titles:
 ${sampleTitles.slice(0, 8).map((t) => `- ${t.slice(0, 90)}`).join("\n") || "(none)"}`;
-  // Retry on 429 (rate limit) with backoff — the free tier limits are strict.
+  // Retry on 429 (rate limit) with backoff, the free tier limits are strict.
   for (let attempt = 0; attempt < 4; attempt++) {
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -281,21 +281,21 @@ ${sampleTitles.slice(0, 8).map((t) => `- ${t.slice(0, 90)}`).join("\n") || "(non
           messages: [
             { role: "system", content: `You are a strict YouTube Shorts channel classifier. Read the channel name + its recent Short titles and pick the SINGLE niche the CHANNEL is actually about. Return STRICT JSON only: {"niche": <id or null>, "format": <id or null>, "faceless": <bool>, "language": <ISO639-1 or null>, "topics": [<3-6 lowercase one-word topic tags, no # or spaces, e.g. "football","cats","reddit","minecraft">]}.
 
-Work through the niches IN THIS ORDER and STOP at the first one that clearly fits. "commentary" is the LAST resort — only use it if NONE of the others fit. Do NOT default to commentary when unsure.
+Work through the niches IN THIS ORDER and STOP at the first one that clearly fits. "commentary" is the LAST resort, only use it if NONE of the others fit. Do NOT default to commentary when unsure.
 
-1. ranking — the titles literally RANK / LIST / TIER things. Signals: the word "Ranking"/"Ranked", "Top 5/10", "Tier list", "Best... / Worst...", "vs", numbered lists, "from weakest to strongest". If MOST titles do this → niche = "ranking". This beats everything else. (A "Ranking funniest football moments" channel is RANKING, not commentary and not edits.)
+1. ranking, the titles literally RANK / LIST / TIER things. Signals: the word "Ranking"/"Ranked", "Top 5/10", "Tier list", "Best, ... / Worst, ...", "vs", numbered lists, "from weakest to strongest". If MOST titles do this → niche = "ranking". This beats everything else. (A "Ranking funniest football moments" channel is RANKING, not commentary and not edits.)
 
-2. gaming — an actual VIDEO GAME is the subject: Minecraft, Roblox, Fortnite, GTA, gameplay footage, game facts/"did you know", game character skits (Roblox/Minecraft avatars on screen). Roblox or Minecraft avatars in the thumbnails/titles → gaming. (FIFA/eFootball the game = gaming; a REAL football match ≠ gaming.)
+2. gaming, an actual VIDEO GAME is the subject: Minecraft, Roblox, Fortnite, GTA, gameplay footage, game facts/"did you know", game character skits (Roblox/Minecraft avatars on screen). Roblox or Minecraft avatars in the thumbnails/titles → gaming. (FIFA/eFootball the game = gaming; a REAL football match ≠ gaming.)
 
-3. animation — the visuals are ANIMATED / cartoon / drawn (2D/3D animation, animated stories). NOT live-action.
+3. animation, the visuals are ANIMATED / cartoon / drawn (2D/3D animation, animated stories). NOT live-action.
 
-4. captions_only — on-screen TEXT story/facts with NO talking head (text over b-roll, silent reddit-style text, AI-voice facts over stock footage).
+4. captions_only, on-screen TEXT story/facts with NO talking head (text over b-roll, silent reddit-style text, AI-voice facts over stock footage).
 
-5. edits_montages — real clips cut & synced to MUSIC/beat (sports edits, character edits, "velocity edit", montages). Aesthetic, music-driven, minimal talking.
+5. edits_montages, real clips cut & synced to MUSIC/beat (sports edits, character edits, "velocity edit", montages). Aesthetic, music-driven, minimal talking.
 
-6. memes — the point is COMEDY: funny/relatable/brainrot/absurd humor, meme formats, skits made to make you laugh.
+6. memes, the point is COMEDY: funny/relatable/brainrot/absurd humor, meme formats, skits made to make you laugh.
 
-7. commentary — LAST RESORT. A person REACTING to / TALKING OVER / giving opinions on clips, news, or storytime with a voice, that fits none of 1–6. If a channel could be ranking OR commentary, choose RANKING. If it could be gaming OR commentary, choose GAMING.
+7. commentary, LAST RESORT. A person REACTING to / TALKING OVER / giving opinions on clips, news, or storytime with a voice, that fits none of 1–6. If a channel could be ranking OR commentary, choose RANKING. If it could be gaming OR commentary, choose GAMING.
 
 CRITICAL ANTI-CONFUSION RULES:
 - Titles containing "Ranking", "Top N", "Tier", "Best/Worst", or "vs" → ranking (NOT commentary, NOT edits), even if the topic is football or games.
@@ -348,7 +348,7 @@ export async function enrichChannel(raw: RawChannel, sourceKeyword: string | nul
 
   const existing = await getChannel(raw.id);
 
-  // Stats-only refresh (skipAi) reuses the stored tags — a channel's niche
+  // Stats-only refresh (skipAi) reuses the stored tags, a channel's niche
   // doesn't change day to day, so no Groq call is needed.
   const tag = skipAi && existing
     ? { niche: existing.aiNiche, format: existing.format, faceless: existing.faceless, language: existing.primaryLanguage, topics: existing.aiTopics ?? [] }
@@ -469,7 +469,7 @@ export async function seedIndex(): Promise<{ seeds: number; enriched: number }> 
 
 // ── Full-index refresh (vids.so's "video refresh") ──
 // Re-measures EVERY indexed channel whose stats are stale (>24h), no matter how
-// it entered the index — seeds, crawl, or search expansion. Stats only (no AI
+// it entered the index, seeds, crawl, or search expansion. Stats only (no AI
 // re-tagging), so it's cheap: ~2 YouTube units per channel, zero Groq calls.
 // Keeps "+X / 48h" and the Blowing-up ranking honest across the whole index.
 export async function refreshIndex(opts: { max?: number } = {}): Promise<{ stale: number; refreshed: number }> {
@@ -502,7 +502,7 @@ function expansionKey(q: string): string {
 
 // Marks the query as expanded and returns true if it's NEW (caller should then
 // run expandQuery in the background, e.g. via next/server `after`).
-// `force` bypasses the TTL — used by the "Discover more channels" button.
+// `force` bypasses the TTL, used by the "Discover more channels" button.
 export async function startQueryExpansion(q: string, force = false): Promise<boolean> {
   const key = expansionKey(q);
   if (!key || key.length < 3) return false;
@@ -559,7 +559,7 @@ export interface DiscoveryQuery {
   sort?: "blowing_up" | "relevance" | "subscribers" | "views" | "recent";
   minSubs?: number;
   faceless?: boolean;
-  language?: string; // ISO code, e.g. "en" — filter to one primary language
+  language?: string; // ISO code, e.g. "en", filter to one primary language
   limit?: number;
 }
 
@@ -571,11 +571,11 @@ const CHANNEL_CACHE_TTL = 5 * 60 * 1000; // 5 min
 
 // No-op kept so call sites (enrich/delete) stay unchanged. Postgres reads are
 // always live, so nothing to invalidate.
-function invalidateChannelCache() { /* Postgres reads are live — nothing cached */ }
+function invalidateChannelCache() { /* Postgres reads are live, nothing cached */ }
 
-// Seed channels only — the curated set the user provided (niche_channels),
+// Seed channels only, the curated set the user provided (niche_channels),
 // with their enriched data. Each channel keeps the niche the USER put it in
-// (seedNiche) — the source of truth for seeds — separate from the AI's guess.
+// (seedNiche), the source of truth for seeds, separate from the AI's guess.
 let seedNicheCache: { at: number; map: Map<string, NicheId> } | null = null;
 async function getSeedNicheMap(): Promise<Map<string, NicheId>> {
   if (seedNicheCache && Date.now() - seedNicheCache.at < CHANNEL_CACHE_TTL) return seedNicheCache.map;

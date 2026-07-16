@@ -105,7 +105,7 @@ export function AiChatPanel({
   );
 
   // A new analysis (different overall+label) should start a fresh conversation.
-  // We DON'T reset on close — history persists when you re-open the panel.
+  // We DON'T reset on close, history persists when you re-open the panel.
   const scoreKey = score ? `${Math.round(score.overall)}-${score.label}-${channelName ?? ""}` : "";
   const prevKeyRef = useRef<string>("");
   useEffect(() => {

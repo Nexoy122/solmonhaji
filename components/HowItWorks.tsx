@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 const STEPS = [
   { n: "01", name: "Type your niche", desc: '"personal finance for millennials", "budget travel vlogs", "AI tool reviews." NicheSpy reads context, not just keywords.' },
-  { n: "02", name: "Get your competitor map", desc: "In seconds, every relevant channel appears — ranked by size, activity, and engagement. See who you're up against." },
+  { n: "02", name: "Get your competitor map", desc: "In seconds, every relevant channel appears, ranked by size, activity, and engagement. See who you're up against." },
   { n: "03", name: "Act on the intel", desc: "Spot the gaps, steal the formats that work, and get alerted the moment the landscape shifts." },
 ];
 

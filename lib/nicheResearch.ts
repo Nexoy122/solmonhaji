@@ -51,7 +51,7 @@ export interface ViralVideo {
   views: number;
   url: string;
   outlierX: number;      // how many times the channel's average
-  publishedAt?: string;  // ISO — for the "Xd ago" chip
+  publishedAt?: string;  // ISO, for the "Xd ago" chip
 }
 
 export interface RankedChannel {
@@ -109,7 +109,7 @@ export async function getNicheChannels(niche: NicheId): Promise<string[]> {
   return (d?.seeds as string[]) ?? (d?.channelIds as string[]) ?? [];
 }
 
-// Alias — in the seeds-only model the tracked set and the seed set are the same.
+// Alias, in the seeds-only model the tracked set and the seed set are the same.
 export async function getNicheSeeds(niche: NicheId): Promise<string[]> {
   return getNicheChannels(niche);
 }
@@ -229,7 +229,7 @@ export async function refreshNiche(niche: NicheId): Promise<NicheRecap> {
   await adminDb().collection(CH_LIST).doc(niche).set({ channelIds, seeds: seeds.length ? seeds : channelIds }, { merge: true });
 
   // Guard: if we HAVE seed channels but fetched ZERO stats, the YouTube fetch
-  // failed (quota/rate-limit) — do NOT overwrite a good prior recap with an
+  // failed (quota/rate-limit), do NOT overwrite a good prior recap with an
   // empty one. Keep the last recap and bail.
   if (channelIds.length > 0 && now.length === 0) {
     const prior = await getRecap(niche);
@@ -317,7 +317,7 @@ async function generateBrief(
 ): Promise<string> {
   if (!process.env.GROQ_API_KEY) return "";
   const hasPrior = d.hasPrior;
-  const topViral = d.viral.slice(0, 5).map((v) => `"${v.title}" by ${v.channelName} — ${fmt(v.views)} views (${v.outlierX.toFixed(1)}x outlier)`).join("; ");
+  const topViral = d.viral.slice(0, 5).map((v) => `"${v.title}" by ${v.channelName}, ${fmt(v.views)} views (${v.outlierX.toFixed(1)}x outlier)`).join("; ");
   try {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -327,7 +327,7 @@ async function generateBrief(
         temperature: 0.7,
         max_tokens: 320,
         messages: [
-          { role: "system", content: "You are a YouTube Shorts niche analyst. Write ONE punchy paragraph (4-6 sentences) recapping the week in a niche: what's winning, the standout viral videos + why they worked (patterns in titles/hooks), and ONE concrete, actionable takeaway for a creator. No preamble, no bullet points. NEVER say the niche is 'dead', 'halted', or growth is 'zero' — if week-over-week numbers aren't available yet, simply focus on the viral videos and what's resonating." },
+          { role: "system", content: "You are a YouTube Shorts niche analyst. Write ONE punchy paragraph (4-6 sentences) recapping the week in a niche: what's winning, the standout viral videos + why they worked (patterns in titles/hooks), and ONE concrete, actionable takeaway for a creator. No preamble, no bullet points. NEVER say the niche is 'dead', 'halted', or growth is 'zero', if week-over-week numbers aren't available yet, simply focus on the viral videos and what's resonating." },
           { role: "user", content: hasPrior
             ? `Niche: ${label} Shorts. This week: ${fmt(d.viewsGained)} views gained across ${d.now} tracked channels, ${fmt(d.subsGained)} subs gained, ${d.newUploads} new uploads, ${d.viralityRate}% hit 2x+ outlier. Top viral: ${topViral || "none major"}. Write the brief.`
             : `Niche: ${label} Shorts, across ${d.now} tracked channels. (Week-over-week growth data starts next week.) The standout viral videos right now: ${topViral || "none major"}. Analyze what's working in this niche based on these viral videos and give a concrete takeaway. Do NOT mention growth numbers.` },
@@ -351,7 +351,7 @@ function fmt(n: number): string {
 
 // Common title-pattern detection (code, not AI → accurate).
 const HOOK_PATTERNS: [RegExp, string][] = [
-  [/\bpov\b/i, "POV:"], [/\bbro\b/i, "\"Bro...\""], [/\bwhen\b/i, "\"When...\""],
+  [/\bpov\b/i, "POV:"], [/\bbro\b/i, "\"Bro, ...\""], [/\bwhen\b/i, "\"When, ...\""],
   [/\bhow to\b/i, "How-to"], [/\btop \d/i, "Top-N lists"], [/\branking\b/i, "Ranking"],
   [/\bvs\.?\b/i, "X vs Y"], [/\byou (won't|wont|never)\b/i, "\"You won't believe\""],
   [/\?$/, "Question hooks"], [/🥀|😭|💀|😳/, "Emoji hooks"], [/#\w+/, "Hashtag-heavy"],
@@ -382,7 +382,7 @@ async function clusterSubNiches(label: string, niche: NicheId, videos: ViralVide
         model: "llama-3.3-70b-versatile",
         temperature: 0.2, max_tokens: 700, response_format: { type: "json_object" },
         messages: [
-          { role: "system", content: `You group YouTube ${label} Shorts into BROAD sub-niches. Assign EACH video index to a short sub-niche name (2-3 words, Title Case). CRITICAL: use only 4-6 BROAD sub-niches total — group aggressively, reuse names, do NOT create one per video. Return STRICT JSON: {"assignments":{"0":"Name",...}} covering every index.` },
+          { role: "system", content: `You group YouTube ${label} Shorts into BROAD sub-niches. Assign EACH video index to a short sub-niche name (2-3 words, Title Case). CRITICAL: use only 4-6 BROAD sub-niches total, group aggressively, reuse names, do NOT create one per video. Return STRICT JSON: {"assignments":{"0":"Name", ...}} covering every index.` },
           { role: "user", content: list },
         ],
       }),
@@ -454,7 +454,7 @@ async function clusterSubNiches(label: string, niche: NicheId, videos: ViralVide
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile", temperature: 0.6, max_tokens: 700, response_format: { type: "json_object" },
           messages: [
-            { role: "system", content: `You are a YouTube Shorts strategist. For each ${label} sub-niche given, write: "insight" = 1 sentence on WHY it's winning right now, and "angle" = 1 specific, concrete content idea a creator could make. Be sharp and specific to the examples. Return STRICT JSON: {"SubNicheName":{"insight":"...","angle":"..."}, ...}` },
+            { role: "system", content: `You are a YouTube Shorts strategist. For each ${label} sub-niche given, write: "insight" = 1 sentence on WHY it's winning right now, and "angle" = 1 specific, concrete content idea a creator could make. Be sharp and specific to the examples. Return STRICT JSON: {"SubNicheName":{"insight":", ...","angle":", ..."}, ...}` },
             { role: "user", content: summary },
           ],
         }),
@@ -496,7 +496,7 @@ export async function getRecapForWeek(niche: NicheId, weekKey: string): Promise<
 }
 
 export async function refreshAllIfDue(): Promise<{ refreshed: boolean }> {
-  // Shared weekly slot (Monday 04:00 UTC) — same clock as Explore + Discover.
+  // Shared weekly slot (Monday 04:00 UTC), same clock as Explore + Discover.
   const first = await getRecap(NICHES[0].id);
   if (first && !isWeeklyRefreshDue(first.updatedAt)) return { refreshed: false };
   await refreshAllNiches();

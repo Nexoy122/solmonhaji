@@ -83,7 +83,7 @@ function AuditingLoader({ progress }: { progress: string }) {
       </div>
       <div className="text-center">
         <p className="text-[14px] font-semibold text-on-surface">{progress || "Processing…"}</p>
-        <p className="mt-1.5 text-[12px] text-on-surface-variant">Downloading, transcribing & reviewing your best and worst Shorts — this takes 8–15 minutes.</p>
+        <p className="mt-1.5 text-[12px] text-on-surface-variant">Downloading, transcribing & reviewing your best and worst Shorts, this takes 8–15 minutes.</p>
       </div>
     </div>
   );
@@ -199,7 +199,7 @@ export function ChannelAudit() {
     <div className="dash-fade-up w-full overflow-x-hidden">
       {/* Intro */}
       <div className="mb-6">
-        <p className="text-[14px] text-on-surface-variant">A full Shorts review — hooks, editing, voiceover, music &amp; captions — from your best 5 &amp; worst 5 Shorts.</p>
+        <p className="text-[14px] text-on-surface-variant">A full Shorts review, hooks, editing, voiceover, music &amp; captions, from your best 5 &amp; worst 5 Shorts.</p>
       </div>
 
       {error && (
@@ -219,13 +219,13 @@ export function ChannelAudit() {
         </div>
       )}
 
-      {/* STATE 1 — running */}
+      {/* STATE 1, running */}
       {running && <AuditingLoader progress={progress} />}
 
-      {/* STATE 2 — input (two ways to audit) */}
+      {/* STATE 2, input (two ways to audit) */}
       {!running && !result && (
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          {/* Deep audit — your own channel */}
+          {/* Deep audit, your own channel */}
           <div className="flex flex-col rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-[#D02020]/10 text-[#D02020]">
@@ -245,7 +245,7 @@ export function ChannelAudit() {
                 : "Connect your YouTube for a deep audit with your real retention, traffic & conversion data layered on top of the video review."}
             </p>
 
-            {/* Connected channels — selectable */}
+            {/* Connected channels, selectable */}
             {connected && channels.length > 0 && (
               <div className="mt-4 space-y-2">
                 <Eyebrow>Select a channel to audit</Eyebrow>
@@ -290,7 +290,7 @@ export function ChannelAudit() {
             )}
           </div>
 
-          {/* Public audit — any channel */}
+          {/* Public audit, any channel */}
           <div className="flex flex-col rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 p-6">
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-white text-black/70">
@@ -317,7 +317,7 @@ export function ChannelAudit() {
         </div>
       )}
 
-      {/* STATE 3 — result */}
+      {/* STATE 3, result */}
       {!running && result && <Results r={result} deep={isDeep} onReset={() => { setResult(null); setChannel(""); }} />}
     </div>
   );
@@ -326,7 +326,7 @@ export function ChannelAudit() {
 function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset: () => void }) {
   return (
     <div className="space-y-6 overflow-x-hidden">
-      {/* HERO — score on top */}
+      {/* HERO, score on top */}
       <div className="relative overflow-hidden rounded-none border-2 border-black bg-white shadow-[5px_5px_0px_0px_#121212] md:border-4 px-6 py-10">
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.12] blur-3xl" style={{ background: overallHex(r.overall) }} />
         <div className="relative flex flex-col items-center text-center">
@@ -416,7 +416,7 @@ function Results({ r, deep, onReset }: { r: AuditResult; deep: boolean; onReset:
         )}
       </div>
 
-      {/* Coach review — wrapped in the animated AI border glow */}
+      {/* Coach review, wrapped in the animated AI border glow */}
       {r.coachReview && (
         <BorderGlow borderRadius={0} backgroundColor="#ffffff" glowColor="0 0 100" glowIntensity={0.5} mesh>
           <div className="p-6">

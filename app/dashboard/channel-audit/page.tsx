@@ -1,6 +1,6 @@
 // Channel Audit is temporarily disabled ("Soon"). The full tool lives in
 // components/dashboard/ChannelAudit.tsx and the /api/audit* routes + audit-worker
-// — re-enable by restoring the <ChannelAudit /> render below and removing the
+//, re-enable by restoring the <ChannelAudit /> render below and removing the
 // `soon: true` flag on the sidebar nav item in DashboardShell.tsx.
 
 function Icon({ d, size = 30 }: { d: string; size?: number }) {
@@ -23,7 +23,7 @@ export default function ChannelAuditPage() {
           <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[11px] font-semibold text-white/60">Soon</span>
         </div>
         <p className="mt-3 text-[14px] leading-relaxed text-on-surface-variant">
-          A full AI review of your Shorts — hooks, editing, voiceover, music &amp; captions.
+          A full AI review of your Shorts, hooks, editing, voiceover, music &amp; captions.
           We&apos;re putting the finishing touches on it. Check back shortly.
         </p>
       </div>

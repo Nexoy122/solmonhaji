@@ -1,6 +1,6 @@
 import { Reveal } from "../Reveal";
 
-// Testimonials / reviews. Placeholder content — swap names/quotes/avatars for
+// Testimonials / reviews. Placeholder content, swap names/quotes/avatars for
 // real ones later. No real images (initials avatars).
 type Review = { name: string; handle: string; quote: string; subs: string };
 

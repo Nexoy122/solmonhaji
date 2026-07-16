@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequest } from "@/lib/firebaseAdmin";
+import { hasRole } from "@/lib/admin";
 import { NICHES, NicheId, resolveChannelIds, getNicheChannels, setNicheChannels } from "@/lib/nicheResearch";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 // Admin UIDs allowed to seed the tracked channel lists.
-const ADMIN_UIDS = (process.env.ADMIN_UIDS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 
 // POST /api/niche-research/seed  { niche, channels: string[], replace?: boolean }
 // Resolves handles/URLs/IDs → channel IDs and stores them for the niche.
 export async function POST(req: NextRequest) {
   const uid = await verifyRequest(req.headers.get("authorization"));
   if (!uid) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (ADMIN_UIDS.length > 0 && !ADMIN_UIDS.includes(uid)) {
+  if (!hasRole(uid, "admin")) {
     return NextResponse.json({ error: "Admin only." }, { status: 403 });
   }
 
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const uid = await verifyRequest(req.headers.get("authorization"));
   if (!uid) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (ADMIN_UIDS.length > 0 && !ADMIN_UIDS.includes(uid)) {
+  if (!hasRole(uid, "admin")) {
     return NextResponse.json({ error: "Admin only." }, { status: 403 });
   }
   const counts: Record<string, number> = {};

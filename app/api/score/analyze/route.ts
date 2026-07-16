@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
     let quotaExceeded = false;
 
     // The channel's "uploads" playlist is the authoritative, complete, date-ordered
-    // list of every upload — far more reliable than search.list (which can return
+    // list of every upload, far more reliable than search.list (which can return
     // nothing or stale results and is quota-heavy).
     const uploadsPlaylist: string | undefined =
       ch.contentDetails?.relatedPlaylists?.uploads;
@@ -214,8 +214,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // If we couldn't read the channel's uploads, don't fabricate upload stats —
-    // tell the user the real reason (usually the daily YouTube API quota).
+    // If we couldn't read the channel's uploads, don't fabricate upload stats, // tell the user the real reason (usually the daily YouTube API quota).
     if (!videoDataLoaded) {
       return NextResponse.json(
         {
@@ -228,7 +227,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Charge credits — only now, after all validation passed and we're about to
+    // Charge credits, only now, after all validation passed and we're about to
     // run the (paid) analytics pull. Avoids charging for early error returns.
     const charge = await chargeCredits(uid, "trustScore");
     if (!charge.ok) return charge.response;

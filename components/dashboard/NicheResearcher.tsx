@@ -102,10 +102,10 @@ export function NicheResearcher() {
 
   return (
     <div className="dash-fade-up w-full overflow-x-hidden">
-      {/* Header — the page title lives in the fixed topbar (no duplicate H1). */}
-      <p className="mb-4 text-[14.5px] text-on-surface-variant">What happened in every niche this week — virals, movers, and where the opportunity is.</p>
+      {/* Header, the page title lives in the fixed topbar (no duplicate H1). */}
+      <p className="mb-4 text-[14.5px] text-on-surface-variant">What happened in every niche this week, virals, movers, and where the opportunity is.</p>
 
-      {/* Niche tabs — Uiverse gradient (btn-donate) */}
+      {/* Niche tabs, Uiverse gradient (btn-donate) */}
       <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
         {tabNiches.map((n) => (
           <button
@@ -151,7 +151,7 @@ export function NicheResearcher() {
       {/* ── A niche is picked and loaded: real content ── */}
       {picked && !loading && (
         <>
-          {/* AI ANALYSIS panel — premium animated border glow */}
+          {/* AI ANALYSIS panel, premium animated border glow */}
           <p className="mb-2 text-[13px] text-on-surface-variant">AI reads the whole niche and tells you exactly where the gap is.</p>
           <BorderGlow borderRadius={16} backgroundColor="#F0F0F0" glowColor="0 0 100" glowIntensity={0.5} className="mb-1">
             <div className="p-6">
@@ -166,7 +166,7 @@ export function NicheResearcher() {
             </div>
           </BorderGlow>
 
-          {/* Week history dropdown — full width */}
+          {/* Week history dropdown, full width */}
           {weeks.length > 0 && (
             <div className="relative mt-5">
               <button
@@ -209,7 +209,7 @@ export function NicheResearcher() {
           ) : (
             <>
               {/* Stats at a glance */}
-              <p className="mb-3 mt-6 text-[13px] text-on-surface-variant">The numbers at a glance — channels, videos, and how often they go viral.</p>
+              <p className="mb-3 mt-6 text-[13px] text-on-surface-variant">The numbers at a glance, channels, videos, and how often they go viral.</p>
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                 <StatCard icon="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" label="Views Gained" value={`+${fmt(recap.viewsGained)}`} foot={`across ${recap.trackedChannels} tracked channels`} trend={recap.viewsGained > 0 ? "up" : "flat"} />
                 <StatCard icon="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" label="Subs Gained" value={`+${fmt(recap.subsGained)}`} foot="net across the niche" trend={recap.subsGained > 0 ? "up" : "flat"} />
@@ -256,7 +256,7 @@ export function NicheResearcher() {
                 </div>
               </div>
 
-              {/* Sub-niche breakdown — at the bottom */}
+              {/* Sub-niche breakdown, at the bottom */}
               {recap.subNiches?.length > 0 && (
                 <div className="mt-8">
                   <SectionHead
@@ -278,7 +278,7 @@ export function NicheResearcher() {
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/40 px-4 text-center backdrop-blur-[1px]">
                         <span className="flex h-11 w-11 items-center justify-center border-2 border-black bg-[#F0C020] text-black shadow-[3px_3px_0px_0px_#121212]"><LockIcon size={20} /></span>
                         <p className="text-[15px] font-black uppercase tracking-tight text-black">Sub-niche breakdown is a Pro feature</p>
-                        <p className="max-w-[420px] text-[13px] font-medium text-black/70">Unlock all {recap.subNiches.length} sub-niches — viral rate, weekly movement, and the channels driving each one — on any paid plan.</p>
+                        <p className="max-w-[420px] text-[13px] font-medium text-black/70">Unlock all {recap.subNiches.length} sub-niches, viral rate, weekly movement, and the channels driving each one, on any paid plan.</p>
                         <Link href="/dashboard/plans" className="mt-1 inline-flex items-center gap-2 border-2 border-black bg-[#D02020] px-4 py-2 text-[13px] font-black uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">Upgrade plan</Link>
                       </div>
                     </div>
@@ -308,7 +308,7 @@ function SectionHead({ icon, title, subtitle, iconColor }: { icon: string; title
   );
 }
 
-// Rocket "speeder" loader (Uiverse by anand_4957) — one loader for the whole
+// Rocket "speeder" loader (Uiverse by anand_4957), one loader for the whole
 // page while the niche's recap + AI analysis load together.
 function RocketLoader({ label }: { label: string }) {
   return (
@@ -461,7 +461,7 @@ function SubNicheCard({ s }: { s: SubNiche }) {
         )}
       </div>
 
-      {/* Actionable idea — the key takeaway */}
+      {/* Actionable idea, the key takeaway */}
       {s.contentAngle && (
         <div className="mt-2.5 flex gap-2 rounded-md border border-black bg-white p-2.5">
           <span className="mt-0.5 shrink-0 text-black/60"><Icon d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" size={13} /></span>
@@ -469,7 +469,7 @@ function SubNicheCard({ s }: { s: SubNiche }) {
         </div>
       )}
 
-      {/* Examples + patterns — compact footer */}
+      {/* Examples + patterns, compact footer */}
       {(s.examples.length > 0 || s.titlePatterns.length > 0) && (
         <div className="mt-2.5 flex items-end gap-2">
           {s.examples.slice(0, 3).map((e) => (
@@ -500,7 +500,7 @@ function VideoGrid({ videos }: { videos: ViralVideo[] }) {
         const ago = timeAgo(v.publishedAt);
         return (
           <div key={v.id} className="group flex flex-col overflow-hidden rounded-none border border-black bg-white transition-colors hover:border-black">
-            {/* 9:16 thumbnail — click to open the Short on YouTube */}
+            {/* 9:16 thumbnail, click to open the Short on YouTube */}
             <a href={v.url} target="_blank" rel="noopener noreferrer" className="group/thumb relative block aspect-[9/16] overflow-hidden bg-white">
               {v.thumbnail && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -548,7 +548,7 @@ function VideoGrid({ videos }: { videos: ViralVideo[] }) {
   );
 }
 
-// trend: "up" (green ↗), "down" (red ↘), or "flat" (grey —) arrow beside the value.
+// trend: "up" (green ↗), "down" (red ↘), or "flat" (grey ) arrow beside the value.
 function StatCard({ icon, label, value, foot, trend = "flat" }: { icon: string; label: string; value: string; foot: string; trend?: "up" | "down" | "flat" }) {
   const arrow =
     trend === "up" ? { d: "M7 17L17 7M17 7H8M17 7v9", c: "#34d399" } :

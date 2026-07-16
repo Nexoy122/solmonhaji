@@ -19,7 +19,7 @@ export function AnimatedShowcase() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [active, setActive] = useState(0);
 
-  // responsive scaling — internal coords are always 1280×720
+  // responsive scaling, internal coords are always 1280×720
   useEffect(() => {
     const hero = heroRef.current;
     const stage = stageRef.current;
@@ -92,7 +92,7 @@ export function AnimatedShowcase() {
         <div className="ns-layer ns-grid" />
         <div className="ns-layer ns-radar" />
 
-        {/* SCENE 0 — hook */}
+        {/* SCENE 0, hook */}
         <section className={sc(0)} id="s0">
           <svg className="ns-reticle" viewBox="0 0 100 100" fill="none" stroke="#0fa5e9" strokeWidth=".5">
             <circle cx="50" cy="50" r="46" /><circle cx="50" cy="50" r="30" /><circle cx="50" cy="50" r="14" />
@@ -108,7 +108,7 @@ export function AnimatedShowcase() {
           </h1>
         </section>
 
-        {/* SCENE 1 — Competitor Finder */}
+        {/* SCENE 1, Competitor Finder */}
         <section className={sc(1)} id="s1">
           <div className="ns-tag"><span className="ns-num">01</span>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></svg>
@@ -127,7 +127,7 @@ export function AnimatedShowcase() {
           </div>
         </section>
 
-        {/* SCENE 2 — Outlier Detector */}
+        {/* SCENE 2, Outlier Detector */}
         <section className={sc(2)} id="s2">
           <div className="ns-tag"><span className="ns-num">02</span>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 8-8" /><path d="M21 7v5h-5" /></svg>
@@ -149,24 +149,24 @@ export function AnimatedShowcase() {
           </div>
         </section>
 
-        {/* SCENE 3 — Viral Alerts */}
+        {/* SCENE 3, Viral Alerts */}
         <section className={sc(3)} id="s3">
           <div className="ns-tag"><span className="ns-num">03</span>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10 21a2 2 0 004 0" /></svg>
             Viral Alerts</div>
           <div className="ns-toast" style={{ ["--d" as string]: ".1s" }}>
             <div className="ns-bell"><svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10 21a2 2 0 004 0" /></svg></div>
-            <div><div className="ns-t1">Midnight Files just posted</div><div className="ns-t2">Gaining traction fast — <b>+18K views</b> in 2h</div></div>
+            <div><div className="ns-t1">Midnight Files just posted</div><div className="ns-t2">Gaining traction fast, <b>+18K views</b> in 2h</div></div>
             <div className="ns-live"><span className="ns-pdot" />Live</div>
           </div>
           <div className="ns-toast" style={{ ["--d" as string]: ".4s" }}>
             <div className="ns-bell"><svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 8-8" /><path d="M21 7v5h-5" /></svg></div>
-            <div><div className="ns-t1">Outlier detected in your niche</div><div className="ns-t2">Tracking <b>9× average</b> — act before it peaks</div></div>
+            <div><div className="ns-t1">Outlier detected in your niche</div><div className="ns-t2">Tracking <b>9× average</b>, act before it peaks</div></div>
             <div className="ns-live"><span className="ns-pdot" />Live</div>
           </div>
         </section>
 
-        {/* SCENE 4 — CTA */}
+        {/* SCENE 4, CTA */}
         <section className={sc(4)} id="s4">
           <div className="ns-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -186,7 +186,7 @@ export function AnimatedShowcase() {
   );
 }
 
-// count-up helper — runs on the active scene's counters
+// count-up helper, runs on the active scene's counters
 function runCounters(root: HTMLElement | null, sceneId: string) {
   if (!root) return;
   const scene = root.querySelector(`#${sceneId}`);
@@ -270,14 +270,14 @@ const CSS = `
 .ns-avg{ position:absolute; left:0; right:0; bottom:96px; border-top:2px dashed rgba(255,255,255,.35) }
 .ns-avg span{ position:absolute; right:0; top:-26px; font-size:13px; color:var(--mut); letter-spacing:.08em; text-transform:uppercase }
 .ns-bar{ width:36px; border-radius:8px 8px 0 0; height:0; background:linear-gradient(180deg,#3a3a5c,#26263f) }
-.ns-scene.ns-active .ns-bar{ animation:ns-growBar .7s var(--d) cubic-bezier(.2,.8,.2,1) both }
+.ns-scene.ns-active .ns-bar{ animation:ns-growBar .7s var(--d) cubic-bezier(.2.8.2,1) both }
 .ns-bar.ns-out{ background:linear-gradient(180deg,var(--red2),var(--red)); box-shadow:0 0 34px var(--glow) }
 .ns-callout{ position:absolute; top:8px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:8px; padding:10px 16px; border-radius:12px; background:var(--red); color:#fff; font-weight:800; font-size:18px; box-shadow:0 0 30px var(--glow) }
 .ns-callout svg{ width:18px; height:18px; stroke:#fff }
 .ns-scene.ns-active .ns-callout{ animation:ns-popGlowC .55s 1s both }
 
 .ns-toast{ display:flex; align-items:center; gap:16px; width:560px; padding:20px 22px; margin:10px 0; border:1px solid rgba(255,255,255,.1); border-radius:16px; text-align:left; background:linear-gradient(180deg,rgba(20,20,38,.92),rgba(13,13,26,.92)); backdrop-filter:blur(8px); box-shadow:0 24px 60px -26px #000 }
-.ns-scene.ns-active .ns-toast{ animation:ns-slideInRight .6s var(--d) cubic-bezier(.2,.8,.2,1) both }
+.ns-scene.ns-active .ns-toast{ animation:ns-slideInRight .6s var(--d) cubic-bezier(.2.8.2,1) both }
 .ns-bell{ width:46px; height:46px; border-radius:12px; flex:none; display:flex; align-items:center; justify-content:center; background:rgba(15,165,233,.16) }
 .ns-bell svg{ width:24px; height:24px; stroke:var(--red) }
 .ns-scene.ns-active .ns-bell svg{ animation:ns-ring 1.4s ease-in-out infinite }
@@ -320,6 +320,6 @@ const CSS = `
 @keyframes ns-drift1{ 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,40px)} }
 @keyframes ns-drift2{ 0%,100%{transform:translate(0,0)} 50%{transform:translate(-50px,-30px)} }
 @media (prefers-reduced-motion: reduce){
-  .ns-grid,.ns-radar,.ns-blob,.ns-reticle,.ns-btn::after,.ns-bell svg,.ns-live .ns-pdot{ animation:none !important }
+  .ns-grid.ns-radar.ns-blob.ns-reticle.ns-btn::after.ns-bell svg.ns-live .ns-pdot{ animation:none !important }
 }
 `;

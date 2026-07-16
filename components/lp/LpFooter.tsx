@@ -34,7 +34,7 @@ export function LpFooter() {
             </div>
             <p className="mt-4 max-w-[300px] text-[15px] leading-relaxed text-white/50">
               The competitor-intelligence workspace for YouTube creators. Spy on your niche,
-              find what works, and grow faster — without the spreadsheet grind.
+              find what works, and grow faster, without the spreadsheet grind.
             </p>
             <div className="mt-5 flex items-center gap-2.5">
               <a
@@ -104,7 +104,7 @@ export function LpFooter() {
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/[0.07] pt-7 text-center md:flex-row md:text-left">
           <p className="text-[14px] text-white/45">
-            © {new Date().getFullYear()} NicheSpy — Built for creators who want the edge.
+            © {new Date().getFullYear()} NicheSpy, Built for creators who want the edge.
           </p>
           <div className="flex items-center gap-6 text-[14px] text-white/45">
             <Link href="/privacy" className="transition-colors hover:text-[#01D4FF]">Privacy</Link>

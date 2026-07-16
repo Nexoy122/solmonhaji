@@ -1,5 +1,5 @@
 /**
- * Eggar Trust Score Engine — YouTube SHORTS channel health scoring.
+ * Eggar Trust Score Engine, YouTube SHORTS channel health scoring.
  *
  * This tool scores Shorts-first channels, so every benchmark below is tuned to
  * Shorts norms (much higher completion/retention, daily posting, feed-driven
@@ -67,7 +67,7 @@ export interface MetricInput {
   // ── NEW real signals ──
   savesRate: number;              // playlist adds / views * 100
   browsePct: number;              // % views from browse/home + subscriber feed
-  suggestedPct: number;           // % views from suggested (RELATED_VIDEO) — algorithm push
+  suggestedPct: number;           // % views from suggested (RELATED_VIDEO), algorithm push
   searchPct: number;              // % views from YouTube search
   externalPct: number;            // % views from off-platform
   subscriberViewPct: number;      // % views from subscribed viewers (loyalty)
@@ -76,7 +76,7 @@ export interface MetricInput {
   hasDislikeData?: boolean;       // did Analytics return real like/dislike counts?
   hasSavesData?: boolean;         // did videosAddedToPlaylists return real data?
 
-  // ── Manual inputs (data YouTube's API can't give — user types from Studio) ──
+  // ── Manual inputs (data YouTube's API can't give, user types from Studio) ──
   manualSwipeRate?: number;       // swipe rate % from Studio (Shorts feed retention)
   communityStrikes?: number;      // active community guideline strikes (0-3)
   copyrightStrikes?: number;      // active copyright strikes (0-3)
@@ -182,7 +182,7 @@ function trustBadge(score: number): ScoreResult["trustBadge"] {
 }
 
 /**
- * Satura-style trust tier — what the score means for algorithmic distribution.
+ * Satura-style trust tier, what the score means for algorithmic distribution.
  *   75+   High trust    → "Algorithm actively promotes your content"
  *   50-74 Medium trust  → "Content gets tested but not pushed"
  *   <50   Low trust     → "Limited distribution, small test audiences"
@@ -268,7 +268,7 @@ function uploadFreqScore(uploadsPerMonth: number, isShorts = false): number {
     // Shorts reward DAILY posting. YouTube favors creators who post every day and
     // penalizes skipped days, so the target is ~30/month (daily) and anything less
     // than near-daily is treated as below par.
-    if (uploadsPerMonth >= 30) return 100; // daily — ideal
+    if (uploadsPerMonth >= 30) return 100; // daily, ideal
     if (uploadsPerMonth >= 26) return 92;  // ~6 days/week
     if (uploadsPerMonth >= 22) return 82;  // ~5 days/week
     if (uploadsPerMonth >= 17) return 68;  // ~4 days/week
@@ -322,7 +322,7 @@ function strikePenalty(community = 0, copyright = 0): { mult: number; total: num
 export function calculateEngagement(input: MetricInput): CategoryScore {
   const metrics: MetricResult[] = [];
 
-  // 1. Like rate (weight 26%) — primary engagement signal
+  // 1. Like rate (weight 26%), primary engagement signal
   const likeRate = input.likeRate > 0
     ? input.likeRate
     : input.avgViewsPerVideo > 0 ? (input.avgLikes / input.avgViewsPerVideo) * 100 : 0;
@@ -343,12 +343,12 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
     hasIssue: likeScore < 45,
     issueLevel: likeScore < 25 ? "critical" : likeScore < 45 ? "warning" : null,
     recommendation: likeScore < 45
-      ? "Low like rate. Ask viewers to like within the first 30 seconds — early engagement is weighted heavily by the algorithm."
+      ? "Low like rate. Ask viewers to like within the first 30 seconds, early engagement is weighted heavily by the algorithm."
       : null,
     trend: null,
   });
 
-  // 2. Comment rate (weight 18%) — strongest social signal
+  // 2. Comment rate (weight 18%), strongest social signal
   const commentRate = input.commentRate > 0
     ? input.commentRate
     : input.avgViewsPerVideo > 0 ? (input.avgComments / input.avgViewsPerVideo) * 100 : 0;
@@ -368,12 +368,12 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
     hasIssue: commentScore < 40,
     issueLevel: commentScore < 20 ? "warning" : null,
     recommendation: commentScore < 40
-      ? "End every video with an open question. Respond to all comments in the first 2 hours — this signals activity to the algorithm."
+      ? "End every video with an open question. Respond to all comments in the first 2 hours, this signals activity to the algorithm."
       : null,
     trend: null,
   });
 
-  // 3. Audience sentiment — like-to-dislike ratio (weight 18%)
+  // 3. Audience sentiment, like-to-dislike ratio (weight 18%)
   // Real, valid Analytics metric. 90%+ is healthy; below 80% signals content issues.
   const sentimentBenchmark = 92;
   const sentiment = input.likeToDislikeRatio;
@@ -402,7 +402,7 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
     hasIssue: sentimentKnown && sentimentScore < 55,
     issueLevel: !sentimentKnown ? null : sentimentScore < 38 ? "critical" : sentimentScore < 55 ? "warning" : null,
     recommendation: sentimentKnown && sentimentScore < 55
-      ? "Your like-to-dislike ratio is low. Review which videos draw dislikes — misleading titles/thumbnails or controversial framing often cause this."
+      ? "Your like-to-dislike ratio is low. Review which videos draw dislikes, misleading titles/thumbnails or controversial framing often cause this."
       : null,
     trend: null,
   });
@@ -432,7 +432,7 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
     trend: null,
   });
 
-  // 5. Share rate (weight 16%) — per Satura, the strongest engagement signal
+  // 5. Share rate (weight 16%), per Satura, the strongest engagement signal
   const shareBenchmark = engagementBenchmark(0.08, input.subscriberCount, input.niche);
   const shareRate = input.shareRate > 0
     ? input.shareRate
@@ -452,12 +452,12 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
     hasIssue: shareScore < 30,
     issueLevel: null,
     recommendation: shareScore < 30
-      ? "Low shares. Shares are the single strongest engagement signal — create 'share-worthy' moments (surprising stats, emotional hooks, listicles)."
+      ? "Low shares. Shares are the single strongest engagement signal, create 'share-worthy' moments (surprising stats, emotional hooks, listicles)."
       : null,
     trend: null,
   });
 
-  // 6. Saves / playlist-add rate (weight 12%) — strong intent signal (Satura "saves")
+  // 6. Saves / playlist-add rate (weight 12%), strong intent signal (Satura "saves")
   const savesBenchmark = engagementBenchmark(0.4, input.subscriberCount, input.niche);
   const savesRate = input.savesRate;
   // 0 = data unavailable (public path) → neutral, don't penalise.
@@ -475,7 +475,7 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
     hasIssue: savesScore < 35,
     issueLevel: null,
     recommendation: savesScore < 35
-      ? "Few viewers save your videos. Saves signal high value — create reference-worthy content (tutorials, lists, guides) people want to revisit."
+      ? "Few viewers save your videos. Saves signal high value, create reference-worthy content (tutorials, lists, guides) people want to revisit."
       : null,
     trend: null,
   });
@@ -491,7 +491,7 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
     summary: score >= 70
       ? "Your audience engages actively with your content."
       : score >= 45
-      ? "Engagement is average — prompt likes, comments, and shares more directly."
+      ? "Engagement is average, prompt likes, comments, and shares more directly."
       : "Low engagement is limiting your algorithmic reach.",
   };
 }
@@ -499,10 +499,10 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
 // ─── Category: Retention ─────────────────────────────────────────────────────
 /**
  * Measures how much of each Short people actually watch.
- * On Shorts this is THE ranking signal — the feed pushes clips that hold and
+ * On Shorts this is THE ranking signal, the feed pushes clips that hold and
  * loop viewers. Because Shorts loop, average view percentage routinely lands
  * 60-100%+ (a rewatch counts as >100%), so the benchmarks here are far higher
- * than long-form. There is no "video length optimization" — a Short is a Short.
+ * than long-form. There is no "video length optimization", a Short is a Short.
  *
  * Shorts benchmarks:
  *   - Avg view percentage: strong = 75%+, viral = 90-100%+
@@ -511,7 +511,7 @@ export function calculateEngagement(input: MetricInput): CategoryScore {
 export function calculateRetention(input: MetricInput): CategoryScore {
   const metrics: MetricResult[] = [];
 
-  // 1. Average View Percentage (weight 60%) — the gold-standard Shorts signal.
+  // 1. Average View Percentage (weight 60%), the gold-standard Shorts signal.
   // Shorts loop, so 75% is solid and 90%+ is viral territory.
   const avpBenchmark = 75;
   const avp = input.avgViewPercentage;
@@ -530,13 +530,13 @@ export function calculateRetention(input: MetricInput): CategoryScore {
     hasIssue: avpScore < 50,
     issueLevel: avpScore < 30 ? "critical" : avpScore < 50 ? "warning" : null,
     recommendation: avpScore < 50
-      ? "Viewers swipe away before the end. On Shorts the first 1-2 seconds decide everything — open on the payoff, cut every dead beat, and loop the ending back to the start so it replays seamlessly."
+      ? "Viewers swipe away before the end. On Shorts the first 1-2 seconds decide everything, open on the payoff, cut every dead beat, and loop the ending back to the start so it replays seamlessly."
       : null,
     trend: null,
   });
 
-  // 2. Completion — avg watch time as a fraction of clip length (weight 25%).
-  // For Shorts we WANT this near (or above) 100% — a full watch plus rewatches.
+  // 2. Completion, avg watch time as a fraction of clip length (weight 25%).
+  // For Shorts we WANT this near (or above) 100%, a full watch plus rewatches.
   const clipLen = input.avgVideoDuration;
   const completion = clipLen > 0 ? (input.avgViewDuration / clipLen) * 100 : 0;
   // Benchmark 85%: a Short held almost to the end. Ratio caps naturally >1 on loops.
@@ -561,10 +561,10 @@ export function calculateRetention(input: MetricInput): CategoryScore {
     trend: null,
   });
 
-  // 3. Audience loyalty — share of views from subscribed viewers (weight 15%)
+  // 3. Audience loyalty, share of views from subscribed viewers (weight 15%)
   // A healthy mix: enough subscriber loyalty (a returning base) without being
   // 100% subscriber-dependent (which means no new-audience reach). Sweet spot
-  // is moderate — both extremes are penalised slightly.
+  // is moderate, both extremes are penalised slightly.
   const subPct = input.subscriberViewPct;
   let loyaltyScore: number;
   if (subPct <= 0) loyaltyScore = 50;          // data unavailable → neutral
@@ -586,9 +586,9 @@ export function calculateRetention(input: MetricInput): CategoryScore {
     hasIssue: subPct > 0 && loyaltyScore < 60,
     issueLevel: null,
     recommendation: subPct >= 65
-      ? "Most of your views come from existing subscribers — great loyalty, but your content isn't reaching new audiences. Optimize packaging for browse/suggested to expand reach."
+      ? "Most of your views come from existing subscribers, great loyalty, but your content isn't reaching new audiences. Optimize packaging for browse/suggested to expand reach."
       : (subPct > 0 && subPct < 10)
-      ? "Very few views come from subscribers — viewers aren't sticking around. Strengthen your channel identity and give people a clear reason to subscribe."
+      ? "Very few views come from subscribers, viewers aren't sticking around. Strengthen your channel identity and give people a clear reason to subscribe."
       : null,
     trend: null,
   });
@@ -612,7 +612,7 @@ export function calculateRetention(input: MetricInput): CategoryScore {
       hasIssue: swipeScore < 45,
       issueLevel: swipeScore < 25 ? "critical" : swipeScore < 45 ? "warning" : null,
       recommendation: swipeScore < 45
-        ? "Too many people swipe away before watching. Your first frame + first spoken words must land instantly — lead with the payoff, not a setup, and test a bolder on-screen hook."
+        ? "Too many people swipe away before watching. Your first frame + first spoken words must land instantly, lead with the payoff, not a setup, and test a bolder on-screen hook."
         : null,
       trend: null,
     });
@@ -632,7 +632,7 @@ export function calculateRetention(input: MetricInput): CategoryScore {
     summary: score >= 70
       ? "Viewers watch a strong percentage of your videos."
       : score >= 45
-      ? "Retention is average — improving hooks will increase algorithmic reach."
+      ? "Retention is average, improving hooks will increase algorithmic reach."
       : "Low retention is the biggest blocker to growth. Focus here first.",
   };
 }
@@ -650,7 +650,7 @@ export function calculateRetention(input: MetricInput): CategoryScore {
 export function calculateUploadConsistency(input: MetricInput): CategoryScore {
   const metrics: MetricResult[] = [];
 
-  // 1. Monthly upload frequency (weight 40%) — benchmark adapts to content type
+  // 1. Monthly upload frequency (weight 40%), benchmark adapts to content type
   const uploadsPerMonth = input.uploadsLast30Days;
   const freqScore = uploadFreqScore(uploadsPerMonth, input.isShorts);
   const freqBenchmark = input.isShorts ? 30 : 4;
@@ -671,14 +671,14 @@ export function calculateUploadConsistency(input: MetricInput): CategoryScore {
     issueLevel: freqScore < 30 ? "critical" : freqScore < 60 ? "warning" : null,
     recommendation: freqScore < 60
       ? input.isShorts
-        ? `You posted ${uploadsPerMonth} Short${uploadsPerMonth === 1 ? "" : "s"} last month. Post DAILY (aim ~30/month) — YouTube rewards consistent daily Shorts and pulls back distribution when you skip days. Batch-film and schedule one every day.`
+        ? `You posted ${uploadsPerMonth} Short${uploadsPerMonth === 1 ? "" : "s"} last month. Post DAILY (aim ~30/month), YouTube rewards consistent daily Shorts and pulls back distribution when you skip days. Batch-film and schedule one every day.`
         : `You uploaded ${uploadsPerMonth} video${uploadsPerMonth === 1 ? "" : "s"} last month. Aim for 4+ per month minimum. Batch-record on weekends and schedule releases throughout the week.`
       : null,
     trend: null,
   });
 
   // 2. Upload recency (weight 30%)
-  // Days since last upload — freshness matters
+  // Days since last upload, freshness matters
   const days = input.daysSinceLastUpload;
   let recencyScore: number;
   if (input.isShorts) {
@@ -716,7 +716,7 @@ export function calculateUploadConsistency(input: MetricInput): CategoryScore {
     issueLevel: recencyScore < 30 ? "critical" : recencyScore < 60 ? "warning" : null,
     recommendation: recencyScore < 60
       ? input.isShorts
-        ? `Last Short was ${days} day${days === 1 ? "" : "s"} ago. Shorts need DAILY uploads — YouTube penalizes skipped days and pulls back your reach. Get back to posting every single day, even a simple Short, to rebuild momentum.`
+        ? `Last Short was ${days} day${days === 1 ? "" : "s"} ago. Shorts need DAILY uploads, YouTube penalizes skipped days and pulls back your reach. Get back to posting every single day, even a simple Short, to rebuild momentum.`
         : `Last upload was ${days} days ago. YouTube de-prioritizes channels that go quiet. Even a short video can re-activate your channel's distribution.`
       : null,
     trend: null,
@@ -762,7 +762,7 @@ export function calculateUploadConsistency(input: MetricInput): CategoryScore {
     weight: 0.20,
     metrics,
     summary: score >= 70
-      ? "You're publishing consistently — the algorithm rewards this."
+      ? "You're publishing consistently, the algorithm rewards this."
       : score >= 45
       ? "Upload frequency is inconsistent. Pick a schedule and stick to it."
       : "Inconsistent uploads are significantly limiting your channel's reach.",
@@ -772,14 +772,14 @@ export function calculateUploadConsistency(input: MetricInput): CategoryScore {
 // ─── Category: Authority ─────────────────────────────────────────────────────
 /**
  * Measures your channel's established trust and size.
- * This is the hardest to move quickly — it rewards tenure.
+ * This is the hardest to move quickly, it rewards tenure.
  *
  * Log-scale scoring because subscriber growth is logarithmic.
  */
 export function calculateAuthority(input: MetricInput): CategoryScore {
   const metrics: MetricResult[] = [];
 
-  // 1. Subscriber count (weight 25%) — log scale
+  // 1. Subscriber count (weight 25%), log scale
   // 1K = 20, 10K = 40, 100K = 60, 1M = 80, 10M = 100
   const subScore = clamp(Math.log10(Math.max(input.subscriberCount, 1)) * 13.3);
   metrics.push({
@@ -845,7 +845,7 @@ export function calculateAuthority(input: MetricInput): CategoryScore {
     trend: null,
   });
 
-  // 4. Channel age (weight 20%) — YouTube trusts older channels more
+  // 4. Channel age (weight 20%), YouTube trusts older channels more
   const ageYears = input.channelAgeInDays / 365;
   const ageScore = clamp(ageYears >= 5 ? 100 : ageYears >= 3 ? 85 : ageYears >= 2 ? 70 : ageYears >= 1 ? 55 : ageYears >= 0.5 ? 35 : 15);
   metrics.push({
@@ -873,10 +873,10 @@ export function calculateAuthority(input: MetricInput): CategoryScore {
     weight: 0.15,
     metrics,
     summary: score >= 70
-      ? "Strong authority — YouTube trusts your channel with broader distribution."
+      ? "Strong authority, YouTube trusts your channel with broader distribution."
       : score >= 45
-      ? "Building authority — keep consistent and it grows automatically."
-      : "Early stage channel — authority builds with time and quality content.",
+      ? "Building authority, keep consistent and it grows automatically."
+      : "Early stage channel, authority builds with time and quality content.",
   };
 }
 
@@ -948,7 +948,7 @@ export function calculateVelocity(input: MetricInput): CategoryScore {
     trend: null,
   });
 
-  // 3. Views momentum — REAL recent 28d vs prior 28d (weight 25%)
+  // 3. Views momentum, REAL recent 28d vs prior 28d (weight 25%)
   // input.viewsMomentum is a % change: +20 means 20% more views than the prior period.
   const vm = input.viewsMomentum;
   const viewsMomScore = clamp(
@@ -977,7 +977,7 @@ export function calculateVelocity(input: MetricInput): CategoryScore {
     trend: vm >= 0 ? "up" : "down",
   });
 
-  // 4. Subscriber conversion — net subs per 1,000 views (weight 15%)
+  // 4. Subscriber conversion, net subs per 1,000 views (weight 15%)
   // How effectively your views turn into subscribers. ~3-5 per 1k is healthy.
   const convBenchmark = 4;
   const conv = input.subsPerThousandViews;
@@ -1000,7 +1000,7 @@ export function calculateVelocity(input: MetricInput): CategoryScore {
     trend: null,
   });
 
-  // 5. Algorithmic Discovery (weight 15%) — THE core "is YouTube pushing you" signal.
+  // 5. Algorithmic Discovery (weight 15%), THE core "is YouTube pushing you" signal.
   // High suggested + browse share = the algorithm is actively distributing your
   // content (vs. relying only on subscribers/search). This is what "trust" means.
   const algoPct = input.suggestedPct + input.browsePct;
@@ -1026,7 +1026,7 @@ export function calculateVelocity(input: MetricInput): CategoryScore {
     hasIssue: algoPct > 0 && algoScore < 50,
     issueLevel: algoPct > 0 && algoScore < 35 ? "critical" : algoPct > 0 && algoScore < 50 ? "warning" : null,
     recommendation: algoPct > 0 && algoScore < 50
-      ? `Only ${algoPct.toFixed(0)}% of your views come from browse/suggested — YouTube isn't actively pushing your content. Improve packaging (titles/thumbnails) and retention so the algorithm tests you wider.`
+      ? `Only ${algoPct.toFixed(0)}% of your views come from browse/suggested, YouTube isn't actively pushing your content. Improve packaging (titles/thumbnails) and retention so the algorithm tests you wider.`
       : null,
     trend: null,
   });
@@ -1040,7 +1040,7 @@ export function calculateVelocity(input: MetricInput): CategoryScore {
     weight: 0.10,
     metrics,
     summary: score >= 70
-      ? "Channel is on an upward trajectory — momentum is building."
+      ? "Channel is on an upward trajectory, momentum is building."
       : score >= 45
       ? "Growth is modest. Stronger consistency and engagement will accelerate velocity."
       : "Growth has stalled. Focus on engagement fundamentals to restart momentum.",
@@ -1056,7 +1056,7 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
   const authority  = calculateAuthority(input);
   const velocity   = calculateVelocity(input);
 
-  // Weighted overall — weights match category.weight values
+  // Weighted overall, weights match category.weight values
   const baseOverall =
     engagement.score * engagement.weight +
     retention.score  * retention.weight  +
@@ -1073,11 +1073,7 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
 
   // Collect and rank all recommendations by impact
   const allMetrics = [
-    ...engagement.metrics,
-    ...retention.metrics,
-    ...upload.metrics,
-    ...authority.metrics,
-    ...velocity.metrics,
+    ...engagement.metrics, ...retention.metrics, ...upload.metrics, ...authority.metrics, ...velocity.metrics,
   ];
 
   const categoryNames: Record<string, string> = {
@@ -1135,7 +1131,7 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
       title: "Resolve active strikes",
       description: `You reported ${parts.join(" + ")} strike${strikes.total > 1 ? "s" : ""}. Active strikes cap your distribution and monetization, and 3 in either category terminates the channel. Dispute invalid ones, wait out the 90-day expiry on the rest, and avoid any new violations. This is costing you ~${lost} points.`,
       impact: lost,
-      action: "Resolve or wait out your active strikes — they expire 90 days after issue.",
+      action: "Resolve or wait out your active strikes, they expire 90 days after issue.",
     });
   }
 
@@ -1161,24 +1157,24 @@ export function calculateOverallScore(input: MetricInput): ScoreResult {
     .find((x) => x.c === strongest)!;
 
   if (overall >= 70) {
-    insights.push(`Strong overall performance — your ${categoryLabelMap[strongestName.i]} is a key driver.`);
+    insights.push(`Strong overall performance, your ${categoryLabelMap[strongestName.i]} is a key driver.`);
   } else {
     insights.push(`Your biggest opportunity is ${categoryLabelMap[weakestName.i]} (score: ${Math.round(weakest.score)}/100).`);
   }
 
   if (retention.score < 55) {
-    insights.push("Retention is below average — this directly limits how YouTube distributes your videos.");
+    insights.push("Retention is below average, this directly limits how YouTube distributes your videos.");
   } else if (engagement.score < 50) {
     insights.push("Low engagement (likes, comments, shares) is limiting how far the Shorts feed pushes your videos.");
   } else if (upload.score < 50) {
-    insights.push("Upload consistency is your top growth lever — consistent publishers grow 2-3× faster.");
+    insights.push("Upload consistency is your top growth lever, consistent publishers grow 2-3× faster.");
   } else {
     insights.push(`Your retention rate of ${input.avgViewPercentage.toFixed(0)}% puts you in the ${scorePercentile(retention.score)} of creators.`);
   }
 
   insights.push(
     recommendations.length > 0
-      ? `Top priority: ${recommendations[0].title.toLowerCase()} — estimated +${recommendations[0].impact} score points.`
+      ? `Top priority: ${recommendations[0].title.toLowerCase()}, estimated +${recommendations[0].impact} score points.`
       : "No critical issues detected. Focus on incremental improvement across all categories."
   );
 

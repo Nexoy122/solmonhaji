@@ -51,7 +51,7 @@ export function BhFooter() {
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t-2 border-white/15 pt-6 text-[13px] font-bold uppercase tracking-wide text-white/40 sm:flex-row">
           <span>© {new Date().getFullYear()} NicheSpy</span>
           <span className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-[#D02020]" />
+            <span className="h-3 w-3 rounded-full bg-[#FF0033]" />
             <span className="h-3 w-3 bg-[#1040C0]" />
             <span className="h-3 w-3 bh-triangle bg-[#F0C020]" />
           </span>

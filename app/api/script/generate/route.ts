@@ -11,7 +11,7 @@ import {
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// POST /api/script/generate — JSON modes:
+// POST /api/script/generate, JSON modes:
 //   { mode:"idea", idea, transcript?, youtubeUrl?, withTimestamps? }
 //   { mode:"improve", script, options[], transcript?, youtubeUrl?, withTimestamps? }
 //   (legacy) { topic }  → simple topic generation

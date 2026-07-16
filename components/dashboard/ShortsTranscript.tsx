@@ -110,7 +110,7 @@ export function ShortsTranscript() {
             <><Icon d="M4 7V4h16v3M9 20h6M12 4v16" size={16} /> Get transcript <span className="inline-flex items-center gap-1 rounded-full bg-black/10 px-1.5 py-0.5 text-[11px] font-bold"><CreditIcon size={12} /> {CREDIT_COST.transcript}</span></>
           )}
         </button>
-        {busy && <p className="mt-2 text-center text-[12px] text-on-surface-variant">If the Short has no captions we transcribe the audio — that can take 10–30s.</p>}
+        {busy && <p className="mt-2 text-center text-[12px] text-on-surface-variant">If the Short has no captions we transcribe the audio, that can take 10–30s.</p>}
       </div>
 
       {/* Result */}

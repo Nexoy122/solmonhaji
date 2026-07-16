@@ -32,14 +32,14 @@ export function LpNavbar() {
       }`}
     >
       <nav className="relative flex h-16 items-center justify-between px-5 md:px-8">
-        {/* LOGO — left */}
+        {/* LOGO, left */}
         <Link href="/" className="flex items-center gap-2.5 font-heading text-[19px] font-bold text-white">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/favicon.webp" alt="" width={30} height={30} className="rounded-lg" />
           NicheSpy
         </Link>
 
-        {/* ITEMS — centered */}
+        {/* ITEMS, centered */}
         <div className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-8 lg:flex">
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} className="text-[15px] font-medium text-white/60 transition-colors hover:text-white">

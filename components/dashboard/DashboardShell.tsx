@@ -5,12 +5,13 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { useCredits, CreditIcon } from "@/components/dashboard/CreditsContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { NAV_ICONS, MSym } from "@/components/dashboard/NavIcons";
 import { refreshCountdownLabel } from "@/lib/refreshSchedule";
 
 type NavItem = { label: string; href: string; icon: string; soon?: boolean };
 
-// Product updates / changelog. Newest first — add a new entry at the top when
+// Product updates / changelog. Newest first, add a new entry at the top when
 // something ships. The top entry's `id` drives the "unseen" dot. `points` are
 // the detailed bullets shown in the full Updates modal.
 type Update = { id: string; date: string; tag: "New" | "Improved" | "Fixed"; title: string; body: string; points: string[] };
@@ -20,7 +21,7 @@ const UPDATES: Update[] = [
     date: "July 14, 2026",
     tag: "New",
     title: "A brand-new look",
-    body: "NicheSpy has a bold new Bauhaus design across the whole app — landing, dashboard, and every tool.",
+    body: "NicheSpy has a bold new Bauhaus design across the whole app, landing, dashboard, and every tool.",
     points: [
       "Constructivist Bauhaus theme: primary colors, thick borders, hard shadows.",
       "New Outfit typeface and uppercase headings throughout.",
@@ -35,7 +36,7 @@ const UPDATES: Update[] = [
     title: "Plans & billing",
     body: "Upgrade to Starter, Creator, or Plus right from the dashboard, with secure checkout.",
     points: [
-      "Three plans — Starter ($9), Creator ($19), Plus ($39).",
+      "Three plans, Starter ($9), Creator ($19), Plus ($39).",
       "Every plan includes every tool; you scale credits, channels & support.",
       "Manage or cancel your subscription anytime from the billing portal.",
       "Launch offer: 50% off for early members.",
@@ -309,7 +310,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Refresh countdown — yellow Bauhaus tag */}
+            {/* Refresh countdown, yellow Bauhaus tag */}
             {countdown && (
               <span className="hidden items-center gap-2 border-2 border-black bg-[#F0C020] px-3 py-1.5 text-[12px] font-black uppercase tracking-wide text-black sm:inline-flex">
                 <Icon d="M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" size={14} />
@@ -317,11 +318,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </span>
             )}
 
-            {/* Credits balance — Bauhaus pill with a lightning SVG, links to plans */}
+            {/* Credits balance, Bauhaus pill with a lightning SVG, links to plans */}
             {credits !== null && (
               <Link
                 href="/dashboard/plans"
-                title="Credits — click to get more"
+                title="Credits, click to get more"
                 className="inline-flex items-center gap-1.5 border-2 border-black bg-white px-3 py-1.5 shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
               >
                 <CreditIcon size={17} />
@@ -330,7 +331,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </Link>
             )}
 
-            {/* Updates — "Updates" button that opens the full modal */}
+            {/* Light / dark theme */}
+            <ThemeToggle />
+
+            {/* Updates, "Updates" button that opens the full modal */}
             <button
               onClick={() => { setUpdatesModalOpen(true); setUnseen(false); try { localStorage.setItem("ns_updates_seen", UPDATES[0]?.id ?? ""); } catch { /* ignore */ } }}
               className="hidden items-center gap-2 border-2 border-black bg-white px-3 py-2 text-[12px] font-black uppercase tracking-wide text-black shadow-[3px_3px_0px_0px_#121212] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none sm:inline-flex"
@@ -339,7 +343,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               Updates
             </button>
 
-            {/* Updates — bell button + quick dropdown */}
+            {/* Updates, bell button + quick dropdown */}
             <div className="relative" ref={updatesRef}>
               <button
                 onClick={openUpdates}
@@ -378,7 +382,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               )}
             </div>
 
-            {/* User menu — avatar with hard border */}
+            {/* User menu, avatar with hard border */}
             <div className="relative" ref={menuRef}>
               <button onClick={() => setMenuOpen((o) => !o)} aria-label="Account menu" className="flex size-10 items-center justify-center overflow-hidden rounded-full border-2 border-black p-0 shadow-[2px_2px_0px_0px_#121212]">
                 {avatar ? (
@@ -420,7 +424,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <main className="dashboard-zoom relative flex-1 overflow-y-auto p-4 text-black md:p-6 lg:p-8">{children}</main>
       </div>
 
-      {/* ── Updates modal — full detailed changelog ── */}
+      {/* ── Updates modal, full detailed changelog ── */}
       {updatesModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setUpdatesModalOpen(false)}>
           <div className="absolute inset-0 bg-black/40" />
@@ -445,7 +449,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </button>
             </div>
 
-            {/* body — detailed entries */}
+            {/* body, detailed entries */}
             <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-6">
                 {UPDATES.map((u) => (

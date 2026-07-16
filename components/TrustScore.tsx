@@ -54,8 +54,7 @@ export function TrustScore() {
                 <span className="text-primary">actually strong.</span>
               </h2>
               <p className="mt-5 max-w-[560px] text-body-large text-on-surface-variant">
-                Subscriber counts lie. Trust Score gives any channel — yours or a competitor&apos;s —
-                a single <strong className="text-on-surface">0–100 health score</strong> built from real signals:
+                Subscriber counts lie. Trust Score gives any channel, yours or a competitor&apos;s, a single <strong className="text-on-surface">0–100 health score</strong> built from real signals:
                 engagement, retention, upload consistency, authority, and growth velocity. Instantly tell
                 genuine momentum from inflated vanity numbers.
               </p>

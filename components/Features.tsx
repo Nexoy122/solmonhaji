@@ -51,22 +51,22 @@ export function Features() {
       </Reveal>
       <Reveal delay={0.08}>
         <p className="text-body-large mt-6 max-w-[640px] text-on-surface-variant">
-          Everything you&apos;ve been doing by hand — competitor hunting, video analysis,
-          gap-finding — automated and updated in real time.
+          Everything you&apos;ve been doing by hand, competitor hunting, video analysis,
+          gap-finding, automated and updated in real time.
         </p>
       </Reveal>
 
       <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
         <Card
           name="Competitor Finder"
-          desc="Type any niche and instantly get every competitor channel — subscriber count, total views, and how often they post."
+          desc="Type any niche and instantly get every competitor channel, subscriber count, total views, and how often they post."
           tag="INSTANT RESULTS"
           delay={0}
           icon={<svg width="28" height="28" viewBox="0 0 20 20" fill="none" stroke={tone.primary.stroke} strokeWidth="1.6" strokeLinecap="round"><circle cx="9" cy="9" r="6" /><path d="M14 14l4 4" /><path d="M6 9h6M9 6v6" opacity="0.5" /></svg>}
         />
         <Card
           name="Outlier Detector"
-          desc="Surfaces the videos that crushed a channel's average — the exact formats and titles the algorithm is rewarding right now."
+          desc="Surfaces the videos that crushed a channel's average, the exact formats and titles the algorithm is rewarding right now."
           tag="WHAT'S WORKING"
           delay={0.06}
           icon={<svg width="28" height="28" viewBox="0 0 20 20" fill="none" stroke={tone.primary.stroke} strokeWidth="1.6" strokeLinecap="round"><path d="M3 15l4-6 4 4 3-5 3 3" /><circle cx="17" cy="4" r="2" fill={tone.primary.stroke} opacity="0.4" /></svg>}
@@ -81,13 +81,13 @@ export function Features() {
         />
         <Card
           name="Viral Alerts"
-          desc="Get an email the second a competitor's video takes off. You're always first to know — and first to react — in your niche."
+          desc="Get an email the second a competitor's video takes off. You're always first to know, and first to react, in your niche."
           tag="REAL-TIME"
           delay={0.18}
           icon={<svg width="28" height="28" viewBox="0 0 20 20" fill="none" stroke={tone.primary.stroke} strokeWidth="1.6" strokeLinecap="round"><path d="M10 2v4M15 4l-2.5 2.5M18 10h-4M15 16l-2.5-2.5M10 18v-4M5 16l2.5-2.5M2 10h4M5 4l2.5 2.5" /><circle cx="10" cy="10" r="3" /></svg>}
         />
 
-        {/* Competitor Dashboard — full width */}
+        {/* Competitor Dashboard, full width */}
         <Reveal delay={0.22} className="md:col-span-2 h-full">
           <div className="grid h-full grid-cols-1 lg:grid-cols-2 items-center gap-10 rounded-[28px] border border-outline-variant bg-surface-container-lowest p-8 md:p-10">
             <div>
@@ -97,7 +97,7 @@ export function Features() {
               <h3 className="mb-3 text-headline-small">Competitor Dashboard</h3>
               <p className="text-body-large text-on-surface-variant">
                 Save the channels you care about. Every recent video, views per video, engagement
-                rate, and posting schedule — in one clean view.
+                rate, and posting schedule, in one clean view.
               </p>
               <div className="mt-7 inline-flex items-center rounded-full bg-primary-container px-4 py-1.5 text-[13px] font-semibold text-on-primary-container">
                 EVERYTHING IN ONE PLACE

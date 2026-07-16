@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 
-// Client-side credit cost constants — must mirror lib/creditCosts.ts.
+// Client-side credit cost constants, must mirror lib/creditCosts.ts.
 export const CREDIT_COST = {
   script: 2,
   scriptFromVideo: 8,
@@ -49,7 +49,7 @@ export function useCredits() {
   return c;
 }
 
-// Credit coin icon — a clean bordered coin with a spark, Bauhaus-friendly.
+// Credit coin icon, a clean bordered coin with a spark, Bauhaus-friendly.
 export function CreditIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
@@ -77,7 +77,7 @@ export function ProBadge({ className = "" }: { className?: string }) {
   );
 }
 
-// Inline "upgrade to unlock" nudge — a Bauhaus card tools can drop in place of
+// Inline "upgrade to unlock" nudge, a Bauhaus card tools can drop in place of
 // gated content. `title`/`body` describe what's locked.
 export function UpgradeNudge({ title, body, compact = false }: { title: string; body?: string; compact?: boolean }) {
   return (

@@ -2,11 +2,11 @@
 // Figures out where a visitor came from, so each waitlist signup can be tagged.
 //
 // Accuracy priority (most → least reliable):
-//   1. UTM tag        — ?utm_source=instagram          (you control it; 100% accurate)
-//   2. Platform click-id — fbclid / igshid / ttclid…   (auto-added by the platform)
+//   1. UTM tag, ?utm_source=instagram          (you control it; 100% accurate)
+//   2. Platform click-id, fbclid / igshid / ttclid…   (auto-added by the platform)
 //   3. ref= / source= shorthand params                 (common in shared links)
 //   4. Referrer hostname auto-detect                   (best-effort; social apps often hide it)
-//   5. "direct"                                        (no signal — typed URL, in-app browser, etc.)
+//   5. "direct"                                        (no signal, typed URL, in-app browser, etc.)
 //
 // FIRST-TOUCH: the very first source we see is stored in localStorage and kept,
 // even if the visitor leaves and returns later to sign up. That's the most
@@ -39,7 +39,7 @@ const REFERRER_MAP: { match: RegExp; source: string }[] = [
   { match: /bing\.com/i, source: "bing" },
 ];
 
-// Platform click-IDs the apps append automatically — a strong signal even when
+// Platform click-IDs the apps append automatically, a strong signal even when
 // the referrer is stripped (e.g. Instagram/TikTok in-app browsers).
 function detectFromClickId(params: URLSearchParams): string | null {
   if (params.has("igshid")) return "instagram";

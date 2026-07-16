@@ -41,7 +41,7 @@ function Icon({ d, size = 16 }: { d: string; size?: number }) {
   );
 }
 function fmt(n: number | null | undefined): string {
-  if (n == null) return "—";
+  if (n == null) return ",";
   if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`;
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;

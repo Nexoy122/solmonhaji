@@ -45,15 +45,15 @@ const IMPROVE_OPTS: { id: string; label: string }[] = [
 
 const inputCls = "w-full rounded-md border border-black bg-white px-4 py-3 text-[14px] text-black outline-none transition-colors placeholder:text-black/40 focus:border-[#D02020]/70";
 
-// Idea starter chips — fill the idea box on click.
+// Idea starter chips, fill the idea box on click.
 const IDEA_CHIPS = ["Weird product review", "Internet drama recap", "“Healthy” habit myth", "Overrated or underrated"];
 
 // Static tips for the "How to get the best script" help panel.
 const HELP_TIPS = [
   "Be specific: name the exact topic, angle, or hook you want.",
   "Add a reference (URL or transcript) to copy a creator's style & hook.",
-  "For a silent/aesthetic clip, use From Video — the AI reads the on-screen text and visuals.",
-  "After it generates, refine it with the improve box — e.g. “make the hook more controversial”.",
+  "For a silent/aesthetic clip, use From Video, the AI reads the on-screen text and visuals.",
+  "After it generates, refine it with the improve box, e.g. “make the hook more controversial”.",
 ];
 
 export function ScriptGenerator() {
@@ -104,7 +104,7 @@ export function ScriptGenerator() {
         <button onClick={() => fileRef.current?.click()} className="flex w-full flex-col items-center justify-center gap-2 border border-dashed border-black py-8 text-black/60 transition-colors hover:border-black hover:bg-white hover:text-black/80">
           <Icon d="M12 16V4M7 9l5-5 5 5M5 20h14" size={26} />
           <span className="text-[13.5px] font-medium">Click to upload a video</span>
-          <span className="text-[11.5px] text-on-surface-variant">MP4, MOV, WEBM — up to 500 MB</span>
+          <span className="text-[11.5px] text-on-surface-variant">MP4, MOV, WEBM, up to 500 MB</span>
         </button>
       )}
     </>
@@ -112,7 +112,7 @@ export function ScriptGenerator() {
 
   const refStep = (
     <>
-      <input value={refUrl} onChange={(e) => setRefUrl(e.target.value)} placeholder="Reference YouTube URL — copies its style" className={inputCls} />
+      <input value={refUrl} onChange={(e) => setRefUrl(e.target.value)} placeholder="Reference YouTube URL, copies its style" className={inputCls} />
       <div className="my-3"><OrDivider /></div>
       <textarea value={refTranscript} onChange={(e) => setRefTranscript(e.target.value)} rows={4} placeholder="…or paste a reference transcript to copy its style & hook" className={inputCls + " resize-none"} />
     </>
@@ -125,7 +125,7 @@ export function ScriptGenerator() {
       </span>
       <div>
         <p className="text-[14px] font-semibold text-black">Include timestamps</p>
-        <p className="text-[12px] text-on-surface-variant">Add [0-3s] beats to each line — handy for editing.</p>
+        <p className="text-[12px] text-on-surface-variant">Add [0-3s] beats to each line, handy for editing.</p>
       </div>
     </label>
   );
@@ -133,7 +133,7 @@ export function ScriptGenerator() {
   // ── Per-mode step definitions (one thing per step) ──
   const steps: Step[] =
     mode === "idea" ? [
-      { title: "Your idea", hint: "Describe the video you want to make — the topic, angle, or hook.", canNext: idea.trim().length >= 5,
+      { title: "Your idea", hint: "Describe the video you want to make, the topic, angle, or hook.", canNext: idea.trim().length >= 5,
         content: (
           <div>
             <textarea value={idea} onChange={(e) => setIdea(e.target.value)} rows={5} maxLength={10000} placeholder="e.g. A video comparing Iran vs USA military power" className={inputCls + " resize-none"} />
@@ -148,7 +148,7 @@ export function ScriptGenerator() {
             </div>
           </div>
         ) },
-      { title: "Reference style", hint: "Optional — give a video or transcript to copy its style & hook.", canNext: true, optional: true, content: refStep },
+      { title: "Reference style", hint: "Optional, give a video or transcript to copy its style & hook.", canNext: true, optional: true, content: refStep },
       { title: "Options", hint: "Choose how the final script is formatted.", canNext: true, content: optionsStep },
     ] :
     mode === "improve" ? [
@@ -166,9 +166,9 @@ export function ScriptGenerator() {
         content: <div className="space-y-4">{refStep}<div className="border-t border-black pt-4">{optionsStep}</div></div> },
     ] :
     [
-      { title: "Your video", hint: "Upload a video (≤60s works best). Our AI watches & analyzes it — no captions or voiceover needed.", canNext: Boolean(file),
+      { title: "Your video", hint: "Upload a video (≤60s works best). Our AI watches & analyzes it, no captions or voiceover needed.", canNext: Boolean(file),
         content: <div>{uploadBox}</div> },
-      { title: "Reference style", hint: "Optional — give a video or transcript to copy its style.", canNext: true, optional: true, content: refStep },
+      { title: "Reference style", hint: "Optional, give a video or transcript to copy its style.", canNext: true, optional: true, content: refStep },
       { title: "Options", hint: "Choose how the final script is formatted.", canNext: true, content: optionsStep },
     ];
 
@@ -241,7 +241,7 @@ export function ScriptGenerator() {
 
   return (
     <div className="dash-fade-up w-full">
-      <p className="mb-4 text-[14px] text-on-surface-variant">Write scroll-stopping YouTube Shorts scripts — from an idea, a script, or a video.</p>
+      <p className="mb-4 text-[14px] text-on-surface-variant">Write scroll-stopping YouTube Shorts scripts, from an idea, a script, or a video.</p>
 
       {/* From-Video paywall modal (free users) */}
       {videoLocked && (
@@ -256,7 +256,7 @@ export function ScriptGenerator() {
         </div>
       )}
 
-      {/* How to get the best script — collapsible help */}
+      {/* How to get the best script, collapsible help */}
       <div className="mb-5 overflow-hidden rounded-xl border border-black bg-[#ffffff]">
         <button onClick={() => setHelpOpen((o) => !o)} className="flex w-full items-center gap-2.5 px-5 py-3.5 text-left transition-colors hover:bg-white">
           <span className="text-[#D02020]"><Icon d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 16v-4M12 8h.01" size={17} /></span>
@@ -304,7 +304,7 @@ export function ScriptGenerator() {
               </div>
             </div>
 
-            {/* Active step (animated) — grows to fill */}
+            {/* Active step (animated), grows to fill */}
             <div className="step-in mt-4 flex-1" key={`${mode}-${step}`}>
               <p className="text-[18px] font-bold text-on-surface">{cur.title}</p>
               <p className="mb-4 mt-1 text-[13px] leading-relaxed text-on-surface-variant">{cur.hint}</p>

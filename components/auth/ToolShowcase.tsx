@@ -5,7 +5,7 @@ import { TOOL_GRAPHICS } from "@/components/auth/ToolGraphics";
 
 // Each tool = a hero "poster" (title + subtitle + a cyan-tinted concentric
 // visual). The panel auto-cycles; the bottom tab strip lets you jump between
-// them — modeled on the AUTO CLIP reference.
+// them, modeled on the AUTO CLIP reference.
 const TOOLS = [
   {
     id: "explore",
@@ -18,7 +18,7 @@ const TOOLS = [
     id: "trust",
     tab: "TRUST",
     title: "TRUST SCORE",
-    tagline: "Know if a channel is worth chasing — instantly.",
+    tagline: "Know if a channel is worth chasing, instantly.",
     desc: "Get a 0–100 health score for any channel: growth, consistency, engagement and red flags, analyzed in seconds. Stop guessing who's actually winning.",
   },
   {
@@ -26,28 +26,28 @@ const TOOLS = [
     tab: "NICHE",
     title: "NICHE RESEARCHER",
     tagline: "See exactly what's blowing up this week.",
-    desc: "Auto-tracked channels, viral outliers and AI-written recaps for every niche — updated daily. Spot the wave before everyone else rides it.",
+    desc: "Auto-tracked channels, viral outliers and AI-written recaps for every niche, updated daily. Spot the wave before everyone else rides it.",
   },
   {
     id: "script",
     tab: "SCRIPT",
     title: "SCRIPT GENERATOR",
     tagline: "From blank page to viral hook in seconds.",
-    desc: "Drop a topic and get a scroll-stopping Shorts script — punchy hook, retention beats and a CTA that converts. Write a week of content in minutes.",
+    desc: "Drop a topic and get a scroll-stopping Shorts script, punchy hook, retention beats and a CTA that converts. Write a week of content in minutes.",
   },
   {
     id: "audit",
     tab: "AUDIT",
     title: "CHANNEL AUDIT",
     tagline: "A full teardown of any channel's playbook.",
-    desc: "Hooks, editing, voiceover, music and captions — a deep AI audit of what a channel does right and where it leaks views. Reverse-engineer the winners.",
+    desc: "Hooks, editing, voiceover, music and captions, a deep AI audit of what a channel does right and where it leaks views. Reverse-engineer the winners.",
   },
   {
     id: "transcript",
     tab: "TRANSCRIPT",
     title: "SHORTS TRANSCRIPT",
     tagline: "Rip the words out of any Short instantly.",
-    desc: "Paste any YouTube Shorts link and get its full transcript in seconds — even Hinglish, cleaned and ready to study, remix or repurpose.",
+    desc: "Paste any YouTube Shorts link and get its full transcript in seconds, even Hinglish, cleaned and ready to study, remix or repurpose.",
   },
 ] as const;
 
@@ -58,7 +58,7 @@ export function ToolShowcase() {
   const [paused, setPaused] = useState(false);
 
   // Re-arm a single timer on every tool change so the progress bar (keyed on
-  // `active`) and the auto-advance stay perfectly in step — no drift.
+  // `active`) and the auto-advance stay perfectly in step, no drift.
   useEffect(() => {
     if (paused) return;
     const t = setTimeout(() => setActive((i) => (i + 1) % TOOLS.length), CYCLE_MS);
@@ -86,7 +86,7 @@ export function ToolShowcase() {
         }}
       />
 
-      {/* Per-tool motion graphic — re-keys on tool change to replay the animation */}
+      {/* Per-tool motion graphic, re-keys on tool change to replay the animation */}
       <div key={tool.id} className="showcase-scene pointer-events-none absolute inset-0 flex items-center justify-center">
         <span className="absolute size-56 rounded-full bg-[#0FA5E9]/[0.12] blur-[70px]" />
         <div className="relative h-[320px] w-[320px] max-xl:h-[260px] max-xl:w-[260px]">
@@ -132,7 +132,7 @@ export function ToolShowcase() {
             </button>
           ))}
         </div>
-        {/* progress track — keyed on `active` so it restarts in lockstep with
+        {/* progress track, keyed on `active` so it restarts in lockstep with
             the auto-advance timer (paused freezes it) */}
         <div className="relative mt-3 h-[2px] w-full bg-white/[0.08]">
           <div

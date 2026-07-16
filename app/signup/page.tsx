@@ -97,7 +97,7 @@ export default function SignupPage() {
       if (data.token) {
         await signInWithCustomToken(auth, data.token);
       }
-      router.replace("/dashboard");
+      router.replace("/onboarding");
     } catch {
       setError("Network error. Please try again.");
       setBusy(false);
@@ -111,7 +111,7 @@ export default function SignupPage() {
     try {
       const cred = await signInWithPopup(auth, googleProvider);
       void sendGoogleWelcome(() => cred.user.getIdToken());
-      router.replace("/dashboard");
+      router.replace("/onboarding");
     } catch (err) {
       setError(authErrorMessage((err as { code?: string })?.code ?? ""));
       setBusy(false);

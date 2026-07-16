@@ -1,5 +1,5 @@
 // Shape of a YouTube channel as consumed by the scoring engine.
-// (Ported from ChannelScore — only the type is needed here.)
+// (Ported from ChannelScore, only the type is needed here.)
 export interface YouTubeChannelData {
   id: string;
   name: string;

@@ -1,4 +1,4 @@
-// Central credit-cost config — how many credits each paid action costs.
+// Central credit-cost config, how many credits each paid action costs.
 // Priced ~1 credit ≈ 1¢ of real API cost, so plans keep ~85%+ margin.
 // Browsing (Discover/Explore) is cached and free.
 

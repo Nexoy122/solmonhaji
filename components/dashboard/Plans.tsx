@@ -298,7 +298,7 @@ export function Plans() {
       <div className="text-center">
         <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-[#D02020] px-4 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-white">
           <Icon d="M13 2L3 14h7l-1 8 10-12h-7z" size={14} />
-          50% off every plan — limited time
+          50% off every plan, limited time
         </div>
 
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#D02020]">Pricing</p>
@@ -307,7 +307,7 @@ export function Plans() {
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-[14.5px] leading-relaxed text-on-surface-variant">
           Every plan gets every tool. Plans differ by monthly credits, connected channels,
-          history, and support — not by what you can open. Upgrade, downgrade, or cancel anytime.
+          history, and support, not by what you can open. Upgrade, downgrade, or cancel anytime.
         </p>
         <button
           onClick={handleManageBilling}
@@ -347,8 +347,7 @@ export function Plans() {
       <div className="mt-16">
         <h2 className="text-center font-heading text-[22px] font-bold text-on-surface">How credits work</h2>
         <p className="mx-auto mt-2 max-w-xl text-center text-[13.5px] leading-relaxed text-on-surface-variant">
-          Browsing Discover and Explore is always free. Credits are only spent on AI actions —
-          cheap actions cost few credits, and Channel Audit (our heaviest action) costs more.
+          Browsing Discover and Explore is always free. Credits are only spent on AI actions, cheap actions cost few credits, and Channel Audit (our heaviest action) costs more.
         </p>
 
         <div className="mx-auto mt-6 max-w-2xl overflow-hidden rounded-[16px] border border-black bg-white">

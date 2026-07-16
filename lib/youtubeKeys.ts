@@ -16,7 +16,7 @@ function loadKeys(): string[] {
   return [...new Set(all)];
 }
 
-// Track keys we've seen hit quota, with the timestamp — cleared at the next
+// Track keys we've seen hit quota, with the timestamp, cleared at the next
 // Pacific midnight. Module-level (per server instance).
 const exhausted = new Map<string, number>();
 
@@ -89,7 +89,7 @@ export async function youtubeFetch(build: (key: string) => string): Promise<unkn
       lastErr = `quota (${reason || res.status})`;
       continue; // try next key
     }
-    // Non-quota error (bad request, etc.) — fail fast, rotating won't help.
+    // Non-quota error (bad request, etc.), fail fast, rotating won't help.
     throw new Error(`YouTube request failed (${res.status}): ${text.slice(0, 200)}`);
   }
   throw new Error(`All YouTube API keys exhausted. Last: ${lastErr}`);

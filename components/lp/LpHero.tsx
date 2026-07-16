@@ -42,7 +42,7 @@ export function LpHero() {
 
         <motion.p custom={2} variants={fadeUp} initial="hidden" animate="show" className="mx-auto mt-5 max-w-[620px] text-[16px] leading-relaxed text-white/60">
           AI-powered competitor intelligence, outlier detection, and untapped-topic ideas that do
-          the heavy lifting — <strong className="font-semibold text-white/90">so you can focus on creating.</strong>
+          the heavy lifting, <strong className="font-semibold text-white/90">so you can focus on creating.</strong>
         </motion.p>
 
         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">

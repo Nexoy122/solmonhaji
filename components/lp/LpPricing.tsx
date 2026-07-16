@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Reveal } from "../Reveal";
 
 // Mirrors the real tiers in lib/plan.ts (free / creator / pro). Paywall is OFF
-// pre-launch, so CTAs point at signup — framed as early-access pricing.
+// pre-launch, so CTAs point at signup, framed as early-access pricing.
 type Plan = {
   name: string;
   price: string;
@@ -68,8 +68,7 @@ export function LpPricing() {
             <span className="bg-gradient-to-r from-[#0FA5E9] to-[#01D4FF] bg-clip-text text-transparent">every tool</span>
           </h2>
           <p className="mt-5 text-[18px] leading-relaxed text-white/60 mx-auto max-w-[560px]">
-            Pick your plan by how much you create. All tools unlocked on every tier —
-            you only scale credits, channels, and support.
+            Pick your plan by how much you create. All tools unlocked on every tier, you only scale credits, channels, and support.
           </p>
         </div>
       </Reveal>
