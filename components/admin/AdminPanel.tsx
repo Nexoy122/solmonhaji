@@ -47,20 +47,21 @@ export function AdminPanel() {
     return t ? { Authorization: `Bearer ${t}` } : {};
   }, [user]);
 
-  // Gate. The server enforces this too; this only avoids showing a broken shell.
+  // AdminGate has already proven the role server-side before mounting this, so
+  // here we only need to know WHICH admin role, to show/hide admin-only actions.
+  // (The APIs re-check on every call regardless; this is presentation only.)
   useEffect(() => {
-    if (loading) return;
-    if (!user) { router.replace("/login"); return; }
+    if (loading || !user) return;
     (async () => {
       try {
-        const res = await fetch("/api/access", { headers: await authHeader() });
+        const res = await fetch("/api/admin/whoami", { headers: await authHeader() });
+        if (res.status === 401 || res.status === 403) { setDenied(true); setChecked(true); return; }
         const d = await res.json();
         setRole(d.role ?? "user");
-        if (!["staff", "admin", "super_admin"].includes(d.role)) setDenied(true);
       } catch { setDenied(true); }
       setChecked(true);
     })();
-  }, [user, loading, authHeader, router]);
+  }, [user, loading, authHeader]);
 
   const loadUsers = useCallback(async (status: string) => {
     try {
