@@ -35,6 +35,8 @@ export default function SignupPage() {
   const [notice, setNotice] = useState("");
   const [resendIn, setResendIn] = useState(0);
   const [captchaToken, setCaptchaToken] = useState("");
+  // True when Turnstile can't work at all, so we stop requiring a token.
+  const [captchaDead, setCaptchaDead] = useState(false);
   const captchaRef = useRef<CaptchaHandle>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -60,7 +62,7 @@ export default function SignupPage() {
     if (!name.trim()) return setError("Please enter your name.");
     if (!EMAIL_RE.test(email)) return setError("Please enter a valid email address.");
     if (password.length < 6) return setError("Password must be at least 6 characters.");
-    if (TURNSTILE_SITE_KEY && !captchaToken) return setError("Please complete the captcha.");
+    if (TURNSTILE_SITE_KEY && !captchaToken && !captchaDead) return setError("Please complete the captcha.");
 
     setBusy(true);
     try {
@@ -215,7 +217,7 @@ export default function SignupPage() {
           </p>
         )}
 
-        <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} />
+        <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} onUnavailable={() => setCaptchaDead(true)} />
 
         <AuthSubmit disabled={busy}>{busy ? "Sending code…" : "Continue"}</AuthSubmit>
       </form>

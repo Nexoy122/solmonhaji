@@ -61,7 +61,7 @@ function normalizeYoutubeUrl(url: string): string {
 async function fetchCaptions(url: string): Promise<string> {
   const transcript = await YoutubeTranscript.fetchTranscript(normalizeYoutubeUrl(url));
   const text = transcript.map((t) => t.text).join(" ");
-  return text.split(" ").slice(0, 800).join(" ");
+  return text;
 }
 
 // Strategy 2: yt-dlp download + Groq Whisper (fallback for no-caption videos).
@@ -92,7 +92,7 @@ async function fetchViaWhisper(url: string): Promise<string> {
 
   try {
     const text = await whisperTranscribeFile(outPath);
-    return text.split(" ").slice(0, 800).join(" ");
+    return text;
   } finally {
     fs.unlink(outPath, () => {});
   }
@@ -177,7 +177,7 @@ async function fetchViaSupadata(url: string): Promise<string> {
   const data = (await res.json()) as { content?: string; text?: string };
   const text = (data.content || data.text || "").trim();
   if (!text) throw new Error("Supadata returned no transcript.");
-  return text.split(" ").slice(0, 800).join(" ");
+  return text;
 }
 
 // Main transcript resolver. Order (each falls back to the next):

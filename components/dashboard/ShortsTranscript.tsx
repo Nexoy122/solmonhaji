@@ -73,7 +73,7 @@ export function ShortsTranscript() {
       {/* Title */}
       <div className="mb-7 text-center">
         <h1 className="text-[30px] font-bold text-on-surface">Shorts Transcript</h1>
-        <p className="mt-1.5 text-[15px] text-on-surface-variant">Paste a YouTube Shorts link and get its full transcript.</p>
+        <p className="mt-1.5 text-[15px] text-on-surface-variant">Paste any YouTube link, Shorts or long-form up to an hour, and get its full transcript.</p>
       </div>
 
       {error && (
@@ -94,7 +94,7 @@ export function ShortsTranscript() {
 
       {/* Input */}
       <div className="rounded-none border-2 border-black bg-white shadow-[6px_6px_0px_0px_#121212] md:border-4 p-6">
-        <label className="text-[13px] font-semibold uppercase tracking-wider text-on-surface-variant/70">YouTube Shorts URL</label>
+        <label className="text-[13px] font-semibold uppercase tracking-wider text-on-surface-variant/70">YouTube URL</label>
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}

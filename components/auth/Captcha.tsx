@@ -27,8 +27,18 @@ function loadScript(): Promise<void> {
 
 export interface CaptchaHandle { reset: () => void }
 
-export const Captcha = forwardRef<CaptchaHandle, { onVerify: (token: string) => void; onExpire?: () => void }>(
-  function Captcha({ onVerify, onExpire }, ref) {
+export const Captcha = forwardRef<
+  CaptchaHandle,
+  {
+    onVerify: (token: string) => void;
+    onExpire?: () => void;
+    /** Called when the widget can't work at all (bad hostname, script blocked,
+     *  Cloudflare erroring). Lets the form fall back to signing in without it,
+     *  rather than trapping a real user behind a captcha that will never pass. */
+    onUnavailable?: () => void;
+  }
+>(
+  function Captcha({ onVerify, onExpire, onUnavailable }, ref) {
     const boxRef = useRef<HTMLDivElement>(null);
     const widgetId = useRef<string | null>(null);
     const [ready, setReady] = useState(false);
@@ -43,6 +53,9 @@ export const Captcha = forwardRef<CaptchaHandle, { onVerify: (token: string) => 
       loadScript()
         .then(async () => {
           for (let i = 0; i < 50 && !window.turnstile; i++) await new Promise((r) => setTimeout(r, 100));
+          // Script never arrived (blocked by an extension, network, or CSP):
+          // don't leave the form waiting for a token that can't come.
+          if (!cancelled && !window.turnstile) { onUnavailable?.(); return; }
           if (cancelled || !window.turnstile || !boxRef.current || widgetId.current) return;
           setReady(true);
           widgetId.current = window.turnstile.render(boxRef.current, {
@@ -51,10 +64,13 @@ export const Captcha = forwardRef<CaptchaHandle, { onVerify: (token: string) => 
             size: "flexible", // stretches to the container width
             callback: (token: string) => onVerify(token),
             "expired-callback": () => onExpire?.(),
-            "error-callback": () => onExpire?.(),
+            // An error here means the widget itself failed (most often the
+            // hostname isn't on the widget's allow-list). Retrying won't help,
+            // so tell the form to stop waiting for a token.
+            "error-callback": () => { onExpire?.(); onUnavailable?.(); },
           });
         })
-        .catch(() => {});
+        .catch(() => { onUnavailable?.(); });
       return () => {
         cancelled = true;
         if (widgetId.current) { try { window.turnstile?.remove(widgetId.current); } catch { /* ignore */ } }

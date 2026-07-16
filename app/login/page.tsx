@@ -35,6 +35,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [captchaToken, setCaptchaToken] = useState("");
+  // True when Turnstile can't work at all, so we stop requiring a token.
+  const [captchaDead, setCaptchaDead] = useState(false);
   const captchaRef = useRef<CaptchaHandle>(null);
 
   useEffect(() => {
@@ -46,21 +48,29 @@ export default function LoginPage() {
     setError(""); setNotice("");
     if (!EMAIL_RE.test(email)) return setError("Please enter a valid email address.");
     if (!password) return setError("Please enter your password.");
-    if (TURNSTILE_SITE_KEY && !captchaToken) return setError("Please complete the captcha.");
-
+    // Captcha is anti-abuse, not authentication. Never let it stand between a
+    // real user and their own account: if the widget can't produce a token
+    // (wrong hostname, blocked script, offline), sign in anyway. Firebase still
+    // rate-limits and still requires the correct password.
     setBusy(true);
     try {
-      // Verify the captcha token server-side before signing in.
       if (captchaToken) {
-        const v = await fetch("/api/verify-turnstile", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: captchaToken }),
-        });
-        if (!v.ok) {
-          setError("Captcha check failed. Please try again.");
-          captchaRef.current?.reset(); setCaptchaToken("");
-          setBusy(false); return;
+        try {
+          const v = await fetch("/api/verify-turnstile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: captchaToken }),
+          });
+          const d = await v.json().catch(() => ({}));
+          // Only block when Turnstile EXPLICITLY rejects the token. The route
+          // already fails open on its own outages (returns ok:true, degraded).
+          if (!v.ok && d?.error === "verification_failed") {
+            setError("Captcha check failed. Please try again.");
+            captchaRef.current?.reset(); setCaptchaToken("");
+            setBusy(false); return;
+          }
+        } catch {
+          // Verification endpoint unreachable: fail open rather than lock out.
         }
       }
       await signInWithEmailAndPassword(auth, email.trim(), password);
@@ -130,7 +140,7 @@ export default function LoginPage() {
         )}
         {notice && <p className="text-[14px] font-medium text-[#4fc3f7]">{notice}</p>}
 
-        <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} />
+        <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} onUnavailable={() => setCaptchaDead(true)} />
 
         <AuthSubmit disabled={busy}>{busy ? "Logging in…" : "Log in"}</AuthSubmit>
       </form>

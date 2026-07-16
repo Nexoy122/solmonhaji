@@ -4,9 +4,13 @@ import { getTranscript } from "@/lib/transcriptFetcher";
 import { chargeCredits } from "@/lib/requireCredits";
 
 export const runtime = "nodejs";
-export const maxDuration = 120; // Whisper fallback can take a bit
+// A 1-hour video's Whisper fallback needs real time: download, extract audio,
+// transcribe. 120s wasn't close.
+export const maxDuration = 300;
 
-const SHORT_MAX_SECONDS = 190; // Shorts are up to ~3 min
+// Longest video we'll accept. Past this the Whisper path can't finish inside
+// maxDuration, so we'd fail slowly instead of saying no quickly.
+const MAX_SECONDS = 60 * 60; // 1 hour
 
 // Extract a video ID from a Shorts or watch URL. Returns { id, wasShortsUrl }.
 function parseYouTubeUrl(url: string): { id: string | null; wasShortsUrl: boolean } {
@@ -32,14 +36,14 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({}));
   const url = (body?.url ?? "").toString().trim();
-  if (!url) return NextResponse.json({ error: "Paste a YouTube Shorts link." }, { status: 400 });
+  if (!url) return NextResponse.json({ error: "Paste a YouTube link." }, { status: 400 });
 
   const { id, wasShortsUrl } = parseYouTubeUrl(url);
   if (!id) return NextResponse.json({ error: "That doesn't look like a valid YouTube link." }, { status: 400 });
 
-  // ── Shorts-only check ──
-  // /shorts/ URLs are definitively Shorts. For watch URLs, verify duration ≤ 3 min
-  // (needs the YouTube API key). Also fetch the title/thumbnail for display.
+  // ── Duration check ──
+  // Shorts and long-form are both supported; we only reject past MAX_SECONDS.
+  // Needs the YouTube API key. Also fetches the title/thumbnail for display.
   let title = "";
   let thumbnail: string | null = null;
   const apiKey = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_API_KEYS?.split(",")[0]?.trim();
@@ -55,17 +59,24 @@ export async function POST(req: NextRequest) {
         title = item.snippet?.title ?? "";
         thumbnail = item.snippet?.thumbnails?.medium?.url ?? item.snippet?.thumbnails?.default?.url ?? null;
         const duration = parseDuration(item.contentDetails?.duration ?? "PT0S");
-        if (!wasShortsUrl && duration > SHORT_MAX_SECONDS) {
+        // Long-form is supported now, up to an hour. Beyond that the Whisper
+        // fallback would blow past the route's time budget and time out anyway,
+        // so refuse clearly rather than hang and fail.
+        if (duration > MAX_SECONDS) {
           return NextResponse.json(
-            { unsupported: "not_short", error: "This is a long-form video. This tool only transcribes YouTube Shorts (up to ~3 minutes)." },
+            {
+              unsupported: "too_long",
+              error: `That video is ${Math.round(duration / 60)} minutes. This tool handles videos up to ${MAX_SECONDS / 60} minutes.`,
+            },
             { status: 422 }
           );
         }
       }
     } catch {
-      // If the metadata check fails, still allow /shorts/ URLs (they're Shorts by definition).
+      // Metadata lookup failed. /shorts/ URLs are safe to try anyway (they're
+      // always under the limit); for anything else we can't know the length.
       if (!wasShortsUrl) {
-        return NextResponse.json({ error: "Couldn't verify the video. Please try a Shorts link." }, { status: 502 });
+        return NextResponse.json({ error: "Couldn't verify that video. Check the link and try again." }, { status: 502 });
       }
     }
   }
@@ -78,11 +89,11 @@ export async function POST(req: NextRequest) {
   try {
     const transcript = await getTranscript(`https://www.youtube.com/watch?v=${id}`);
     if (!transcript || transcript.trim().length < 2) {
-      return NextResponse.json({ error: "Couldn't get a transcript for this Short (no captions and audio transcription failed)." }, { status: 422 });
+      return NextResponse.json({ error: "Couldn't get a transcript for this video. It may have captions disabled and no usable audio." }, { status: 422 });
     }
     return NextResponse.json({ success: true, transcript, title, thumbnail });
   } catch (err) {
     console.error("[transcript] error:", err);
-    return NextResponse.json({ error: "Couldn't transcribe this Short. Please try again." }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't transcribe this video. Please try again." }, { status: 500 });
   }
 }
