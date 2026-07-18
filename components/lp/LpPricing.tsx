@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Reveal } from "../Reveal";
 
-// Mirrors the real tiers in lib/plan.ts (free / creator / pro). Paywall is OFF
-// pre-launch, so CTAs point at signup, framed as early-access pricing.
+// Mirrors the live paid plans in components/dashboard/Plans.tsx.
 type Plan = {
   name: string;
   price: string;
+  originalPrice: string;
   cadence: string;
   tagline: string;
   features: string[];
@@ -15,12 +15,13 @@ type Plan = {
 const PLANS: Plan[] = [
   {
     name: "Starter",
-    price: "$9",
+    price: "$3",
+    originalPrice: "$5",
     cadence: "/ month",
     tagline: "For a solo creator getting started.",
     features: [
       "All tools included",
-      "500 credits / month",
+      "1,000 credits / month",
       "1 connected channel",
       "7-day history",
       "Community support",
@@ -28,12 +29,13 @@ const PLANS: Plan[] = [
   },
   {
     name: "Creator",
-    price: "$19",
+    price: "$6",
+    originalPrice: "$12",
     cadence: "/ month",
     tagline: "For an active creator running 1–3 channels.",
     features: [
       "All tools included",
-      "1,500 credits / month",
+      "3,000 credits / month",
       "3 connected channels",
       "30-day history",
       "Priority email support",
@@ -42,12 +44,13 @@ const PLANS: Plan[] = [
   },
   {
     name: "Plus",
-    price: "$39",
+    price: "$13",
+    originalPrice: "$25",
     cadence: "/ month",
     tagline: "For agencies & power users.",
     features: [
       "All tools included",
-      "4,000 credits / month",
+      "8,000 credits / month",
       "10 connected channels",
       "Unlimited history",
       "Priority + early access",
@@ -61,7 +64,7 @@ export function LpPricing() {
       <Reveal>
         <div className="text-center">
           <span className="inline-flex items-center rounded-full border border-[#01D4FF]/30 bg-[#01D4FF]/10 px-4 py-1.5 text-[13px] font-bold text-[#01D4FF]">
-            PRICING
+            50% OFF LAUNCH PRICING
           </span>
           <h2 className="font-heading mt-6 text-[clamp(30px,4vw,46px)] font-bold tracking-[-0.01em] text-white mx-auto max-w-[720px]">
             Every plan gets{" "}
@@ -93,6 +96,12 @@ export function LpPricing() {
               <div className="mt-3 flex items-end gap-2">
                 <span className="font-heading text-[clamp(30px,4vw,44px)] font-bold text-white">{p.price}</span>
                 <span className="mb-2 text-[15px] text-white/50">{p.cadence}</span>
+              </div>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-[13px] font-medium text-white/35 line-through">{p.originalPrice}{p.cadence}</span>
+                <span className="rounded-full bg-[#01D4FF]/15 px-2 py-0.5 text-[11px] font-bold text-[#01D4FF]">
+                  50% off
+                </span>
               </div>
               <p className="mt-2 text-[15px] text-white/55">{p.tagline}</p>
 

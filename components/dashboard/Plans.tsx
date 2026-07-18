@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "@/components/AuthProvider";
 
 const DISCOUNT_RATE = 0.5; // 50% off
@@ -95,12 +95,7 @@ const CREDIT_COSTS: { action: string; credits: string; note: string }[] = [
   { action: "Channel Audit (deep video ML)", credits: "40", note: "Our most expensive action" },
 ];
 
-function getPriceInfo(plan: Plan, yearly: boolean) {
-  if (yearly) {
-    const original = plan.price * 12;
-    const discounted = Math.round(original * (1 - DISCOUNT_RATE));
-    return { discounted, original: Math.round(original), period: "year" as const };
-  }
+function getPriceInfo(plan: Plan) {
   const discounted = Math.round(plan.price * (1 - DISCOUNT_RATE));
   return { discounted, original: Math.round(plan.price), period: "month" as const };
 }
@@ -134,8 +129,8 @@ function CreditPill({ credits }: { credits: number }) {
   );
 }
 
-function PlanCard({ plan, onUpgrade, loading, yearly }: { plan: Plan; onUpgrade: (planId: string) => void; loading: boolean; yearly: boolean }) {
-  const { discounted, original, period } = getPriceInfo(plan, yearly);
+function PlanCard({ plan, onSelect, busy, error }: { plan: Plan; onSelect: () => void; busy: boolean; error: string }) {
+  const { discounted, original, period } = getPriceInfo(plan);
 
   const cardInner = (
     <div className="flex h-full flex-col p-6">
@@ -201,24 +196,18 @@ function PlanCard({ plan, onUpgrade, loading, yearly }: { plan: Plan; onUpgrade:
       </div>
 
       <div className="mt-6">
-        {plan.popular ? (
-          <button
-            onClick={() => onUpgrade(plan.id)}
-            disabled={loading}
-            className="btn-donate inline-flex w-full items-center justify-center gap-2 !rounded-xl !text-[14px] !font-bold disabled:opacity-60"
-          >
-            {loading ? "Redirecting…" : `Upgrade to ${plan.name}`}
-          </button>
-        ) : (
-          <button
-            onClick={() => onUpgrade(plan.id)}
-            disabled={loading}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black px-4 py-3 text-[14px] font-bold text-on-surface transition-colors hover:bg-white disabled:opacity-60"
-          >
-            {loading ? "Redirecting…" : `Upgrade to ${plan.name}`}
-          </button>
-        )}
-        <p className="mt-2.5 text-center text-[11.5px] text-on-surface-variant/70">Cancel anytime</p>
+        <button
+          onClick={onSelect}
+          disabled={busy}
+          className={
+            plan.popular
+              ? "btn-donate inline-flex w-full items-center justify-center gap-2 !rounded-xl !text-[14px] !font-bold disabled:opacity-60"
+              : "inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black px-4 py-3 text-[14px] font-bold text-on-surface transition-colors hover:bg-white disabled:opacity-60"
+          }
+        >
+          {busy ? "Opening checkout…" : `Get ${plan.name}`}
+        </button>
+        {error && <p className="mt-2.5 text-center text-[12px] font-semibold text-[#D02020]">{error}</p>}
       </div>
     </div>
   );
@@ -251,96 +240,56 @@ const ICON_PATHS: Record<string, string> = {
 
 export function Plans() {
   const { user } = useAuth();
-  const [yearly, setYearly] = useState(false);
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [portalLoading, setPortalLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [busyPlan, setBusyPlan] = useState<string | null>(null);
+  const [error, setError] = useState<{ plan: string; msg: string } | null>(null);
 
-  const authHeader = async (): Promise<Record<string, string>> => {
-    const token = await user?.getIdToken();
-    return token ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } : {};
-  };
-
-  const handleUpgrade = async (planId: string) => {
-    setError("");
-    setLoadingPlan(planId);
+  // Ask the server for a Polar checkout URL and send the browser there. The
+  // price lives in Polar, so nothing here can be tampered with client-side.
+  const startCheckout = useCallback(async (planId: string) => {
+    setError(null);
+    if (!user) { window.location.href = "/login?next=/dashboard/plans"; return; }
+    setBusyPlan(planId);
     try {
+      const token = await user.getIdToken();
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: await authHeader(),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ plan: planId }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.url) throw new Error(data.error || "Could not start checkout");
-      window.location.href = data.url;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
-      setLoadingPlan(null);
+      const d = await res.json();
+      if (!res.ok || !d.url) {
+        setError({ plan: planId, msg: d.error || "Couldn't start checkout." });
+        setBusyPlan(null);
+        return;
+      }
+      window.location.href = d.url;
+    } catch {
+      setError({ plan: planId, msg: "Network error. Please try again." });
+      setBusyPlan(null);
     }
-  };
-
-  const handleManageBilling = async () => {
-    setError("");
-    setPortalLoading(true);
-    try {
-      const res = await fetch("/api/portal", { method: "POST", headers: await authHeader() });
-      const data = await res.json();
-      if (!res.ok || !data.url) throw new Error(data.error || "No active subscription found.");
-      window.location.href = data.url;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
-      setPortalLoading(false);
-    }
-  };
+  }, [user]);
 
   return (
     <div className="mx-auto max-w-6xl">
       <div className="text-center">
-        <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-[#D02020] px-4 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-white">
-          <Icon d="M13 2L3 14h7l-1 8 10-12h-7z" size={14} />
-          50% off every plan, limited time
-        </div>
-
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#D02020]">Pricing</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#D02020]">Plans</p>
         <h1 className="mt-2 font-heading text-[28px] font-bold tracking-[-0.01em] text-on-surface md:text-[34px]">
-          Simple, credit-based pricing
+          Every plan unlocks every tool
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-[14.5px] leading-relaxed text-on-surface-variant">
-          Every plan gets every tool. Plans differ by monthly credits, connected channels,
-          history, and support, not by what you can open. Upgrade, downgrade, or cancel anytime.
+          You only scale credits, not access. Start free with 100 credits a week, upgrade whenever you need more.
         </p>
-        <button
-          onClick={handleManageBilling}
-          disabled={portalLoading}
-          className="mt-3 text-[12.5px] font-medium text-on-surface-variant underline decoration-white/20 underline-offset-4 transition-colors hover:text-on-surface disabled:opacity-60"
-        >
-          {portalLoading ? "Opening billing portal…" : "Already subscribed? Manage billing"}
-        </button>
-        {error && <p className="mt-3 text-[13px] text-[#ff6b6b]">{error}</p>}
-
-        <div className="mx-auto mt-6 inline-flex items-center gap-1 rounded-full border border-black bg-white p-1">
-          <button
-            onClick={() => setYearly(false)}
-            className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
-              !yearly ? "bg-white text-on-surface" : "text-on-surface-variant"
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setYearly(true)}
-            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
-              yearly ? "bg-white text-on-surface" : "text-on-surface-variant"
-            }`}
-          >
-            Yearly
-          </button>
-        </div>
       </div>
 
       <div className="mt-10 grid grid-cols-1 items-stretch gap-6 md:grid-cols-3">
         {PLANS.map((plan) => (
-          <PlanCard key={plan.id} plan={plan} onUpgrade={handleUpgrade} loading={loadingPlan === plan.id} yearly={yearly} />
+          <PlanCard
+            key={plan.id}
+            plan={plan}
+            onSelect={() => startCheckout(plan.id)}
+            busy={busyPlan === plan.id}
+            error={error?.plan === plan.id ? error.msg : ""}
+          />
         ))}
       </div>
 

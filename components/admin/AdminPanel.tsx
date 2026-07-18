@@ -185,7 +185,7 @@ export function AdminPanel() {
         </div>
 
         {tab === "team" ? (
-          <TeamTab authHeader={authHeader} canInviteTeam={role === "super_admin"} />
+          <TeamTab authHeader={authHeader} canInviteTeam={role === "super_admin"} canGrantCredits={canAdmin} />
         ) : tab === "audit" ? (
           <div className="mt-5 border-2 bh-border bh-surface bh-sh-4">
             <div className="border-b-2 bh-border px-5 py-3">

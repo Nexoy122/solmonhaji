@@ -406,8 +406,6 @@ function BillingSection({
 }) {
   const [data, setData] = useState<{ plan: string; balance: number; status: string; currentPeriodEnd: string | null; cancelAtPeriodEnd: boolean; transactions: Tx[] } | null>(null);
   const [loading, setLoading] = useState(true);
-  const [portalBusy, setPortalBusy] = useState(false);
-  const [err, setErr] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -419,24 +417,13 @@ function BillingSection({
     })();
   }, [authHeader]);
 
-  const openPortal = async () => {
-    setPortalBusy(true); setErr("");
-    try {
-      const res = await fetch("/api/portal", { method: "POST", headers: await authHeader() });
-      const d = await res.json();
-      if (d.url) window.location.href = d.url;
-      else setErr(d.error || "Couldn't open the billing portal.");
-    } catch { setErr("Couldn't open the billing portal."); }
-    setPortalBusy(false);
-  };
-
   const shownPlan = data?.plan ?? plan;
   const shownBalance = data?.balance ?? balance;
   const paid = shownPlan !== "free";
 
   return (
     <>
-      <Card title="Your plan" desc="Live from your subscription, never cached.">
+      <Card title="Your plan" desc="Payments are currently unavailable. Stay tuned for updates.">
         <div className="flex flex-wrap items-center gap-4">
           <span className="border-2 border-black bg-[#D02020] px-4 py-2 text-[15px] font-black uppercase tracking-wide text-white shadow-[3px_3px_0px_0px_#121212]">
             {shownPlan}
@@ -460,20 +447,17 @@ function BillingSection({
 
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/dashboard/plans" className={btnCls}>
-            {paid ? "Change plan" : "Upgrade plan"}
+            View plans
           </Link>
           {paid && (
-            <button onClick={openPortal} disabled={portalBusy} className={btnGhost}>
-              {portalBusy ? "Opening…" : "Manage subscription"}
+            <button disabled className={`${btnGhost} cursor-not-allowed opacity-60`}>
+              Manage subscription
             </button>
           )}
         </div>
-        {err && <Note kind="err">{err}</Note>}
-        {paid && (
-          <p className="mt-4 text-[12.5px] font-medium text-black/50">
-            Invoices, payment method, and cancellation are handled in the secure billing portal.
-          </p>
-        )}
+        <p className="mt-4 text-[12.5px] font-medium text-black/50">
+          Payments are currently unavailable. Stay tuned for updates.
+        </p>
       </Card>
 
       <Card title="Credit history" desc="Your most recent credit activity.">
@@ -616,16 +600,12 @@ function DangerSection({
 
   return (
     <>
-      <Card title="Cancel subscription" desc="Cancel anytime. You keep access until the end of your billing period.">
+      <Card title="Subscription management" desc="Payments are currently unavailable. Stay tuned for updates.">
         <button
-          onClick={async () => {
-            const res = await fetch("/api/portal", { method: "POST", headers: await authHeader() });
-            const d = await res.json();
-            if (d.url) window.location.href = d.url;
-          }}
-          className={btnGhost}
+          disabled
+          className={`${btnGhost} cursor-not-allowed opacity-60`}
         >
-          Manage in billing portal
+          Stay tuned
         </button>
       </Card>
 

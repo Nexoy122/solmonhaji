@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Mail, Send, Trash2, Check, Clock } from "lucide-react";
+import { Mail, Send, Trash2, Check, Clock, Coins } from "lucide-react";
 
 interface Invite {
   id: string; email: string; role: string; kind: string; note: string | null;
@@ -23,12 +23,78 @@ const ROLE_COLOR: Record<string, string> = {
 const btn = "inline-flex items-center justify-center gap-2 border-2 border-black px-4 py-2.5 text-[12.5px] font-black uppercase tracking-wider transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-50";
 const input = "w-full border-2 border-black bg-white px-3.5 py-2.5 text-[13.5px] font-medium text-black outline-none placeholder:text-black/35";
 
+// Grant credits to any user by email. Admin-only, reason required, audit-logged.
+function GrantCredits({ authHeader }: { authHeader: () => Promise<Record<string, string>> }) {
+  const [email, setEmail] = useState("");
+  const [amount, setAmount] = useState("");
+  const [reason, setReason] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ k: "ok" | "err"; m: string } | null>(null);
+
+  const grant = async () => {
+    setBusy(true); setMsg(null);
+    try {
+      const res = await fetch("/api/admin/credits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(await authHeader()) },
+        body: JSON.stringify({ email: email.trim(), amount: Number(amount), reason: reason.trim() }),
+      });
+      const d = await res.json();
+      if (!res.ok) setMsg({ k: "err", m: d.error || "Couldn't grant credits." });
+      else {
+        setMsg({ k: "ok", m: `Gave ${d.amount.toLocaleString()} credits to ${d.email}. New balance: ${d.balance.toLocaleString()}.` });
+        setEmail(""); setAmount(""); setReason("");
+      }
+    } catch { setMsg({ k: "err", m: "Network error." }); }
+    setBusy(false);
+  };
+
+  return (
+    <div className="border-2 border-black bg-white p-5 shadow-[4px_4px_0px_0px_#121212]">
+      <h2 className="flex items-center gap-2 text-[14px] font-black uppercase tracking-wide text-black">
+        <Coins className="h-4 w-4" strokeWidth={2.5} /> Give credits
+      </h2>
+      <p className="mt-1 text-[12px] font-medium text-black/50">
+        Credits land instantly. The account must already exist, and every grant is recorded in the audit log.
+      </p>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_140px]">
+        <div>
+          <label className="mb-1.5 block text-[11px] font-black uppercase tracking-widest text-black/50">User email</label>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="them@example.com" className={input} />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-[11px] font-black uppercase tracking-widest text-black/50">Credits</label>
+          <input value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))} inputMode="numeric" placeholder="1000" className={input} />
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <label className="mb-1.5 block text-[11px] font-black uppercase tracking-widest text-black/50">Reason</label>
+        <input value={reason} onChange={(e) => setReason(e.target.value)} maxLength={200} placeholder="e.g. beta tester bonus, support goodwill" className={input} />
+      </div>
+
+      <button
+        onClick={grant}
+        disabled={busy || !email.trim() || !amount || !reason.trim()}
+        className={`${btn} mt-4 bg-[#118A3E] text-white shadow-[3px_3px_0px_0px_#121212]`}
+      >
+        <Coins className="h-3.5 w-3.5" strokeWidth={3} /> {busy ? "Sending…" : "Give credits"}
+      </button>
+
+      {msg && <p className={`mt-3 text-[13px] font-bold ${msg.k === "ok" ? "text-[#118A3E]" : "text-[#FF0033]"}`}>{msg.m}</p>}
+    </div>
+  );
+}
+
 export function TeamTab({
   authHeader,
   canInviteTeam,
+  canGrantCredits,
 }: {
   authHeader: () => Promise<Record<string, string>>;
   canInviteTeam: boolean;
+  canGrantCredits: boolean;
 }) {
   const [invites, setInvites] = useState<Invite[]>([]);
   const [team, setTeam] = useState<Member[]>([]);
@@ -86,6 +152,8 @@ export function TeamTab({
 
   return (
     <div className="mt-5 space-y-5">
+      {canGrantCredits && <GrantCredits authHeader={authHeader} />}
+
       {/* Invite form */}
       <div className="border-2 border-black bg-white p-5 shadow-[4px_4px_0px_0px_#121212]">
         <h2 className="flex items-center gap-2 text-[14px] font-black uppercase tracking-wide text-black">
