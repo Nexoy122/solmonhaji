@@ -10,17 +10,17 @@ const PLANS = [
     cta: "Start free",
   },
   {
-    name: "Starter", price: "$5", accent: "#1040C0",
+    name: "Starter", price: "$5", was: "$10", accent: "#1040C0",
     features: ["Every tool unlocked", "1,000 credits / month", "Unlimited results", "All filters unlocked", "Email support"],
     cta: "Get Starter",
   },
   {
-    name: "Creator", price: "$12", accent: "#FF0033", featured: true,
+    name: "Creator", price: "$10", was: "$20", accent: "#FF0033", featured: true,
     features: ["Every tool unlocked", "3,000 credits / month", "Unlimited results", "All filters unlocked", "Priority support"],
     cta: "Get Creator",
   },
   {
-    name: "Plus", price: "$25", accent: "#7C3AED",
+    name: "Plus", price: "$20", was: "$40", accent: "#7C3AED",
     features: ["Every tool unlocked", "8,000 credits / month", "Unlimited results", "All filters unlocked", "Priority + early access"],
     cta: "Get Plus",
   },
@@ -54,7 +54,15 @@ export function BhPricing() {
               <div className="mt-2 flex items-end gap-1.5">
                 <span className="text-[46px] font-black leading-none bh-text">{p.price}</span>
                 <span className="mb-2 text-[15px] font-bold uppercase opacity-50 bh-text">/ mo</span>
+                {p.was && (
+                  <span className="mb-2 ml-1 text-[16px] font-bold leading-none text-[#FF0033] line-through opacity-70">{p.was}</span>
+                )}
               </div>
+              {p.was && (
+                <span className="mt-1.5 inline-block border-2 bh-border bg-[#F0C020] px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-black">
+                  50% off · Beta
+                </span>
+              )}
               <ul className="mt-7 space-y-3">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-[14.5px] font-medium bh-text">

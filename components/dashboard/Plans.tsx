@@ -26,7 +26,7 @@ const PLANS: Plan[] = [
     name: "Starter",
     tagline: "For a solo creator just getting started.",
     icon: "auto_awesome",
-    price: 5,
+    price: 10,
     credits: 1000,
     groups: [
       {
@@ -47,7 +47,7 @@ const PLANS: Plan[] = [
     name: "Creator",
     tagline: "For an active faceless creator running 1–3 channels.",
     icon: "workspace_premium",
-    price: 12,
+    price: 20,
     popular: true,
     credits: 3000,
     groups: [
@@ -68,7 +68,7 @@ const PLANS: Plan[] = [
     name: "Plus",
     tagline: "For agencies and power users managing many channels.",
     icon: "bolt",
-    price: 25,
+    price: 40,
     credits: 8000,
     groups: [
       {
