@@ -41,7 +41,10 @@ export async function POST(req: NextRequest) {
     email = (await adminAuth().getUser(uid)).email ?? undefined;
   } catch { /* non-fatal */ }
 
-  const origin = req.nextUrl.origin;
+  // Behind nginx, req.nextUrl.origin is the INTERNAL origin (localhost:3000), so
+  // Polar would redirect the buyer to localhost after paying. Use the public
+  // site URL, and only fall back to the request origin in local dev.
+  const base = (process.env.NEXT_PUBLIC_SITE_URL?.trim() || req.nextUrl.origin).replace(/\/$/, "");
 
   try {
     const session = await polar.checkouts.create({
@@ -49,7 +52,7 @@ export async function POST(req: NextRequest) {
       // The webhook reads this to credit the right account.
       externalCustomerId: uid,
       customerEmail: email,
-      successUrl: `${origin}/dashboard/plans?checkout=success`,
+      successUrl: `${base}/dashboard/plans?checkout=success`,
       metadata: { uid, plan },
     });
     return NextResponse.json({ url: session.url });
